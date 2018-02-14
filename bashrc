@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=443
+# FileVersion=444
 
 #====================================================================
 # Main
@@ -1630,7 +1630,7 @@ _source_utilities(){
 			while true; do
 				bash -c "</dev/tcp/${arguments[host]}/${arguments[port]}" >/dev/null 2>&1 &
 				pid=$!
-				read -t${interval}
+				read -t${interval} || true
 				pgrep -f -U ${EUID} -a "bash -c </dev/tcp/${arguments[host]}/${arguments[port]}$" && ec=1 && kill $pid || ec=0
 				[[ ${arguments[-m]:-0} -eq 1 ]] || break
 				if [[ ${ec} -eq 0 ]]; then
