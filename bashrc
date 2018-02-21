@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=444
+# FileVersion=445
 
 #====================================================================
 # Main
@@ -1791,7 +1791,6 @@ _source_histgrep(){
 				rm ${file}
 			done < <(find ${path} -type f -regextype sed -regex "${path}/${days[$i]}[0-9]\{6\}\.[0-9]*\.\(pts\|tty\)[0-9]*" | sort)
 		done
-		echo "Compacting history files finished"
 	}
 
 	preexec(){
