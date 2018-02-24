@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=445
+# FileVersion=446
 
 #====================================================================
 # Main
@@ -1486,7 +1486,7 @@ _source_utilities(){
 	max-mtu(){
 		arguments_list=(args1); args1='[{mtu:integer}] {ip:ip}'
 		arguments_description=( 'max-mtu' 'Obtain the maximum MTU to an IP.')
-		arguments_parameters=( '[{mtu}]: start probing with this MTU.'
+		arguments_parameters=( '[{mtu}]: start probing with this MTU (minimum value: 28).'
 		                       '{ip}: test path to this IP.' )
 		arguments_examples=( '$ max-mtu 9000 1.2.3.4' '')
 		argparse "$@" && shift ${arguments_shift}
@@ -1502,16 +1502,23 @@ _source_utilities(){
 		if [[ ${arguments[mtu]:-0} -eq 0 || ${mtu} -lt ${arguments[mtu]:-0} ]]; then
 			echo "Using MTU of ${mtu} from interface ${interface}."
 		else
-			echo "Using MTU of ${arguments[mtu]}."
-			mtu=${arguments[mtu]}
+			if [[ ${arguments[mtu]} -lt 28 ]]; then
+				echo "Using minimum MTU of 28."
+				mtu=28
+			else
+				echo "Using MTU of ${arguments[mtu]}."
+				mtu=${arguments[mtu]}
+			fi
 		fi
 		
-		while true; do
-			echo -ne "\r${mtu}"
-			ping -c 1 -W ${timeout} -w ${timeout} -M do -s $(( ${mtu} - 28 )) ${arguments[ip]} >/dev/null 2>&1 && echo -ne "\r" && break
+		while [[ ${mtu} -ge 28 ]]; do
+			echo -ne "      \r${mtu}"
+			ping -c 1 -W ${timeout} -w ${timeout} -M do -s $(( ${mtu} - 28 )) ${arguments[ip]} >/dev/null 2>&1 && break
 			mtu=$(( ${mtu} - 1 ))
 		done
-		echo "Maximum MTU found: ${mtu}."
+		echo -ne "        \r"
+		[[ ${mtu} -eq 27 ]] && echo "Did not get any ICMP reply from ${arguments[ip]}." && exit 1
+		[[ ${mtu} -ge 28 ]] && echo "Maximum MTU found: ${mtu}."
 	}
 
 	pastebin(){
