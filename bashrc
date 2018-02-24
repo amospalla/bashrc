@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=446
+# FileVersion=447
 
 #====================================================================
 # Main
@@ -1446,7 +1446,7 @@ _source_utilities(){
 		if ! program-exists "${1}"; then
 			echo "Program ${1} not found."; exit 1
 		fi
-		while true; do $@ && break; read -t ${arguments[seconds]:-1}; done
+		while true; do $@ && break; read -t ${arguments[seconds]:-1} || true; done
 	}
 
 	wait-ping(){
