@@ -225,7 +225,7 @@ color(){
 		*blue*)    number="34" ;;
 		*magenta*) number="35" ;;
 		*cyan*)    number="36" ;;
-		*)         number="0" ;; 
+		*)         number="0" ;;
 	esac
 	printf "\e[${mode};${number}m"
 }
@@ -311,7 +311,7 @@ argparse(){
 				integer) [[ "${value}" =~ ^[0-9]+$ ]] ;;
 				number) [[ "${value}" =~ ^-?([0-9]+('.'[0-9]+)?|'.'[0-9]+)$ ]] ;;
 				bool|boolean) [[ "${value}" =~ ^true|false|1|0|on|off$ ]] ;;
-				diu) 
+				diu)
 					[[ "${value}" =~ ^([0-9]+('.'[0-9]+)?|'.'[0-9]+)([[:space:]]*(b|bytes?|[kmgtpezyxsd](b|ib)?|(kilo|mega|giga|tera|peta|exa|zetta|yotta|kibi|mebi|gibi|tebi|pebi|exbi|zebi|yobi)bytes?))?$ ]]
 					;;
 				time)
@@ -673,11 +673,11 @@ _source_utilities(){
 				k*)          echo 1000 ;;
 				m|mib|me*)   echo 1048576 ;;
 				m*)          echo 1000000 ;;
-				g|gib*)      echo 1073741824 ;; 
+				g|gib*)      echo 1073741824 ;;
 				g*)          echo 1000000000 ;;
-				t|tib|tebi*) echo 1099511627776 ;; 
+				t|tib|tebi*) echo 1099511627776 ;;
 				t*)          echo 1000000000000 ;;
-				p|pib|peb*)  echo 1125899906842624 ;; 
+				p|pib|peb*)  echo 1125899906842624 ;;
 				p*)          echo 1000000000000000 ;;
 				e|eib|exb*)  echo 1152921504606850000 ;;
 				e*)          echo 1000000000000000000 ;;
@@ -705,7 +705,7 @@ _source_utilities(){
 		args2='time [-d|--decimals {decimals}] {unit} {units...}'
 		arguments_description=('unit-conversion' 'Convert between units.')
 		arguments_parameters=( 'time: do time conversion to the specified unit.'
-		                        'diu: do digital information unit conversion to the specified unit.' 
+		                        'diu: do digital information unit conversion to the specified unit.'
 								'[-d|--decimals {decimals}]: print up to specified decimals (by default 2 if --decimals is used).' )
 		arguments_examples=( '$ unit-conversion time -d 2 weeks "24m" "3h"' 'convert to months using with two decimals.'
 		                        '$ unit-conversion diu megabytes 0.25G' 'convert 0.25G to megabytes.' )
@@ -787,7 +787,7 @@ _source_utilities(){
 			integer) [[ "${value}" =~ ^[0-9]+$ ]] ;;
 			number) [[ ${value} =~ ^-?([0-9]+('.'[0-9]+)?|'.'[0-9]+)$ ]] ;;
 			bool|boolean) [[ "${value}" =~ ^true|false|1|0|on|off$ ]] ;;
-			diu) 
+			diu)
 				[[ "${value}" =~ ^([0-9]+('.'[0-9]+)?|'.'[0-9]+)([[:space:]]*(b|bytes?|[kmgtpezyxsd](b|ib)?|(kilo|mega|giga|tera|peta|exa|zetta|yotta|kibi|mebi|gibi|tebi|pebi|exbi|zebi|yobi)bytes?))?$ ]]
 				;;
 			time)
@@ -1091,7 +1091,7 @@ _source_utilities(){
 		}
 		
 		_lock_unlock(){
-			_lock_sub_lock; _lock_remove_running_unnamed && ec=0 || ec=1; _lock_sub_unlock; 
+			_lock_sub_lock; _lock_remove_running_unnamed && ec=0 || ec=1; _lock_sub_unlock;
 			return ${ec}
 		}
 		
@@ -1122,7 +1122,7 @@ _source_utilities(){
 			# Example: _binarysearch 0 $(( $array - 1 )) 123
 			local lowerIndex=${1} upperIndex=${2} value=${3} middle
 			while [[ $lowerIndex -le $upperIndex ]]; do
-				middle=$(( ( $upperIndex - $lowerIndex / 2) + $lowerIndex )) 
+				middle=$(( ( $upperIndex - $lowerIndex / 2) + $lowerIndex ))
 				if [[ ${date[$middle]} -eq $value ]]; then
 					echo $(( $middle )) && return 0
 				else
@@ -1223,7 +1223,7 @@ _source_utilities(){
 		
 		dates_counter="${#dates[@]}"
 		
-		# Initialize end of interval to most recent day 
+		# Initialize end of interval to most recent day
 		interval_end="${date[$(( $dates_counter - 1 ))]}"
 		# Sustract one day to it
 		interval_end="$(date -d "${interval_end} + 1 days" +'%Y%m%d')"
