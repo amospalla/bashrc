@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=449
+# FileVersion=450
 
 #====================================================================
 # Main
@@ -86,6 +86,18 @@ file-readable(){
 	while [[ $# -gt 0 ]]; do
 		if [[ ! -r "${1}" ]]; then
 			[[ ${message} -eq 1 ]] && echo "Error: file '$1' is not readable or does not exist."
+			return 1
+		fi
+		shift
+	done
+}
+
+folder-exists(){
+	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: folder-exists {folders...}\n" && return 0
+	[[ "${1}" == "--message" ]] && local message=1 && shift || local message=0
+	while [[ $# -gt 0 ]]; do
+		if [[ ! -d "${1}" ]]; then
+			[[ ${message} -eq 1 ]] && echo "Error: '$1' does not exist or is not a folder."
 			return 1
 		fi
 		shift
