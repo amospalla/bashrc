@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=448
+# FileVersion=449
 
 #====================================================================
 # Main
@@ -21,6 +21,7 @@ _main(){
 	[[ -x "${HOME}/.bashrc" ]] || chmod u+x "${HOME}/.bashrc"
 
 	if [[ $- != *i* ]] ; then
+		export bashrc_interactive=0
 		_source_path_add_home_bin
 		_program_load "$@" # Check if ${0} is this .bashrc or a link to it and execute the program asked for and exit, else we return.
 		# Shell is non-interactive.  Be done now!
@@ -34,6 +35,7 @@ _main(){
 		_source_ps1
 		_source_variables_amospalla
 		_source_aliases_amospalla
+		export bashrc_interactive=1
 		[[ "${_update_enable:-0}" -eq 1 ]] && ( _bash_update bashrc  & ) || true
 	fi
 }
