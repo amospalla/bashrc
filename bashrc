@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=458
+# FileVersion=459
 
 #====================================================================
 # Main
@@ -208,7 +208,7 @@ _bash_update(){
 	onlineversion="${onlineversion//# FileVersion=/}"
 	[[ ${onlineversion} =~ ^[0-9]+$ ]] || return
 	is-number ${onlineversion} || return
-	[[ ${currentversion} -lt ${onlineversion} ]] && echo "${bashrc_online}" > "${filepath}"
+	[[ ${currentversion} -lt ${onlineversion} ]] && echo "[bashrc] Upgrade ${currentversion} > ${onlineversion}" && echo "${bashrc_online}" > "${filepath}"
 }
 
 _source_path_add_home_bin(){
