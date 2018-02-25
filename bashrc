@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=452
+# FileVersion=453
 
 #====================================================================
 # Main
@@ -114,6 +114,15 @@ folder-writable(){
 		fi
 		shift
 	done
+}
+
+check-ping(){
+	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: check-ping [-m|--message] {host}\n" && return 0
+	[[ "${1}" =~ ^(-m|--message)$ ]] && local message=1 && shift || local message=0
+	if ! ping -w1 -c1 ${1} >/dev/null 2>&1; then
+		[[ ${message} -eq 1 ]] && echo "Could not ping to '${1}' with a 1 second timeout."
+		return 1
+	fi
 }
 
 is-number(){
