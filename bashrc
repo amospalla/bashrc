@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=457
+# FileVersion=458
 
 #====================================================================
 # Main
@@ -610,6 +610,7 @@ _binary_decode(){
 			readarray -t localfile < "${filepath}"
 			for (( i=0; i<${#localfile[@]}; i++ )); do
 				[[ "${localfile[$i]}" =~ ^" "*#" "*FileVersion=[0-9]+$ ]] && [[ "${localfile[$i]}" =~ [0-9]+ ]] && version="${BASH_REMATCH}" && break
+				[[ ${i} -gt 10 ]] && break # FileVersion should be at the start of the file
 			done
 		fi
 		if [[ ${version} -eq 0 || ${version} -lt ${_binary[${file}_version]} ]]; then
