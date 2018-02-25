@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=450
+# FileVersion=451
 
 #====================================================================
 # Main
@@ -81,8 +81,8 @@ perf_end(){
 }
 
 file-readable(){
-	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: file-readable {files...}\n" && return 0
-	[[ "${1}" == "--message" ]] && local message=1 && shift || local message=0
+	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: [-m|--message] file-readable {files...}\n" && return 0
+	[[ "${1}" == "^(-m|--message)$" ]] && local message=1 && shift || local message=0
 	while [[ $# -gt 0 ]]; do
 		if [[ ! -r "${1}" ]]; then
 			[[ ${message} -eq 1 ]] && echo "Error: file '$1' is not readable or does not exist."
@@ -93,8 +93,8 @@ file-readable(){
 }
 
 folder-exists(){
-	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: folder-exists {folders...}\n" && return 0
-	[[ "${1}" == "--message" ]] && local message=1 && shift || local message=0
+	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: folder-exists [-m|--message] {folders...}\n" && return 0
+	[[ "${1}" =~ "^(-m|--message)$" ]] && local message=1 && shift || local message=0
 	while [[ $# -gt 0 ]]; do
 		if [[ ! -d "${1}" ]]; then
 			[[ ${message} -eq 1 ]] && echo "Error: '$1' does not exist or is not a folder."
@@ -105,8 +105,8 @@ folder-exists(){
 }
 
 folder-writable(){
-	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: folder-writable --message {folders...}\n" && return 0
-	[[ "${1}" == "--message" ]] && local message=1 && shift || local message=0
+	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: folder-writable [-m|--message] {folders...}\n" && return 0
+	[[ "${1}" =~ "^(-m|--message)$" ]] && local message=1 && shift || local message=0
 	while [[ $# -gt 0 ]]; do
 		if [[ ! -w "${1}" ]]; then
 			[[ ${message} -eq 1 ]] && echo "Error: folder ${1} is not writable."
@@ -117,8 +117,8 @@ folder-writable(){
 }
 
 is-number(){
-	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: is-number []--message] {string}\n" && return 0
-	[[ "${1}" == "--message" ]] && local message=1 && shift || local message=0
+	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: is-number [-m|--message] {string}\n" && return 0
+	[[ "${1}" =~ "^(-m|--message)$" ]] && local message=1 && shift || local message=0
 	if ! echo $@ | grep -q "^[0-9]\+$"; then
 		[[ ${message} -eq 1 ]] && echo "'${1}' is not a number."
 		return 1
@@ -126,8 +126,8 @@ is-number(){
 }
 
 program-exists(){
-	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: program-exists --message {programs...}\n" && return 0
-	[[ "${1}" == "--message" ]] && local message=1 && shift || local message=0
+	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: program-exists [-m|--message] {programs...}\n" && return 0
+	[[ "${1}" =~ "^(-m|--message)$" ]] && local message=1 && shift || local message=0
 	while [[ $# -gt 0 ]]; do
 		if ! which "${1:-__None__}" >/dev/null 2>&1; then
 			[[ ${message} -eq 1 ]] && echo "Error: program ${1} is not available."
