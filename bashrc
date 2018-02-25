@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=456
+# FileVersion=457
 
 #====================================================================
 # Main
@@ -591,7 +591,7 @@ _binary[tmuxrc_version]="59"
 _binary[tmuxrc_filepath]="$HOME/.tmux.conf"
 _binary[tmuxrc_filemode]="644"
 _binary[tmuxrc_rootpath]="/etc/tmux.conf"
-_binary[tmuxrc_rootmode]="0644"
+_binary[tmuxrc_rootmode]="644"
 _binary[tmuxrc_option]="_tmuxrc"
 
 _binary_decode(){
