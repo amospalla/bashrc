@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=453
+# FileVersion=454
 
 #====================================================================
 # Main
@@ -869,8 +869,12 @@ _source_utilities(){
 				models[$i]="$(</sys/class/block/${names[$i]}/device/model)"
 				models[$i]=$( echo "${models[$i]}" | sed -e 's/[[:space:]]*$//' -e 's/[[:space:]]\+/_/g' )
 				adapters[$i]="$(_diskinfo_getdevice "${names[$i]}")"
-				serials[$i]="$(</sys/class/block/${names[$i]}/device/wwid)" || serials[$i]="."
-				serials[$i]="${serials[$i]:52:999}"
+				if [[ -e /sys/class/block/${names[$i]}/device/wwid ]]; then
+					serials[$i]="$(</sys/class/block/${names[$i]}/device/wwid)"
+					serials[$i]="${serials[$i]:52:999}"
+				else
+					serials[$i]="."
+				fi
 				[[ ${#serials[$i]} -eq 0 ]] && serials[$i]="."
 			done
 		}
