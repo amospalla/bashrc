@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=460
+# FileVersion=461
 
 #====================================================================
 # Main
@@ -2263,7 +2263,7 @@ _source_ps1(){
 			[[ ${_ps1_get_performance} -eq 1 ]] && perf_start bashupdate
 			if [[ ${ps1_bash_update} -lt 20 && -f "/tmp/${UID}.$$.bashrcupdate" ]]; then
 				read ps1_bash_update_text < /tmp/${UID}.$$.bashrcupdate
-				_color magentabold; printf "(bashrc update ${ps1_bash_update_text})"
+				_color magentabold; printf "(bashrc updated: ${ps1_bash_update_text})"
 				ps1_separator=1 && print_separator
 				rm /tmp/${UID}.$$.bashrcupdate
 			[[ ${_ps1_get_performance} -eq 1 ]] && _ps1_perf_end bashupdate
