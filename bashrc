@@ -81,66 +81,82 @@ perf_end(){
 }
 
 file-readable(){
-	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: [-m|--message] file-readable {files...}\n" && return 0
+	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: [-m|--message] [-i|--invert] file-readable {files...}\n" && return 0
 	[[ "${1}" == "^(-m|--message)$" ]] && local message=1 && shift || local message=0
+	[[ "${1}" =~ ^(-i|--invert)$  ]] && local invert=1 && shift  || local invert=0
 	while [[ $# -gt 0 ]]; do
-		if [[ ! -r "${1}" ]]; then
-			[[ ${message} -eq 1 ]] && echo "Error: file '$1' is not readable or does not exist."
-			return 1
+		if [[ -r "${1}" && ${invert} -eq 1 ]]; then
+			[[ ${message} -eq 1 ]] && echo "Error: file '$1' is readable."; return 1
+		elif [[ ! -r "${1}" && ${invert} -eq 0 ]]; then
+			[[ ${message} -eq 1 ]] && echo "Error: file '$1' is not readable or does not exist."; return 1
 		fi
 		shift
 	done
 }
 
 folder-exists(){
-	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: folder-exists [-m|--message] {folders...}\n" && return 0
+	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: folder-exists [-m|--message] [-i|--invert] {folders...}\n" && return 0
 	[[ "${1}" =~ ^(-m|--message)$ ]] && local message=1 && shift || local message=0
+	[[ "${1}" =~ ^(-i|--invert)$  ]] && local invert=1 && shift  || local invert=0
 	while [[ $# -gt 0 ]]; do
-		if [[ ! -d "${1}" ]]; then
-			[[ ${message} -eq 1 ]] && echo "Error: '$1' does not exist or is not a folder."
-			return 1
+		if [[ -d "${1}" && ${invert} -eq 1 ]]; then
+			[[ ${message} -eq 1 ]] && echo "Error: folder '$1' exists."; return 1
+		fi
+		if [[ ! -d "${1}" && ${invert} -eq 0 ]]; then
+			[[ ${message} -eq 1 ]] && echo "Error: '$1' does not exist or is not a folder."; return 1
 		fi
 		shift
 	done
 }
 
 folder-writable(){
-	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: folder-writable [-m|--message] {folders...}\n" && return 0
+	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: folder-writable [-m|--message] [-i|--invert] {folders...}\n" && return 0
 	[[ "${1}" =~ ^(-m|--message)$ ]] && local message=1 && shift || local message=0
+	[[ "${1}" =~ ^(-i|--invert)$  ]] && local invert=1 && shift  || local invert=0
 	while [[ $# -gt 0 ]]; do
-		if [[ ! -w "${1}" ]]; then
-			[[ ${message} -eq 1 ]] && echo "Error: folder ${1} is not writable."
-			return 1
+		if [[ -w "${1}" && ${invert} -eq 1 ]]; then
+			[[ ${message} -eq 1 ]] && echo "Error: folder ${1} is writable."; return 1
+		elif [[ ! -w "${1}" && ${invert} -eq 0 ]]; then
+			[[ ${message} -eq 1 ]] && echo "Error: folder ${1} is not writable."; return 1
 		fi
 		shift
 	done
 }
 
 check-ping(){
-	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: check-ping [-m|--message] {host}\n" && return 0
+	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: check-ping [-m|--message] [-i|--invert] {host}\n" && return 0
 	[[ "${1}" =~ ^(-m|--message)$ ]] && local message=1 && shift || local message=0
-	if ! ping -w1 -c1 ${1} >/dev/null 2>&1; then
-		[[ ${message} -eq 1 ]] && echo "Could not ping to '${1}' with a 1 second timeout."
-		return 1
+	[[ "${1}" =~ ^(-i|--invert)$  ]] && local invert=1 && shift  || local invert=0
+	ping -w1 -c1 ${1} >/dev/null 2>&1 && local pinged=1 || local pinged=0
+	if [[ ${pinged} -eq 1 && ${invert} -eq 1 ]]; then
+		[[ ${message} -eq 1 ]] && echo "Error: could ping to '${1}'."; return 1
+	elif [[ ${pinged} -eq 0 && ${invert} -eq 0 ]]; then
+		[[ ${message} -eq 1 ]] && echo "Could not ping to '${1}' with a 1 second timeout."; return 1
 	fi
 }
 
 is-number(){
-	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: is-number [-m|--message] {string}\n" && return 0
+	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: is-number [-m|--message] [-i|--invert] {string}\n" && return 0
 	[[ "${1}" =~ ^(-m|--message)$ ]] && local message=1 && shift || local message=0
-	if ! echo $@ | grep -q "^[0-9]\+$"; then
-		[[ ${message} -eq 1 ]] && echo "'${1}' is not a number."
-		return 1
+	[[ "${1}" =~ ^(-i|--invert)$  ]] && local invert=1 && shift  || local invert=0
+	echo $@ | grep -q "^[0-9]\+$" && is_number=1 || is_number=0
+	if [[ ${is_number} -eq 1 && ${invert} -eq 1 ]]; then
+		[[ ${message} -eq 1 ]] && echo "Error: '${1}' is a number."; return 1
+	elif [[ ${is_number} -eq 0 && ${invert} -eq 0 ]]; then
+		[[ ${message} -eq 1 ]] && echo "Error: '${1}' is not a number."; return 1
 	fi
 }
 
 program-exists(){
-	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: program-exists [-m|--message] {programs...}\n" && return 0
+	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: program-exists [-m|--message] [-i|--invert] {programs...}\n" && return 0
 	[[ "${1}" =~ ^(-m|--message)$ ]] && local message=1 && shift || local message=0
+	[[ "${1}" =~ ^(-i|--invert)$  ]] && local invert=1 && shift  || local invert=0
 	while [[ $# -gt 0 ]]; do
-		if ! which "${1:-__None__}" >/dev/null 2>&1; then
-			[[ ${message} -eq 1 ]] && echo "Error: program ${1} is not available."
-			return 1
+		which "${1:-__None__}" >/dev/null 2>&1 && local exists=1 || local exists=0
+		if [[ ${exists} -eq 1 && ${invert} -eq 1 ]]; then
+			[[ ${message} -eq 1 ]] && echo "Error: program ${1} is available."; return 1
+		elif [[ ${exists} -eq 0 && ${invert} -eq 0 ]]; then
+			[[ ${message} -eq 1 ]] && echo "Error: program ${1} is not available."; return 1
 		fi
 		shift
 	done
