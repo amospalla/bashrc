@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=459
+# FileVersion=460
 
 #====================================================================
 # Main
@@ -9,7 +9,7 @@
 # argparse
 declare -A arguments=() _perf_data=() _binary
 declare -a arguments_list=() arguments_description=() arguments_examples=() arguments_extra_help=() arguments_parameters=()
-declare -i arguments_shift
+declare -i arguments_shift ps1_bash_update=0
 
 _ip_regex="(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\."
 _ip_regex="${_ip_regex}(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\."
@@ -208,7 +208,10 @@ _bash_update(){
 	onlineversion="${onlineversion//# FileVersion=/}"
 	[[ ${onlineversion} =~ ^[0-9]+$ ]] || return
 	is-number ${onlineversion} || return
-	[[ ${currentversion} -lt ${onlineversion} ]] && echo "[bashrc] Upgrade ${currentversion} > ${onlineversion}" && echo "${bashrc_online}" > "${filepath}"
+	if [[ ${currentversion} -lt ${onlineversion} ]]; then
+		echo "${bashrc_online}" > "${filepath}"
+		echo "${currentversion} > ${onlineversion}" > "/tmp/${UID}.$$.bashrcupdate"
+	fi
 }
 
 _source_path_add_home_bin(){
@@ -673,6 +676,7 @@ _source_bash_options(){
 	_bash_options_add _ps1_virtualenv 1
 	_bash_options_add _ps1_git 0
 	_bash_options_add _ps1_prompt 1
+	_bash_options_add _ps1_bash_update 1
 	_bash_options_add _tmuxrc 1
 	_bash_options_add _histgrep_compact 1
 	_bash_options_add _update_enable 0
@@ -1934,6 +1938,7 @@ _source_histgrep(){
 			export ps1_date_new="$(date +'%s')"
 		fi
 		ps1_time_diff="$(( $ps1_date_new - $ps1_date_old))"
+		[[ ${ps1_bash_update} -lt 20 ]] && ps1_bash_update=$(( ${ps1_bash_update} + 1 ))
 	}
 
 	# Compact history every now and then
@@ -2248,6 +2253,21 @@ _source_ps1(){
 			fi
 			print_separator
 			[[ ${_ps1_get_performance} -eq 1 ]] && _ps1_perf_end git
+		fi
+
+		###############
+		# bash update #
+		###############
+
+		if [[ "${_ps1_bash_update}" -eq 1 ]]; then
+			[[ ${_ps1_get_performance} -eq 1 ]] && perf_start bashupdate
+			if [[ ${ps1_bash_update} -lt 20 && -f "/tmp/${UID}.$$.bashrcupdate" ]]; then
+				read ps1_bash_update_text < /tmp/${UID}.$$.bashrcupdate
+				_color magentabold; printf "(bashrc update ${ps1_bash_update_text})"
+				ps1_separator=1 && print_separator
+				rm /tmp/${UID}.$$.bashrcupdate
+			[[ ${_ps1_get_performance} -eq 1 ]] && _ps1_perf_end bashupdate
+			fi
 		fi
 
 		#############
