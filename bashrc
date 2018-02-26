@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=464
-FileVersion=464
+# FileVersion=465
+FileVersion=465
 
 #====================================================================
 # Main
@@ -787,10 +787,10 @@ _source_utilities(){
 								'{host}: host to check.' )
 		argparse "$@" && shift ${arguments_shift}
 		ping -w1 -c1 ${arguments[host]} >/dev/null 2>&1 && local pinged=1 || local pinged=0
-		if [[ ${pinged} -eq 1 && ${arguments[invert]} -eq 1 ]]; then
-			[[ ${arguments[message]} -eq 1 ]] && echo "Error: could ping to '${arguments[host]}'."; return 1
-		elif [[ ${pinged} -eq 0 && ${arguments[invert]} -eq 0 ]]; then
-			[[ ${arguments[message]} -eq 1 ]] && echo "Could not ping to '${arguments[host]}' with a 1 second timeout."; return 1
+		if [[ ${pinged} -eq 1 && ${arguments[-i]} -eq 1 ]]; then
+			[[ ${arguments[-m]} -eq 1 ]] && echo "Error: could ping to '${arguments[host]}'."; return 1
+		elif [[ ${pinged} -eq 0 && ${arguments[-i]} -eq 0 ]]; then
+			[[ ${arguments[-m]} -eq 1 ]] && echo "Could not ping to '${arguments[host]}' with a 1 second timeout."; return 1
 		fi
 	}
 
