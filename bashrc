@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=463
-FileVersion=463
+# FileVersion=464
+FileVersion=464
 
 #====================================================================
 # Main
@@ -126,19 +126,6 @@ folder-writable(){
 		fi
 		shift
 	done
-}
-
-check-ping(){
-	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: check-ping [-m|--message] [-i|--invert] {host}\n" && return 0
-	[[ "${1}" =~ ^(-m|--message)$ ]] && local message=1 && shift || local message=0
-	[[ "${1}" =~ ^(-i|--invert)$  ]] && local invert=1 && shift  || local invert=0
-	[[ $# -eq 0 ]] && echo "Error: no input supplied." && exit 1
-	ping -w1 -c1 ${1} >/dev/null 2>&1 && local pinged=1 || local pinged=0
-	if [[ ${pinged} -eq 1 && ${invert} -eq 1 ]]; then
-		[[ ${message} -eq 1 ]] && echo "Error: could ping to '${1}'."; return 1
-	elif [[ ${pinged} -eq 0 && ${invert} -eq 0 ]]; then
-		[[ ${message} -eq 1 ]] && echo "Could not ping to '${1}' with a 1 second timeout."; return 1
-	fi
 }
 
 is-number(){
@@ -315,6 +302,7 @@ _bashrc_show_help(){
 	color blue; printf "float"; color; echo ": execute floating point operations."
 	color blue; printf "unit-print"; color; echo ": print units."
 	color blue; printf "unit-conversion"; color; echo ": convert between unit."
+	color blue; printf "check-ping"; color; echo ": check ping to a host."
 	color blue; printf "argparse"; color; echo ": argument parser."
 	color blue; printf "lowercase"; color; echo ": prints args in lowercase."
 	color blue; printf "uppercase"; color; echo ": prints args in uppercase."
@@ -787,6 +775,22 @@ _source_utilities(){
 				mo*) echo 2628000 ;;
 				y*) echo 31536000 ;;
 			esac
+		fi
+	}
+
+	check-ping(){
+		arguments_list=(args1)
+		args1='[-m|--message] [-i|--invert] {host}'
+		arguments_description=('check-ping' 'Check if host replies to ping.')
+		arguments_parameters=( '[-m|--message]: show a message if test fails.'
+		                        '[-i|--invert]: fail when get reply.'
+								'{host}: host to check.' )
+		argparse "$@" && shift ${arguments_shift}
+		ping -w1 -c1 ${arguments[host]} >/dev/null 2>&1 && local pinged=1 || local pinged=0
+		if [[ ${pinged} -eq 1 && ${arguments[invert]} -eq 1 ]]; then
+			[[ ${arguments[message]} -eq 1 ]] && echo "Error: could ping to '${arguments[host]}'."; return 1
+		elif [[ ${pinged} -eq 0 && ${arguments[invert]} -eq 0 ]]; then
+			[[ ${arguments[message]} -eq 1 ]] && echo "Could not ping to '${arguments[host]}' with a 1 second timeout."; return 1
 		fi
 	}
 
@@ -2307,7 +2311,7 @@ _source_ps1(){
 # Programs
 #====================================================================
 
-_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention)
+_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping)
 
 make-links(){
 	_show_help(){
