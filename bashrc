@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# FileVersion=461
+# FileVersion=462
+FileVersion=462
 
 #====================================================================
 # Main
@@ -9,7 +10,7 @@
 # argparse
 declare -A arguments=() _perf_data=() _binary
 declare -a arguments_list=() arguments_description=() arguments_examples=() arguments_extra_help=() arguments_parameters=()
-declare -i arguments_shift ps1_bash_update=0
+declare -i arguments_shift ps1_bash_update=0 _bash_updated=0
 
 _ip_regex="(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\."
 _ip_regex="${_ip_regex}(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\."
@@ -199,18 +200,14 @@ _bash_update(){
 	
 	file-readable "${filepath}" || return
 	
-	local currentversion="$(grep -m1 "^# FileVersion=" "${filepath}")"
-	currentversion="${currentversion//# FileVersion=/}"
-	is-number "${currentversion}" || return
-	
 	local bashrc_online="$(wget --timeout=10 ${url} -O - 2> /dev/null)"
 	local onlineversion="$(echo "${bashrc_online}" | grep -m1 "^# FileVersion=")"
 	onlineversion="${onlineversion//# FileVersion=/}"
 	[[ ${onlineversion} =~ ^[0-9]+$ ]] || return
 	is-number ${onlineversion} || return
-	if [[ ${currentversion} -lt ${onlineversion} ]]; then
+	if [[ ${FileVersion} -lt ${onlineversion} ]]; then
 		echo "${bashrc_online}" > "${filepath}"
-		echo "${currentversion} > ${onlineversion}" > "/tmp/${UID}.$$.bashrcupdate"
+		echo "${FileVersion} > ${onlineversion}" > "/tmp/${UID}.$$.bashrcupdate"
 	fi
 }
 
@@ -622,6 +619,19 @@ _binary_decode(){
 			[[ "$(stat -c "%a" "${filepath}")" == ${filemode} ]] || chmod ${filemode} "${filepath}"
 		fi
 	done
+}
+
+_bash_reload(){
+	[[ ${FileVersionOld:-} =~ [0-9]+ ]] && unset FileVersionOld && _bash_updated=0
+	if [[ ${ps1_bash_update} -lt 20 ]]; then
+		ps1_bash_update=$(( ${ps1_bash_update} + 1 ))
+		if [[ -f "/tmp/${UID}.$$.bashrcupdate" ]]; then
+			_bash_updated=1
+			FileVersionOld=${FileVersion}
+			rm /tmp/${UID}.$$.bashrcupdate
+			. $HOME/.bashrc
+		fi
+	fi
 }
 
 #====================================================================
@@ -1858,7 +1868,7 @@ _source_histgrep(){
 	# Detect new command being written, through PROMPT_COMMAND, used in save history
 	# With true time diff between commands is achieved as it makes ps1_date_old
 	# evaluated just before real command is executed
-	PROMPT_COMMAND="true; _histgrep_new_history=1; $PROMPT_COMMAND"
+	PROMPT_COMMAND="true; _histgrep_new_history=1; _bash_reload; $PROMPT_COMMAND"
 	
 	[[ -d "${path}" ]] || mkdir "${path}"
 	
@@ -1938,7 +1948,6 @@ _source_histgrep(){
 			export ps1_date_new="$(date +'%s')"
 		fi
 		ps1_time_diff="$(( $ps1_date_new - $ps1_date_old))"
-		[[ ${ps1_bash_update} -lt 20 ]] && ps1_bash_update=$(( ${ps1_bash_update} + 1 ))
 	}
 
 	# Compact history every now and then
@@ -2260,12 +2269,10 @@ _source_ps1(){
 		###############
 
 		if [[ "${_ps1_bash_update}" -eq 1 ]]; then
-			[[ ${_ps1_get_performance} -eq 1 ]] && perf_start bashupdate
-			if [[ ${ps1_bash_update} -lt 20 && -f "/tmp/${UID}.$$.bashrcupdate" ]]; then
-				read ps1_bash_update_text < /tmp/${UID}.$$.bashrcupdate
-				_color magentabold; printf "(bashrc updated: ${ps1_bash_update_text})"
+			[[ ${_ps2_get_performance} -eq 1 ]] && perf_start bashupdate
+			if [[ ${_bash_updated} -eq 1 ]]; then
+				_color magentabold; printf "(bashrc updated: ${FileVersionOld} > ${FileVersion})"
 				ps1_separator=1 && print_separator
-				rm /tmp/${UID}.$$.bashrcupdate
 			[[ ${_ps1_get_performance} -eq 1 ]] && _ps1_perf_end bashupdate
 			fi
 		fi
