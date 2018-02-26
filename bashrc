@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=462
-FileVersion=462
+# FileVersion=463
+FileVersion=463
 
 #====================================================================
 # Main
@@ -340,251 +340,6 @@ _bashrc_show_help(){
 	color blue; printf "tmuxac"; color; echo ": attach to or create a named tmux session."
 }
 
-argparse(){
-	_debug(){
-		return
-		local i="${substract}"
-		while [[ $i -gt 0 ]]; do
-			printf "   "
-			i=$(( $i -1 ))
-		done
-		echo $@
-	}
-	_argparse_process_args(){
-		_check_type(){
-			local value=$(lowercase "${2}")
-			case "${1}" in
-				integer) [[ "${value}" =~ ^[0-9]+$ ]] ;;
-				number) [[ "${value}" =~ ^-?([0-9]+('.'[0-9]+)?|'.'[0-9]+)$ ]] ;;
-				bool|boolean) [[ "${value}" =~ ^true|false|1|0|on|off$ ]] ;;
-				diu)
-					[[ "${value}" =~ ^([0-9]+('.'[0-9]+)?|'.'[0-9]+)([[:space:]]*(b|bytes?|[kmgtpezyxsd](b|ib)?|(kilo|mega|giga|tera|peta|exa|zetta|yotta|kibi|mebi|gibi|tebi|pebi|exbi|zebi|yobi)bytes?))?$ ]]
-					;;
-				time)
-					[[ "${value}" =~ ^([[:space:]]*([0-9]+('.'[0-9]+)?|'.'[0-9]+)([[:space:]]*(s(ec(onds?)?)?|m(in(utes?)?)?|h(ours?)?|d(ays?)?|w(eeks?)?|months?|y(ears?)?)))*$ ]]
-					;;
-				ip) echo "${value}" | grep -qE "^${_ip_regex}$"
-			esac
-		}
-		process_token(){
-			local input_token="${1}"
-			_debug "process_token: input_token (${input_token}) tokens (${tokens[@]}) token (${token}) type_input (${type_input})"
-			if [[ ${type_input} -eq 1 ]]; then # {arg}
-				local vartype="${token/*:}"
-				if ! _check_type "${vartype}" "${input_token}"; then
-					if [[ ${substract} -eq 0 ]]; then ## if this is the root of _argparse_process_args then optional=0, else it is optional
-						echo "Error: value '${input_token}' is not of type '${vartype}'."
-						$(_eor) 1
-					else
-						return 1
-					fi
-				fi
-				arguments["${token/:*}"]="${input_token}"
-				type_input=0; return 0
-			else
-				local -i i j
-				if [[ ${tokens[0]:0:1} == "-" ]]; then            ## -x|--xxx format
-					for (( i=0; i<${#tokens[@]}; i++ )); do
-						if [[ "${input_token}" == "${tokens[$i]}" ]]; then
-							for (( j=0; j<${#tokens[@]}; j++ )); do arguments["${tokens[$j]}"]=1; done;
-							return 0
-						fi
-					done
-				else
-					for (( i=0; i<${#tokens[@]}; i++ )); do
-						if [[ "${input_token}" == "${tokens[$i]}" ]]; then
-							arguments["${input_token}"]=1;
-							return 0
-						fi
-					done
-				fi
-			fi
-			return 1 # Token and input had no coincidence
-		}
-		
-		substract_add(){ substracts[${substract}]=$(( ${substracts[${substract}]} + ${1} )); }
-		substract_print(){ echo "substract_print: ${substracts[${substract}]}"; }
-		token_add_char(){ token="${token:-}${template_args:${position}:1}"; }
-		pos_inc(){ position+=1; }
-		optional_not_ended(){ [[ ${optional} -eq 1 && ${optional_stack} -ne 0 ]]; }
-		optional_ended(){ [[ ${optional} -eq 1 && ${optional_stack} -eq 0 ]]; }
-		remaining_chars(){ [[ ${position} -le ${len} ]]; }
-		
-		local -i substract=${1} ec; shift
-		local token="" next_input_token template_args="${1} "; shift
-		local -i len=${#template_args} position=0 type_input=0 optional=0 optional_stack=0 substract_next=$(( ${#substracts[@]} + 1 ))
-		local -a tokens=()
-		substracts[${substract}]=0
-		
-		_debug ""
-		_debug "${substract}: _argparse_process_args substract(${substract}) template_args(${template_args}) args($@)"
-		
-		while remaining_chars; do
-			case ${template_args:${position}:1} in
-				" ")	_debug "_argparse_process_args: next char is ' ' ${position}"
-						if optional_not_ended; then           # still reading an optional token [..]
-							token_add_char; pos_inc; continue
-						elif optional_ended; then             # Ended reading an optional token, call myself recursively
-							_debug "  _argparse_process_args: optional ended"
-							if _argparse_process_args ${substract_next} "${token}" "$@"; then
-								substract_add "${substracts[${substract_next}]}"
-								shift "${substracts[${substract_next}]}"
-								_debug "Recursive call returned shift (${substracts[${substract_next}]})"
-							else
-								_debug "Recursive call returned error"
-							fi
-							optional=0
-						else     # Process next token normally
-							tokens[${#tokens[@]}]="${token}"
-							[[ "${token}" =~ '...'$ ]] && pos_inc && continue # {files...} like, must end with three dots and are expected to be the last argument.
-							next_input_token="${1:-}"; shift
-							[[ "${#next_input_token}" -eq 0 ]] && return 1
-							if [[ ${type_input} -eq 0 ]]; then
-								[[ ( "${next_input_token:0:1}" == "-" || ${token:0:1} == "-" ) && "${next_input_token:0:1}" != "${token:0:1}" ]] && return 1
-							fi
-							if process_token "${next_input_token}"; then
-								_debug "  _argparse_process_args: token processed, substract 1"
-								substract_add 1
-							else
-								_debug "  _argparse_process_args: token processed with error, return 1"
-								return 1
-							fi
-						fi
-						token=""; tokens=(); pos_inc ;;
-				"|")	if [[ ${optional} -eq 0 ]]; then
-							tokens[${#tokens[@]}]="${token}"; token=""; pos_inc
-						else
-							token_add_char; pos_inc
-						fi ;;
-				"{")	[[ ${optional} -eq 0 ]] && type_input=1 || token_add_char; pos_inc ;;
-				"}")	[[ ${optional} -eq 0 ]] || token_add_char; pos_inc ;;
-				"[")	[[ ${optional} -eq 0 ]] && optional=1 || token_add_char; optional_stack+=1 && pos_inc ;;
-				"]")	optional_stack=$(( ${optional_stack} -1 ))
-						[[ ${optional_stack} -gt 0 ]] && token_add_char; pos_inc ;;
-				  *)	token_add_char; pos_inc ;;
-			esac
-		done
-		if [[ ${substract} -eq 0 ]]; then # when substract=0 we are in the root of the recursive process
-			# {files...} like, must end with three dots, we expect there are pending input arguments to process
-			if [[ "${token}" =~ '...'$ ]]; then # last argument_parameter was {foo...} like
-				[[ $# -gt 0 ]] && ec=0 || ec=1
-			elif [[ "${template_args}" =~ "["[0-9a-zA-Z_-.:@#%]+"...] "$ ]]; then   # last argument_parameter was [foo...] like
-				local arg_last="${BASH_REMATCH}" && arg_last=${arg_last/[} && arg_last=${arg_last/...] }
-				arguments[${arg_last}]=1
-				[[ $# -gt 0 ]] && ec=0 || ec=0
-			else
-				[[ $# -gt 0 ]] && ec=1 || ec=0
-			fi
-		fi
-		_debug "${substract}: _argparse_process_args end (${substract}) remaining ($@)"
-		[[ ${substract} -eq 0 ]] && remaining_args_num=$#
-		return ${ec:-0}
-	}
-	local i args remaining_args_num
-	local -a substracts=() # Number of input arguments to shift array
-	arguments=()
-	[[ ("${1:-}" =~ ^-h|--help$ && ${#arguments_list[@]} -eq 0 ) || ($# -eq 0 && ${#arguments_list[@]} -eq 0) ]] && echo "execute argparse-create-template" && $(_eor) 0
-	for (( i=0; i<${#arguments_list[@]}; i++ )); do
-		args="${arguments_list[$i]}"; arguments_shift=0
-		[[ $# -eq 0 && "${!args}" == "" ]] && return 0       # arguments and argument_template are both empty
-		if _argparse_process_args 0 "${!args}" "$@"; then
-			arguments_shift="$(( $# - ${remaining_args_num} ))"
-			return 0
-		fi
-	done
-	argparse_show_help 1
-}
-
-argparse_show_help(){
-	_argparse_show_help_argument(){
-		local template_args="${1} "; shift
-		local -i len=${#template_args} position=0 old_position=0 optional=0 optional_stack=0 bracket=0
-		print_color(){
-			[[ ${optional} -eq 1 ]] && color green || color red
-			[[ ${optional_stack} -eq 0 ]] && optional=0 || true
-		}
-		
-		while [[ ${position} -le ${len} ]]; do
-			case ${template_args:${position}:1} in
-				"{") bracket=1 ;;
-				"}") bracket=0 ;;
-				"[") optional=1; optional_stack+=1 ;;
-				"]") optional_stack=$(( ${optional_stack} -1 )) ;;
-				" ") print_color
-					 echo -n "${template_args:${old_position}:$(( ${position} - ${old_position} ))}"
-					 old_position="${position}" ;;
-			esac
-			position+=1
-		done
-		color
-	}
-	local i args len=11 len2 hcolor=boldwhite
-	local -a key value _arguments_parameters=('[-h|--help]: show this help.')
-	
-	# Usage
-	color ${hcolor}; printf "Usage:\n"
-	for (( i=0; i<${#arguments_list[@]}; i++ )); do
-		args="${arguments_list[$i]}"
-		color boldblue; printf "  ${arguments_description[0]} "
-		color blue; _argparse_show_help_argument "${!args}"
-		printf "\n"
-	done
-	
-	# Parameters
-	color ${hcolor}; printf "\nParameters:\n"
-	for (( i=0; i<${#arguments_parameters[@]}; i++ )); do
-		len2="${arguments_parameters[$i]/: *}"
-		[[ ${len} -lt ${#len2} ]] && len=${#len2}
-	done
-	len=$(( ${len} + 2 ))
-	for (( i=0; i<${#_arguments_parameters[@]}; i++ )); do
-		key[${i}]="${_arguments_parameters[$i]/: *}"
-		value[${i}]="${_arguments_parameters[$i]/*: }"
-		color blue; printf -- "%${len}s" "${key[${i}]}";
-		color; printf -- ": ${value[${i}]}\n";
-	done
-	for (( i=0; i<${#arguments_parameters[@]}; i++ )); do
-		key[${i}]="${arguments_parameters[$i]/: *}"
-		value[${i}]="${arguments_parameters[$i]/*: }"
-		color blue; printf -- "%${len}s" "${key[${i}]}";
-		color; printf -- ": ${value[${i}]}\n";
-	done
-	
-	# Examples
-	if [[ ${#arguments_examples[@]} -gt 0 ]]; then
-		color ${hcolor}
-		[[ ${#arguments_examples[@]} -gt 2 ]] && printf "\nExamples:\n" || printf "\nExample:\n"
-		for (( i=0; i<${#arguments_examples[@]}; i+=2 )); do
-			color blue; printf -- "  ${arguments_examples[$i]}"
-			color; [[ "${#arguments_examples[$(( $i + 1 ))]}" -gt 0 ]] && printf -- ": ${arguments_examples[$(( $i + 1 ))]}\n" || printf '\n'
-		done
-	fi
-	
-	# Description
-	if [[ "${#arguments_description[@]}" -gt 1 ]]; then
-		color ${hcolor}; printf "\nDescription:\n"
-		color
-		for (( i=0; i<${#arguments_description[@]}; i++ )); do
-			[[ ${i} -eq 0 ]] && continue
-			printf -- "${arguments_description[${i}]}\n"
-		done
-	fi
-	
-	# Additional information
-	if [[ ${#arguments_extra_help[@]} -gt 0 ]]; then
-		color ${hcolor}; printf "\nAdditional information:\n"; color
-		for (( i=0; i<${#arguments_extra_help[@]}; i++ )); do
-			printf -- "${arguments_extra_help[$i]}\n"
-		done
-	fi
-	
-	color
-	$(_eor) "${1:-0}"
-}
-
-_eor(){
-	[[ $- != *i* ]] && echo exit || echo return
-}
 
 _binary[tmuxrc]="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"
 _binary[tmuxrc_version]="59"
@@ -706,6 +461,247 @@ _source_utilities(){
 	_exit(){
 		printf "\nError at line: ${2}\n"
 		exit ${1}
+	}
+
+	argparse(){
+		_debug(){
+			return
+			local i="${substract}"
+			while [[ $i -gt 0 ]]; do
+				printf "   "
+				i=$(( $i -1 ))
+			done
+			echo $@
+		}
+		_argparse_process_args(){
+			_check_type(){
+				local value=$(lowercase "${2}")
+				case "${1}" in
+					integer) [[ "${value}" =~ ^[0-9]+$ ]] ;;
+					number) [[ "${value}" =~ ^-?([0-9]+('.'[0-9]+)?|'.'[0-9]+)$ ]] ;;
+					bool|boolean) [[ "${value}" =~ ^true|false|1|0|on|off$ ]] ;;
+					diu)
+						[[ "${value}" =~ ^([0-9]+('.'[0-9]+)?|'.'[0-9]+)([[:space:]]*(b|bytes?|[kmgtpezyxsd](b|ib)?|(kilo|mega|giga|tera|peta|exa|zetta|yotta|kibi|mebi|gibi|tebi|pebi|exbi|zebi|yobi)bytes?))?$ ]]
+						;;
+					time)
+						[[ "${value}" =~ ^([[:space:]]*([0-9]+('.'[0-9]+)?|'.'[0-9]+)([[:space:]]*(s(ec(onds?)?)?|m(in(utes?)?)?|h(ours?)?|d(ays?)?|w(eeks?)?|months?|y(ears?)?)))*$ ]]
+						;;
+					ip) echo "${value}" | grep -qE "^${_ip_regex}$"
+				esac
+			}
+			process_token(){
+				local input_token="${1}"
+				_debug "process_token: input_token (${input_token}) tokens (${tokens[@]}) token (${token}) type_input (${type_input})"
+				if [[ ${type_input} -eq 1 ]]; then # {arg}
+					local vartype="${token/*:}"
+					if ! _check_type "${vartype}" "${input_token}"; then
+						if [[ ${substract} -eq 0 ]]; then ## if this is the root of _argparse_process_args then optional=0, else it is optional
+							echo "Error: value '${input_token}' is not of type '${vartype}'."
+							exit 1
+						else
+							return 1
+						fi
+					fi
+					arguments["${token/:*}"]="${input_token}"
+					type_input=0; return 0
+				else
+					local -i i j
+					if [[ ${tokens[0]:0:1} == "-" ]]; then            ## -x|--xxx format
+						for (( i=0; i<${#tokens[@]}; i++ )); do
+							if [[ "${input_token}" == "${tokens[$i]}" ]]; then
+								for (( j=0; j<${#tokens[@]}; j++ )); do arguments["${tokens[$j]}"]=1; done;
+								return 0
+							fi
+						done
+					else
+						for (( i=0; i<${#tokens[@]}; i++ )); do
+							if [[ "${input_token}" == "${tokens[$i]}" ]]; then
+								arguments["${input_token}"]=1;
+								return 0
+							fi
+						done
+					fi
+				fi
+				return 1 # Token and input had no coincidence
+			}
+			
+			substract_add(){ substracts[${substract}]=$(( ${substracts[${substract}]} + ${1} )); }
+			substract_print(){ echo "substract_print: ${substracts[${substract}]}"; }
+			token_add_char(){ token="${token:-}${template_args:${position}:1}"; }
+			pos_inc(){ position+=1; }
+			optional_not_ended(){ [[ ${optional} -eq 1 && ${optional_stack} -ne 0 ]]; }
+			optional_ended(){ [[ ${optional} -eq 1 && ${optional_stack} -eq 0 ]]; }
+			remaining_chars(){ [[ ${position} -le ${len} ]]; }
+			
+			local -i substract=${1} ec; shift
+			local token="" next_input_token template_args="${1} "; shift
+			local -i len=${#template_args} position=0 type_input=0 optional=0 optional_stack=0 substract_next=$(( ${#substracts[@]} + 1 ))
+			local -a tokens=()
+			substracts[${substract}]=0
+			
+			_debug ""
+			_debug "${substract}: _argparse_process_args substract(${substract}) template_args(${template_args}) args($@)"
+			
+			while remaining_chars; do
+				case ${template_args:${position}:1} in
+					" ")	_debug "_argparse_process_args: next char is ' ' ${position}"
+							if optional_not_ended; then           # still reading an optional token [..]
+								token_add_char; pos_inc; continue
+							elif optional_ended; then             # Ended reading an optional token, call myself recursively
+								_debug "  _argparse_process_args: optional ended"
+								if _argparse_process_args ${substract_next} "${token}" "$@"; then
+									substract_add "${substracts[${substract_next}]}"
+									shift "${substracts[${substract_next}]}"
+									_debug "Recursive call returned shift (${substracts[${substract_next}]})"
+								else
+									_debug "Recursive call returned error"
+								fi
+								optional=0
+							else     # Process next token normally
+								tokens[${#tokens[@]}]="${token}"
+								[[ "${token}" =~ '...'$ ]] && pos_inc && continue # {files...} like, must end with three dots and are expected to be the last argument.
+								next_input_token="${1:-}"; shift
+								[[ "${#next_input_token}" -eq 0 ]] && return 1
+								if [[ ${type_input} -eq 0 ]]; then
+									[[ ( "${next_input_token:0:1}" == "-" || ${token:0:1} == "-" ) && "${next_input_token:0:1}" != "${token:0:1}" ]] && return 1
+								fi
+								if process_token "${next_input_token}"; then
+									_debug "  _argparse_process_args: token processed, substract 1"
+									substract_add 1
+								else
+									_debug "  _argparse_process_args: token processed with error, return 1"
+									return 1
+								fi
+							fi
+							token=""; tokens=(); pos_inc ;;
+					"|")	if [[ ${optional} -eq 0 ]]; then
+								tokens[${#tokens[@]}]="${token}"; token=""; pos_inc
+							else
+								token_add_char; pos_inc
+							fi ;;
+					"{")	[[ ${optional} -eq 0 ]] && type_input=1 || token_add_char; pos_inc ;;
+					"}")	[[ ${optional} -eq 0 ]] || token_add_char; pos_inc ;;
+					"[")	[[ ${optional} -eq 0 ]] && optional=1 || token_add_char; optional_stack+=1 && pos_inc ;;
+					"]")	optional_stack=$(( ${optional_stack} -1 ))
+							[[ ${optional_stack} -gt 0 ]] && token_add_char; pos_inc ;;
+					  *)	token_add_char; pos_inc ;;
+				esac
+			done
+			if [[ ${substract} -eq 0 ]]; then # when substract=0 we are in the root of the recursive process
+				# {files...} like, must end with three dots, we expect there are pending input arguments to process
+				if [[ "${token}" =~ '...'$ ]]; then # last argument_parameter was {foo...} like
+					[[ $# -gt 0 ]] && ec=0 || ec=1
+				elif [[ "${template_args}" =~ "["[0-9a-zA-Z_-.:@#%]+"...] "$ ]]; then   # last argument_parameter was [foo...] like
+					local arg_last="${BASH_REMATCH}" && arg_last=${arg_last/[} && arg_last=${arg_last/...] }
+					arguments[${arg_last}]=1
+					[[ $# -gt 0 ]] && ec=0 || ec=0
+				else
+					[[ $# -gt 0 ]] && ec=1 || ec=0
+				fi
+			fi
+			_debug "${substract}: _argparse_process_args end (${substract}) remaining ($@)"
+			[[ ${substract} -eq 0 ]] && remaining_args_num=$#
+			return ${ec:-0}
+		}
+		local i args remaining_args_num
+		local -a substracts=() # Number of input arguments to shift array
+		[[ ("${1:-}" =~ ^-h|--help$ && ${#arguments_list[@]} -eq 0 ) || ($# -eq 0 && ${#arguments_list[@]} -eq 0) ]] && echo "execute argparse-create-template" && exit 0
+		for (( i=0; i<${#arguments_list[@]}; i++ )); do
+			args="${arguments_list[$i]}"; arguments_shift=0
+			[[ $# -eq 0 && "${!args}" == "" ]] && return 0       # arguments and argument_template are both empty
+			if _argparse_process_args 0 "${!args}" "$@"; then
+				arguments_shift="$(( $# - ${remaining_args_num} ))"
+				return 0
+			fi
+		done
+		argparse_show_help 1
+	}
+
+	argparse_show_help(){
+		_argparse_show_help_argument(){
+			local template_args="${1} "; shift
+			local -i len=${#template_args} position=0 old_position=0 optional=0 optional_stack=0 bracket=0
+			print_color(){
+				[[ ${optional} -eq 1 ]] && color green || color red
+				[[ ${optional_stack} -eq 0 ]] && optional=0 || true
+			}
+			
+			while [[ ${position} -le ${len} ]]; do
+				case ${template_args:${position}:1} in
+					"{") bracket=1 ;;
+					"}") bracket=0 ;;
+					"[") optional=1; optional_stack+=1 ;;
+					"]") optional_stack=$(( ${optional_stack} -1 )) ;;
+					" ") print_color
+						 echo -n "${template_args:${old_position}:$(( ${position} - ${old_position} ))}"
+						 old_position="${position}" ;;
+				esac
+				position+=1
+			done
+			color
+		}
+		local i args len=11 len2 hcolor=boldwhite
+		local -a key value _arguments_parameters=('[-h|--help]: show this help.')
+		
+		# Usage
+		color ${hcolor}; printf "Usage:\n"
+		for (( i=0; i<${#arguments_list[@]}; i++ )); do
+			args="${arguments_list[$i]}"
+			color boldblue; printf "  ${arguments_description[0]} "
+			color blue; _argparse_show_help_argument "${!args}"
+			printf "\n"
+		done
+		
+		# Parameters
+		color ${hcolor}; printf "\nParameters:\n"
+		for (( i=0; i<${#arguments_parameters[@]}; i++ )); do
+			len2="${arguments_parameters[$i]/: *}"
+			[[ ${len} -lt ${#len2} ]] && len=${#len2}
+		done
+		len=$(( ${len} + 2 ))
+		for (( i=0; i<${#_arguments_parameters[@]}; i++ )); do
+			key[${i}]="${_arguments_parameters[$i]/: *}"
+			value[${i}]="${_arguments_parameters[$i]/*: }"
+			color blue; printf -- "%${len}s" "${key[${i}]}";
+			color; printf -- ": ${value[${i}]}\n";
+		done
+		for (( i=0; i<${#arguments_parameters[@]}; i++ )); do
+			key[${i}]="${arguments_parameters[$i]/: *}"
+			value[${i}]="${arguments_parameters[$i]/*: }"
+			color blue; printf -- "%${len}s" "${key[${i}]}";
+			color; printf -- ": ${value[${i}]}\n";
+		done
+		
+		# Examples
+		if [[ ${#arguments_examples[@]} -gt 0 ]]; then
+			color ${hcolor}
+			[[ ${#arguments_examples[@]} -gt 2 ]] && printf "\nExamples:\n" || printf "\nExample:\n"
+			for (( i=0; i<${#arguments_examples[@]}; i+=2 )); do
+				color blue; printf -- "  ${arguments_examples[$i]}"
+				color; [[ "${#arguments_examples[$(( $i + 1 ))]}" -gt 0 ]] && printf -- ": ${arguments_examples[$(( $i + 1 ))]}\n" || printf '\n'
+			done
+		fi
+		
+		# Description
+		if [[ "${#arguments_description[@]}" -gt 1 ]]; then
+			color ${hcolor}; printf "\nDescription:\n"
+			color
+			for (( i=0; i<${#arguments_description[@]}; i++ )); do
+				[[ ${i} -eq 0 ]] && continue
+				printf -- "${arguments_description[${i}]}\n"
+			done
+		fi
+		
+		# Additional information
+		if [[ ${#arguments_extra_help[@]} -gt 0 ]]; then
+			color ${hcolor}; printf "\nAdditional information:\n"; color
+			for (( i=0; i<${#arguments_extra_help[@]}; i++ )); do
+				printf -- "${arguments_extra_help[$i]}\n"
+			done
+		fi
+		
+		color
+		exit "${1:-0}"
 	}
 
 	argparse-create-template(){
