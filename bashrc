@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=467
-FileVersion=467
+# FileVersion=468
+FileVersion=468
 
 #====================================================================
 # Main
@@ -1475,7 +1475,6 @@ _source_utilities(){
 		[[ $# -eq 0 ]] && intervals=(1m 15m 1h 1d) || intervals="$@"
 		for (( i=0; i<${#intervals[@]}; i++ )); do
 			if ! check-type time "${intervals[$i]}"; then echo "Error with intervals, token '${intervals[$i]}' not valid time."; exit 1; fi
-			echo "${intervals[$i]}"
 			intervals[$i]=$(unit-conversion time -d 0 s "${intervals[$i]}")
 		done
 		
