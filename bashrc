@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=466
-FileVersion=466
+# FileVersion=467
+FileVersion=467
 
 #====================================================================
 # Main
@@ -303,6 +303,7 @@ _bashrc_show_help(){
 	color blue; printf "unit-print"; color; echo ": print units."
 	color blue; printf "unit-conversion"; color; echo ": convert between unit."
 	color blue; printf "check-ping"; color; echo ": check ping to a host."
+	color blue; printf "check-lvm-usage"; color; echo ": check a LVM thinpool data or metadata are below a threshold."
 	color blue; printf "argparse"; color; echo ": argument parser."
 	color blue; printf "lowercase"; color; echo ": prints args in lowercase."
 	color blue; printf "uppercase"; color; echo ": prints args in uppercase."
@@ -775,6 +776,33 @@ _source_utilities(){
 				mo*) echo 2628000 ;;
 				y*) echo 31536000 ;;
 			esac
+		fi
+	}
+
+	check-lvm-usage(){
+		arguments_list=(args1)
+		args1='[-m|--message] [-i|--invert] [-q|--quiet] data|metadata {value:integer} {vg} {lv}'
+		arguments_description=('check-lvm-usage' 'Check data or metadata for a LVM thinpool is below a given value.')
+		arguments_parameters=( '[-m|--message]: show a message if test fails.'
+		                        '[-i|--invert]: fail when get reply.'
+								'data|metadata: type to check.'
+								'{value}: threshold.'
+								'{vg} {lv}: LVM group and volume.' )
+		argparse "$@" && shift ${arguments_shift}
+		if [[ ! -e /dev/mapper/${arguments[vg]//-/--}-${arguments[lv]//-/--} ]]; then
+			echo "Error: ${arguments[vg]}/${arguments[lv]} does not exist"
+			exit 1
+		fi
+		if [[ ${arguments[data]:-0} -eq 1 ]]; then
+			local current=$(lvs --noheadings -odata_percent ${arguments[vg]}/${arguments[lv]})
+			local type=data
+		elif [[ ${arguments[metadata]:-0} -eq 1 ]]; then
+			local current=$(lvs --noheadings -ometadata_percent ${arguments[vg]}/${arguments[lv]})
+			local type=metadata
+		fi
+		if [[ ${current/.*} -gt ${arguments[value]} ]]; then
+			[[ ${arguments[-q]:-0} -eq 0 ]] && echo "${type} above ${arguments[value]}: ${current}"
+			exit 1
 		fi
 	}
 
@@ -2311,7 +2339,7 @@ _source_ps1(){
 # Programs
 #====================================================================
 
-_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping)
+_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping check-lvm-usage)
 
 make-links(){
 	_show_help(){
