@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=469
-FileVersion=469
+# FileVersion=470
+FileVersion=470
 
 #====================================================================
 # Main
@@ -797,10 +797,10 @@ _source_utilities(){
 			exit 1
 		fi
 		if [[ ${arguments[data]:-0} -eq 1 ]]; then
-			local current=$(lvs --noheadings -odata_percent ${arguments[vg]}/${arguments[lv]})
+			local current=$(/sbin/lvs --noheadings -odata_percent ${arguments[vg]}/${arguments[lv]})
 			local type=data
 		elif [[ ${arguments[metadata]:-0} -eq 1 ]]; then
-			local current=$(lvs --noheadings -ometadata_percent ${arguments[vg]}/${arguments[lv]})
+			local current=$(/sbin/lvs --noheadings -ometadata_percent ${arguments[vg]}/${arguments[lv]})
 			local type=metadata
 		fi
 		if [[ ${current/.*} -gt ${arguments[value]} ]]; then
