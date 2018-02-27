@@ -1475,7 +1475,7 @@ _source_utilities(){
 		fi
 		
 		local -i i; local -a intervals=()
-		[[ $# -eq 0 ]] && intervals=(1m 15m 1h 1d) || intervals="$@"
+		[[ $# -eq 0 ]] && intervals=(1m 15m 1h 1d) || intervals=("$@")
 		for (( i=0; i<${#intervals[@]}; i++ )); do
 			if ! check-type time "${intervals[$i]}"; then echo "Error with intervals, token '${intervals[$i]}' not valid time."; exit 1; fi
 			intervals[$i]=$(unit-conversion time -d 0 s "${intervals[$i]}")
