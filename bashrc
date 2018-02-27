@@ -592,6 +592,7 @@ _source_utilities(){
 			[[ ${substract} -eq 0 ]] && remaining_args_num=$#
 			return ${ec:-0}
 		}
+		[[ $- =~ x ]] && set +x && local debug=1 || local debug=0
 		local i args remaining_args_num
 		local -a substracts=() # Number of input arguments to shift array
 		[[ ("${1:-}" =~ ^-h|--help$ && ${#arguments_list[@]} -eq 0 ) || ($# -eq 0 && ${#arguments_list[@]} -eq 0) ]] && echo "execute argparse-create-template" && exit 0
@@ -600,9 +601,11 @@ _source_utilities(){
 			[[ $# -eq 0 && "${!args}" == "" ]] && return 0       # arguments and argument_template are both empty
 			if _argparse_process_args 0 "${!args}" "$@"; then
 				arguments_shift="$(( $# - ${remaining_args_num} ))"
+				[[ ${debug} -eq 1 ]] && set -x
 				return 0
 			fi
 		done
+		[[ ${debug} -eq 1 ]] && set -x
 		argparse_show_help 1
 	}
 
