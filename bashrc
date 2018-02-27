@@ -804,7 +804,7 @@ _source_utilities(){
 			local type=metadata
 		fi
 		if [[ ${current/.*} -gt ${arguments[value]} ]]; then
-			[[ ${arguments[-q]:-0} -eq 0 ]] && echo "${type} above ${arguments[value]}: ${current}"
+			[[ ${arguments[-q]:-0} -eq 0 ]] && trim "${current}"
 			exit 1
 		fi
 	}
