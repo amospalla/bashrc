@@ -681,6 +681,7 @@ _source_utilities(){
 			done
 			color
 		}
+		[[ $- =~ x ]] && set +x && local debug=1 || local debug=0
 		local i args len=11 len2 hcolor=boldwhite
 		local -a key value _arguments_parameters=('[-h|--help]: show this help.')
 		
@@ -742,6 +743,7 @@ _source_utilities(){
 		fi
 		
 		color
+		[[ ${debug} -eq 1 ]] && set -x
 		exit "${1:-0}"
 	}
 
