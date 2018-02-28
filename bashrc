@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=473
-FileVersion=473
+# FileVersion=474
+FileVersion=474
 
 # Environment functions:
 #   perf_start
@@ -1846,15 +1846,16 @@ _source_utilities(){
 		arguments_parameters=( '[-m|--monitor [{interval}]]: executes continuously.' )
 		arguments_examples=( '$ testport -m 5s 1.2.3.4 80' '' )
 		argparse "$@" && shift ${arguments_shift}
-		local interval=$(unit-conversion time -d 0 s "${arguments[interval]:-1s}") pid
+		local interval pid
+		interval=$(unit-conversion time -d 0 s "${arguments[interval]:-1s}")
 		if program-exists nc; then
 			while true; do
-				nc -z -w ${interval} ${arguments[host]} ${arguments[port]} && local ec=0 || local ec=1; exit $ec
+				nc -z -w ${interval} ${arguments[host]} ${arguments[port]} && local ec=0 || local ec=1
 				[[ ${arguments[-m]:-0} -eq 1 ]] || break
 				if nc -z -w 1 ${arguments[host]} ${arguments[port]}; then
-					printf "|"; read -t${interval} || break
+					printf "|"; read -t${interval} || true
 				else
-					printf "."; read -t${interval} || break
+					printf "."; read -t${interval} || true
 				fi
 			done
 		else
@@ -1865,9 +1866,9 @@ _source_utilities(){
 				pgrep -f -U ${EUID} -a "bash -c </dev/tcp/${arguments[host]}/${arguments[port]}$" && ec=1 && kill $pid || ec=0
 				[[ ${arguments[-m]:-0} -eq 1 ]] || break
 				if [[ ${ec} -eq 0 ]]; then
-					printf "|"; read -t${interval} || break
+					printf "|"; read -t${interval} || true
 				else
-					printf "."; read -t${interval} || break
+					printf "."; read -t${interval} || true
 				fi
 			done
 		fi
