@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=471
-FileVersion=471
+# FileVersion=472
+FileVersion=472
 
 #====================================================================
 # Main
@@ -823,7 +823,6 @@ _source_utilities(){
 		usage=$(show-lvm-thinpool-usage ${type} ${arguments[vg]} ${arguments[lv]})
 		[[ ${usage/.*} -lt ${arguments[threshold]} ]] && ec=ok || ec=error
 		if next_date="$(status-changed set lvm-thinpool-${type}-${arguments[vg]}-${arguments[lv]}-${arguments[threshold]} ${ec} -l ok ${intervals})"; then
-			echo send email
 			[[ $ec == "ok"    ]] && echo "$(hostname -f): LVM ${arguments[vg]}/${arguments[lv]} ${type} usage ${usage} below threshold ${arguments[threshold]}" | mailx -s "$(hostname): LVM ${arguments[vg]}/${arguments[lv]} ${type} recover" ${arguments[recipient]} || true
 			[[ $ec == "error" ]] && echo "$(hostname -f): LVM ${arguments[vg]}/${arguments[lv]} ${type} usage ${usage} above threshold ${arguments[threshold]}" | mailx -s "$(hostname): LVM ${arguments[vg]}/${arguments[lv]} ${type} problem" ${arguments[recipient]} || true
 		fi
@@ -1677,33 +1676,54 @@ _source_utilities(){
 	}
 
 	pastebin(){
-		arguments_list=(args1); args1='[files...]'
+		arguments_list=(args1); args1='[{file}]'
 		arguments_description=( 'pastebin' 'Upload files to a test paste service.')
-		arguments_parameters=( '[files...]: upload the specified files.' )
-		arguments_examples=( '$ pastebin file1 file2' 'upload these two files'
+		arguments_parameters=( '[file]: upload the specified file.' )
+		arguments_examples=( '$ pastebin file1' 'upload a file.'
 		                     '$ echo "foo" | pastebin' 'upload the input text')
-		_pastebin_print(){
-			if [[ ${#url} -gt 0 ]]; then
-				echo "$url"
-				echo "To add syntax (for example bash): $url?bash"
-			else
-				echo "Error executing curl."; exit 1
-			fi
-		}
 		argparse "$@" && shift ${arguments_shift}
-		program-exists --message curl || exit 1
+		[[ -t 0 && -z ${arguments[file]:-} ]] && argparse_show_help 1
 		if [[ -t 0 ]]; then
-			[[ $# -eq 0 ]] && argparse_show_help 1
-			while [[ $# -gt 0 ]]; do
-				file-readable --message "${1}" || exit 1
-				local url="$(curl -s -F 'sprunge=<-' http://sprunge.us < "${1}")"; shift
-				_pastebin_print
-			done
+			file-readable --message "${arguments[file]}" || exit 1
+			exec 3<>/dev/tcp/termbin.com/9999
+			cat "${arguments[file]}" >&3
+			cat <&3
 		else
-			local url="$(curl -s -F 'sprunge=<-' http://sprunge.us < "/dev/stdin")"
-			_pastebin_print
+			exec 3<>/dev/tcp/termbin.com/9999
+			cat >&3
+			cat <&3
 		fi
 	}
+
+	# sprunge.us seems not work reliable lately
+	# pastebin(){
+	# 	arguments_list=(args1); args1='[files...]'
+	# 	arguments_description=( 'pastebin' 'Upload files to a test paste service.')
+	# 	arguments_parameters=( '[files...]: upload the specified files.' )
+	# 	arguments_examples=( '$ pastebin file1 file2' 'upload these two files'
+	# 	                     '$ echo "foo" | pastebin' 'upload the input text')
+	# 	_pastebin_print(){
+	# 		if [[ ${#url} -gt 0 ]]; then
+	# 			echo "$url"
+	# 			echo "To add syntax (for example bash): $url?bash"
+	# 		else
+	# 			echo "Error executing curl."; exit 1
+	# 		fi
+	# 	}
+	# 	argparse "$@" && shift ${arguments_shift}
+	# 	program-exists --message curl || exit 1
+	# 	if [[ -t 0 ]]; then
+	# 		[[ $# -eq 0 ]] && argparse_show_help 1
+	# 		while [[ $# -gt 0 ]]; do
+	# 			file-readable --message "${1}" || exit 1
+	# 			local url="$(curl -s -F 'sprunge=<-' http://sprunge.us < "${1}")"; shift
+	# 			_pastebin_print
+	# 		done
+	# 	else
+	# 		local url="$(curl -s -F 'sprunge=<-' http://sprunge.us < "/dev/stdin")"
+	# 		_pastebin_print
+	# 	fi
+	# }
 
 	grepip(){
 		arguments_list=(args1); args1='[-n|--name] [-o|--only] [files...]'
