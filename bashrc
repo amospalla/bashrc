@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=474
-FileVersion=474
+# FileVersion=475
+FileVersion=475
 
 # Environment functions:
 #   perf_start
@@ -1745,6 +1745,7 @@ _source_utilities(){
 	}
 
 	# sprunge.us seems not work reliable lately
+	# https://curlpaste.com/: not tested
 	# pastebin(){
 	# 	arguments_list=(args1); args1='[files...]'
 	# 	arguments_description=( 'pastebin' 'Upload files to a test paste service.')
@@ -1841,37 +1842,30 @@ _source_utilities(){
 	}
 
 	testport(){
-		arguments_list=(args1); args1='[-m|--monitor [{interval:time}]] {host} {port}'
+		arguments_list=(args1); args1='[-c|--continuous [{interval:time}]] [-w|--wait] {host} {port}'
 		arguments_description=( 'testport' 'Test if a TCP port is open')
-		arguments_parameters=( '[-m|--monitor [{interval}]]: executes continuously.' )
-		arguments_examples=( '$ testport -m 5s 1.2.3.4 80' '' )
+		arguments_parameters=( '[-c|--continuous [{interval}]]: executes continuously.'
+		                       '[-w|--wait]: wait until the port is open, then exits.' )
+		arguments_examples=( '$ testport -c 5s 1.2.3.4 80' '' )
+		arguments_examples=( '$ testport -w 1.2.3.4 80' '' )
 		argparse "$@" && shift ${arguments_shift}
-		local interval pid
+		local interval pid mode ec
 		interval=$(unit-conversion time -d 0 s "${arguments[interval]:-1s}")
-		if program-exists nc; then
-			while true; do
-				nc -z -w ${interval} ${arguments[host]} ${arguments[port]} && local ec=0 || local ec=1
-				[[ ${arguments[-m]:-0} -eq 1 ]] || break
-				if nc -z -w 1 ${arguments[host]} ${arguments[port]}; then
-					printf "|"; read -t${interval} || true
-				else
-					printf "."; read -t${interval} || true
-				fi
-			done
-		else
-			while true; do
-				bash -c "</dev/tcp/${arguments[host]}/${arguments[port]}" >/dev/null 2>&1 &
-				pid=$!
-				read -t${interval} || true
-				pgrep -f -U ${EUID} -a "bash -c </dev/tcp/${arguments[host]}/${arguments[port]}$" && ec=1 && kill $pid || ec=0
-				[[ ${arguments[-m]:-0} -eq 1 ]] || break
-				if [[ ${ec} -eq 0 ]]; then
-					printf "|"; read -t${interval} || true
-				else
-					printf "."; read -t${interval} || true
-				fi
-			done
-		fi
+		program-exists nc && mode=nc || mode=bash
+		while true; do
+			if [[ ${mode} == "nc" ]]; then
+				nc -z -w 1 ${arguments[host]} ${arguments[port]} && ec=0 || ec=1
+			else
+				timeout 1 bash -c "</dev/tcp/${arguments[host]}/${arguments[port]}" >/dev/null 2>&1 && ec=0 || ec=1
+			fi
+			[[ ${arguments[-c]:-0} -eq 0 && ${arguments[-w]:-0} -eq 0 ]] && exit ${ec}
+			[[ ${arguments[-w]:-0} -eq 1 && ${ec} -eq 0 ]] && exit ${ec}
+			if [[ ${ec} -eq 0 ]]; then
+				printf "|"; read -t${interval} || true
+			else
+				printf "."; read -t${interval} || true
+			fi
+		done
 	}
 
 	timer-countdown(){
