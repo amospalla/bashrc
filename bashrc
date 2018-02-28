@@ -303,7 +303,7 @@ _bashrc_show_help(){
 	color blue; printf "unit-print"; color; echo ": print units."
 	color blue; printf "unit-conversion"; color; echo ": convert between unit."
 	color blue; printf "check-ping"; color; echo ": check ping to a host."
-	color blue; printf "check-lvm-usage"; color; echo ": check a LVM thinpool data or metadata are below a threshold."
+	color blue; printf "lvm-show-thinpool-usage"; color; echo ": show thinpool metadata/data usage in percentage."
 	color blue; printf "argparse"; color; echo ": argument parser."
 	color blue; printf "lowercase"; color; echo ": prints args in lowercase."
 	color blue; printf "uppercase"; color; echo ": prints args in uppercase."
@@ -780,6 +780,26 @@ _source_utilities(){
 				y*) echo 31536000 ;;
 			esac
 		fi
+	}
+
+	lvm-show-thinpool-usage(){
+		arguments_list=(args1)
+		args1='data|metadata {vg} {lv}'
+		arguments_description=('lvm-show-thinpool-usage' 'Show lvm thinpool data/metadata percentage usage.')
+		arguments_parameters=('data|metadata: type to check.'
+		                      '{vg} {lv}: LVM group and volume.' )
+		argparse "$@" && shift ${arguments_shift}
+		if [[ ! -e /dev/mapper/${arguments[vg]//-/--}-${arguments[lv]//-/--} ]]; then
+			echo "Error: ${arguments[vg]}/${arguments[lv]} does not exist"
+			exit 1
+		fi
+		local value
+		if [[ ${arguments[data]:-0} -eq 1 ]]; then
+			value=$(/sbin/lvs --noheadings -odata_percent ${arguments[vg]}/${arguments[lv]})
+		elif [[ ${arguments[metadata]:-0} -eq 1 ]]; then
+			value=$(/sbin/lvs --noheadings -ometadata_percent ${arguments[vg]}/${arguments[lv]})
+		fi
+		trim "${value}"
 	}
 
 	check-lvm-usage(){
@@ -2341,7 +2361,7 @@ _source_ps1(){
 # Programs
 #====================================================================
 
-_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping check-lvm-usage)
+_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping check--usage)
 
 make-links(){
 	_show_help(){
