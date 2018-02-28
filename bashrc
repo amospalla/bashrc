@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=470
-FileVersion=470
+# FileVersion=471
+FileVersion=471
 
 #====================================================================
 # Main
@@ -11,6 +11,7 @@ FileVersion=470
 declare -A arguments=() _perf_data=() _binary
 declare -a arguments_list=() arguments_description=() arguments_examples=() arguments_extra_help=() arguments_parameters=()
 declare -i arguments_shift ps1_bash_update=0 _bash_updated=0
+_status_changed_intervals="1m 5m 15m 1h 1d"
 
 _ip_regex="(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\."
 _ip_regex="${_ip_regex}(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\."
@@ -303,7 +304,8 @@ _bashrc_show_help(){
 	color blue; printf "unit-print"; color; echo ": print units."
 	color blue; printf "unit-conversion"; color; echo ": convert between unit."
 	color blue; printf "check-ping"; color; echo ": check ping to a host."
-	color blue; printf "lvm-show-thinpool-usage"; color; echo ": show thinpool metadata/data usage in percentage."
+	color blue; printf "show-lvm-thinpool-usage"; color; echo ": show thinpool metadata/data usage in percentage."
+	color blue; printf "check-lvm-thinpool-usage"; color; echo ": notify by email when lvm thinpool data/metadata usage is below a threshold."
 	color blue; printf "argparse"; color; echo ": argument parser."
 	color blue; printf "lowercase"; color; echo ": prints args in lowercase."
 	color blue; printf "uppercase"; color; echo ": prints args in uppercase."
@@ -313,14 +315,14 @@ _bashrc_show_help(){
 	color blue; printf "lock"; color; echo ": lock/unlock given an identifier."
 	color blue; printf "pastebin"; color; echo ": upload test file to a public service."
 	color blue; printf "testport"; color; echo ": test if a TCP port is open."
-	color blue; printf "testcpu"; color; echo ": poor's man cpu bench."
+	color blue; printf "testcpu"; color; echo ": poor man cpu bench."
 	color blue; printf "repeat"; color; echo ": executes a command continuously."
 	color blue; printf "max-mtu"; color; echo ": obtain the maximum mtu to an IP."
 	color blue; printf "beep"; color; echo ": beeps."
 	color blue; printf "is-number"; color; echo ": returns if an input number is an integer."
 	color blue; printf "tmux-send"; color; echo ": sends test to a tmux pane."
 	color blue; printf "wait-ping"; color; echo ": Wait until ping to IP succeeds (default interval 1 second)."
-	color blue; printf "grepip"; color; echo ": show lines containing IP's from files/stdin."
+	color blue; printf "grepip"; color; echo ": show lines containing IPs from files/stdin."
 	color blue; printf "sshconnect"; color; echo ": use ssh with ConnectTimeout=1 and ServerAliveInterval=3"
 	color blue; printf "myip"; color; echo ": shows public IP and optionally notices when changes and/or executes a command."
 	color blue; printf "status-changed"; color; echo ": given an identifier and the current status exits with return code 1 if status has changed."
@@ -782,7 +784,7 @@ _source_utilities(){
 		fi
 	}
 
-	lvm-show-thinpool-usage(){
+	show-lvm-thinpool-usage(){
 		arguments_list=(args1)
 		args1='data|metadata {vg} {lv}'
 		arguments_description=('lvm-show-thinpool-usage' 'Show lvm thinpool data/metadata percentage usage.')
@@ -802,30 +804,28 @@ _source_utilities(){
 		trim "${value}"
 	}
 
-	check-lvm-usage(){
+	check-lvm-thinpool-usage(){
 		arguments_list=(args1)
-		args1='[-m|--message] [-i|--invert] [-q|--quiet] data|metadata {value:integer} {vg} {lv}'
+		args1='{recipient} data|metadata {threshold:integer} {vg} {lv} [intervals...]'
 		arguments_description=('check-lvm-usage' 'Check data or metadata for a LVM thinpool is below a given value.')
-		arguments_parameters=( '[-m|--message]: show a message if test fails.'
-		                        '[-i|--invert]: fail when get reply.'
+		arguments_parameters=( '{recipient}: email recipient.'
 								'data|metadata: type to check.'
-								'{value}: threshold.'
-								'{vg} {lv}: LVM group and volume.' )
+								'{threshold}: threshold.'
+								'{vg} {lv}: LVM group and volume.'
+								'[intervals...]: status-changed intervals.' )
+		arguments_examples=( 'check-lvm-thinpool-usage root data 59 vg1 thinpool' 'Notice by email if vg1/thinpool data usage is above 59%.')
 		argparse "$@" && shift ${arguments_shift}
-		if [[ ! -e /dev/mapper/${arguments[vg]//-/--}-${arguments[lv]//-/--} ]]; then
-			echo "Error: ${arguments[vg]}/${arguments[lv]} does not exist"
-			exit 1
-		fi
-		if [[ ${arguments[data]:-0} -eq 1 ]]; then
-			local current=$(/sbin/lvs --noheadings -odata_percent ${arguments[vg]}/${arguments[lv]})
-			local type=data
-		elif [[ ${arguments[metadata]:-0} -eq 1 ]]; then
-			local current=$(/sbin/lvs --noheadings -ometadata_percent ${arguments[vg]}/${arguments[lv]})
-			local type=metadata
-		fi
-		if [[ ${current/.*} -gt ${arguments[value]} ]]; then
-			[[ ${arguments[-q]:-0} -eq 0 ]] && trim "${current}"
-			exit 1
+		
+		local usage type ec next_date intervals
+		program-exists -m mailx || exit 1
+		[[ $# -gt 0 ]] && intervals="$@" || intervals=${_status_changed_intervals}
+		[[ ${arguments[data]:-0} -eq 1 ]] && type=data || type=metadata
+		usage=$(show-lvm-thinpool-usage ${type} ${arguments[vg]} ${arguments[lv]})
+		[[ ${usage/.*} -lt ${arguments[threshold]} ]] && ec=ok || ec=error
+		if next_date="$(status-changed set lvm-thinpool-${type}-${arguments[vg]}-${arguments[lv]}-${arguments[threshold]} ${ec} -l ok ${intervals})"; then
+			echo send email
+			[[ $ec == "ok"    ]] && echo "$(hostname -f): LVM ${arguments[vg]}/${arguments[lv]} ${type} usage ${usage} below threshold ${arguments[threshold]}" | mailx -s "$(hostname): LVM ${arguments[vg]}/${arguments[lv]} ${type} recover" ${arguments[recipient]} || true
+			[[ $ec == "error" ]] && echo "$(hostname -f): LVM ${arguments[vg]}/${arguments[lv]} ${type} usage ${usage} above threshold ${arguments[threshold]}" | mailx -s "$(hostname): LVM ${arguments[vg]}/${arguments[lv]} ${type} problem" ${arguments[recipient]} || true
 		fi
 	}
 
@@ -1413,7 +1413,7 @@ _source_utilities(){
 		                       '{state}: current state (must be "ok" or "error").'
 		                       '[-l|--last {last_state}]: if not last state was saved use this value (ok by default).'
 		                       'reset {id}: removes last known state for the specified identifier.'
-							   '[intervals...]: intervals between notifications, if no unit is used assume minutes (default 1m 15m 1h 1d)' )
+							   "[intervals...]: intervals between notifications, if no unit is used assume minutes (default ${_status_changed_intervals})" )
 		arguments_description=( 'status-changed'
 		                        'Case scenario: do not send repeatedly emails when the problem has already been notified.'
 		                        'If state is changed and new state is error, prints the date until no new notifications will be shown.'
@@ -1495,7 +1495,7 @@ _source_utilities(){
 		fi
 		
 		local -i i; local -a intervals=()
-		[[ $# -eq 0 ]] && intervals=(1m 15m 1h 1d) || intervals=("$@")
+		[[ $# -eq 0 ]] && intervals=( ${_status_changed_intervals} ) || intervals=("$@")
 		for (( i=0; i<${#intervals[@]}; i++ )); do
 			if ! check-type time "${intervals[$i]}"; then echo "Error with intervals, token '${intervals[$i]}' not valid time."; exit 1; fi
 			intervals[$i]=$(unit-conversion time -d 0 s "${intervals[$i]}")
@@ -2361,7 +2361,7 @@ _source_ps1(){
 # Programs
 #====================================================================
 
-_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping check--usage)
+_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage)
 
 make-links(){
 	_show_help(){
