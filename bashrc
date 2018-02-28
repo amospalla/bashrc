@@ -132,7 +132,7 @@ perf_end(){
 
 file-readable(){
 	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: [-m|--message] [-i|--invert] file-readable {files...}\n" && return 0
-	[[ "${1}" == "^(-m|--message)$" ]] && local message=1 && shift || local message=0
+	[[ "${1}" =~ ^(-m|--message)$ ]] && local message=1 && shift || local message=0
 	[[ "${1}" =~ ^(-i|--invert)$  ]] && local invert=1 && shift  || local invert=0
 	[[ $# -eq 0 ]] && echo "Error: no input supplied." && exit 1
 	while [[ $# -gt 0 ]]; do
