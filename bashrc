@@ -3,6 +3,53 @@
 # FileVersion=472
 FileVersion=472
 
+# Environment functions:
+#   perf_start
+#   perf_end
+#   file-readable
+#   folder-exists
+#   folder-writable
+#   is-number
+#   program-exists
+#   lowercase
+#   uppercase
+#   trim
+#   vimode
+#   color
+#   colors
+# functions:
+#   argparse
+#   argparse-create-template
+#   unit-print
+#   show-lvm-thinpool-usage
+#   check-lvm-thinpool-usage
+#   check-ping
+#   unit-conversion
+#   float
+#   check-type
+#   disksinfo
+#   extract
+#   lock
+#   retention
+#   lvmthinspahosts *
+#   status-changed
+#   rescan-scsi-bus
+#   tmuxac
+#   tmux-send
+#   try
+#   wait-ping
+#   sshconnect
+#   beep
+#   max-mtu
+#   pastebin
+#   grepip
+#   repeat
+#   testcpu
+#   testport
+#   timer-countdown
+#   myip
+
+
 #====================================================================
 # Main
 #====================================================================
