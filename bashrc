@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=477
-FileVersion=477
+# FileVersion=478
+FileVersion=478
 
 # Environment functions:
 #   perf_start
@@ -87,6 +87,7 @@ _main(){
 		export bashrc_interactive=1
 		[[ "${_update_enable:-0}" -eq 1 ]] && ( _bash_update bashrc  & ) || true
 		_binary_decode
+		_check_new_links
 	fi
 }
 
@@ -427,6 +428,13 @@ _bash_reload(){
 	fi
 }
 
+_check_new_links(){
+	if [[ ${FileVersion} -gt ${_FileVersion} ]]; then
+		sed -i "s/_FileVersion=[0-9]\+/_FileVersion=${FileVersion}/" $HOME/.bashrc.options
+		make-links
+	fi
+}
+
 #====================================================================
 # Aliases
 #====================================================================
@@ -457,7 +465,7 @@ _source_bash_options(){
 	_bash_options_add(){
 		local option="${1}"; local default="${2}"
 		if [[ ! "${file_text}" =~ "${option}=" ]]; then
-			echo "bashrc: Adding to  ${file}  ${option}=${default}"
+			printf "New .bashrc.options option: "; color greenred; echo "${option}=${default}"; color
 			echo "${option}=${default}" >> "${file}"
 		fi
 	}
@@ -483,6 +491,7 @@ _source_bash_options(){
 	_bash_options_add _tmuxrc 1
 	_bash_options_add _histgrep_compact 1
 	_bash_options_add _update_enable 0
+	_bash_options_add _FileVersion ${FileVersion}
 	_bash_options_add _update_url http://www.amospalla.es/rcver/bash
 	
 	. "${file}"
@@ -2416,7 +2425,7 @@ make-links(){
 				fi
 			fi
 		else
-			echo "[new]             ${program}"
+			echo "[new]             ${destination_folder}/${program}"
 			ln -s "${source}" "${destination_folder}/${program}"
 		fi
 	done
@@ -2429,7 +2438,7 @@ make-links(){
 		for program in ${_program_list[@]}; do
 			[[ "$(basename ${link})" == "${program}" ]] && found=1 && break
 		done
-		[[ ${found} -eq 0 ]] && echo "[remove old]      $(basename "${link}")" && rm "${link}" || true
+		[[ ${found} -eq 0 ]] && echo "[remove old]      ${link}" && rm "${link}" || true
 	done
 	# [[ ${EUID} -eq 0 && "${destination_folder}" != "system-wide" ]] && echo "" && make-links --system-wide || true
 }
