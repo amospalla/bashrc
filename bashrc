@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=476
-FileVersion=476
+# FileVersion=477
+FileVersion=477
 
 # Environment functions:
 #   perf_start
@@ -2401,23 +2401,19 @@ make-links(){
 	
 	[[ ! -d "${destination_folder}" ]] && echo "Error, specified path does not exist." && return 1
 	
-	echo "Source: ${source}, destination: ${destination_folder}"
+	# echo "Source: ${source}, destination: ${destination_folder}"
 	local program
 	local source_old
 	# add links
 	for program in ${_program_list[@]}; do
 		if [[ -f "${destination_folder}/${program}" || -L "${destination_folder}/${program}" ]]; then
 			source_old="$(readlink -f "${destination_folder}/${program}")"
-			printf "[already present] ${program}"
-			if [[ "${source_old}" == "${source}" ]]; then
-				printf "\n"
-			else
+			if [[ "${source_old}" != "${source}" ]]; then
 				if [[ -L "${destination_folder}/${program}" ]]; then
-					printf "  (linked from ${source_old})"
+					echo "[already present] ${program} (linked from ${source_old})"
 				else
-					printf "  (independent binary)"
+					echo "[already present] ${program} (independent binary)"
 				fi
-				printf "\n"
 			fi
 		else
 			echo "[new]             ${program}"
@@ -2433,7 +2429,7 @@ make-links(){
 		for program in ${_program_list[@]}; do
 			[[ "$(basename ${link})" == "${program}" ]] && found=1 && break
 		done
-		[[ ${found} -eq 0 ]] && echo "[remove old]      $(basename "${link}")" && rm "${link}"
+		[[ ${found} -eq 0 ]] && echo "[remove old]      $(basename "${link}")" && rm "${link}" || true
 	done
 	# [[ ${EUID} -eq 0 && "${destination_folder}" != "system-wide" ]] && echo "" && make-links --system-wide || true
 }
