@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=475
-FileVersion=475
+# FileVersion=476
+FileVersion=476
 
 # Environment functions:
 #   perf_start
@@ -1314,135 +1314,71 @@ _source_utilities(){
 	}
 
 	retention(){
-		_binarysearch(){
-			# Given an inputdate, returns "Value" like
-			# date[value] <= inputDate
-			# Example: _binarysearch 0 $(( $array - 1 )) 123
-			local lowerIndex=${1} upperIndex=${2} value=${3} middle
-			while [[ $lowerIndex -le $upperIndex ]]; do
-				middle=$(( ( $upperIndex - $lowerIndex / 2) + $lowerIndex ))
-				if [[ ${date[$middle]} -eq $value ]]; then
-					echo $(( $middle )) && return 0
-				else
-					if [[ $value -lt ${date[middle]} ]]; then
-						upperIndex=$(( $middle -1 ))
-					else
-						lowerIndex=$(( $middle +1 ))
-					fi
-				fi
-			done
-			echo -1 && return 0
-		}
-		
-		_processInterval(){
-			_processDay(){
-				local localDate=${1} index=${2} i
-				local indexTmp=$index localhour localmin mins myInterval intervalFound
-				while [[ ${indexTmp} -ge 0 && ${indexTmp} -lt ${dates_counter} && ${date[$indexTmp]} -eq ${date[$index]} ]]; do
-					lowIndex=${indexTmp}
-					indexTmp=$(( ${indexTmp} - 1 ))
-				done
-				
-				indexTmp=${index}
-				while [[ ${indexTmp} -ge 0 && ${indexTmp} -lt ${dates_counter} && ${date[$indexTmp]} -eq ${date[$index]} ]]; do
-					highIndex=$indexTmp
-					indexTmp=$(( $indexTmp + 1 ))
-				done
-				
-				# Example:
-				# $lowIndex= 201301010000
-				# $highIndex=201301012359
-				local intervalMins=$(( 1440/${intervals} ))
-				# echo "intervalMins: $intervalMins"
-				for (( i=0; i<intervals; i++ )); do
-					intervalFound[$i]=0
-				done
-				for (( i=$lowIndex; i<=$highIndex; i++  )); do
-					localhour=$( echo ${hour[$i]:0:2} | sed 's/^0//' )
-					localmin=$(  echo ${hour[$i]:2:2} | sed 's/^0//' )
-					mins=$(( ($localhour * 60) + $localmin ))
-					# Get in which interval this hour:minute is,
-					# if it has not been found any prior hour:minute on this interval, mark the interval as found,
-					# and mark this hour:minute not to be deleted
-					myInterval=$(( $mins / $intervalMins))
-					if [[ ${intervalFound[${myInterval}]} -eq 0 ]]; then
-						intervalFound[${myInterval}]=1
-						delete[$i]=0
-					fi
-					# echo "index: $i hora: $localhour:$localmin interval:$myInterval"
-				done
-			}
-			
-			# Search the oldest day in the given interval on the dates_in[] array
-			dateIntervalStart=${1}
-			interval_end=${2}
-			intervals=${3}
-			
-			local i=${interval_end}
-			local found=0
-			while [[ $i -le $dateIntervalStart ]] && [[ $found -eq 0 ]]; do
-				result=$(_binarysearch 0 $(( $dates_counter - 1 )) $i)
-				if [[ $result -ne -1 ]]; then
-					found=1
-					_processDay $i $result
-				fi
-				i=$(( $i+1 ))
-			done
-		}
 		arguments_list=(args1)
-		args1='[print_pretty|print_dates] {retention} {dates}'
+		args1='[-v|--verbose] [-s|--seconds {seconds:integer}] [-m|--minutes {minutes:integer}] [-h|--hours {hours:integer}] [-d|--days {days:integer}] [-w|--weeks {weeks:integer}] [--months {months:integer}] [-y|--years {years:integer}] {dates}'
 		arguments_description=( 'retention' 'Helper for keeping a specified retention with given dates.')
-		arguments_parameters=( 'print_pretty: print all days with a mark "keep" or "delete".'
-		                       'print_dates: print dates to be deleted.'
-		                       '{retention}: retention to be used. Pairs of "days hours".'
+		arguments_parameters=( '[-v|--verbose]: print all days with a mark "keep" or "delete, else print only dates to be deleted.'
+		                       '[-d|--daily {day}]: number of daily copies to mantain.'
 		                       '{dates}: list of dates.' )
-		arguments_examples=( '$ retention print_pretty "1 24   1 1  4 1" "200102040400 200102040300 200102040200 200102040100 200102030000 200102020000 200102010000 200101010000"' 'keep hourly copies for the first day, one copy for second day, and one copy for the interval of the following 4 days.' )
+		arguments_examples=( '$ retention print_pretty -h 8 -d 7 -w 4 -m 6 "200102040400 200102040300 200102040200 200102040100 200102030000 200102020000 200102010000 200101010000"' 'keep 8 hourly copies for the first day, one daily copy for a week, 4 weekly copies and 6 monthly.' )
 		argparse "$@" && shift ${arguments_shift}
 		
-		local -a dates=() retention_days=() retention_hours=() date=() hour=() delete=()
-		local -i i j dates_counter
-		local item
-		for item in $(for item in ${arguments[dates]}; do echo "${item}"; done | sort); do
-			[[ ! ${item} =~ ^[0-9]{12}$ ]] && echo "Error: date '${item}' is not valid." && exit 1 || true
-			dates[${#dates[@]}]="${item}"
-			date[${#date[@]}]="${item:0:8}"
-			hour[${#hour[@]}]="${item:8:4}"
+		_retention_expand_date(){
+			# if date is 2001-01-01 return 2001-01-01 00:00:00 (only the numbers)
+			year=${i:0:4}
+			month=${i:4:2}
+			day=${i:6:2}
+			[[ ${#i} -gt  8 ]] && hour=${i:8:2}    || hour=00
+			[[ ${#i} -gt 10 ]] && minute=${i:10:2} || minute=00
+			[[ ${#i} -gt 12 ]] && second=${i:12:2} || second=00
+			itemfull="${year}${month}${day} ${hour}:${minute}:${second}"
+		}
+		
+		local i j k year month day hour minute second
+		local -a dates=() datesfull=() datessecond=() delete=() intervals=() intervals_used=()
+		declare -A times=( [seconds]=1 [minutes]=60 [hours]=3600 [days]=86400 [weeks]=604800 [months]=2592000 [years]=31104000 )
+		
+		if ! [[ ${arguments[-s]:-0} -eq 1 || ${arguments[-m]:-0} -eq 1 || ${arguments[-h]:-0} -eq 1 || ${arguments[-d]:-0} -eq 1 || ${arguments[-w]:-0} -eq 1 || ${arguments[-m]:-0} -eq 1 || ${arguments[-y]:-0} -eq 1 ]]; then
+			echo "Error: no interval specified."; exit 1
+		fi
+		
+		for i in $(for i in ${arguments[dates]}; do echo "${i}"; done | sort -r); do
+			if ! [[ ${i} =~ ^[0-9]+$ && ${#i} =~ ^8|10|12|14$ ]]; then
+				echo "Error: date '${i}' is not valid." && exit 1
+			fi
+			_retention_expand_date
+			dates[${#dates[@]}]=${i}
+			datesfull[${#datesfull[@]}]=${itemfull}
+			datessecond[${#datessecond[@]}]=$(date --date "${itemfull}" +'%s')
 			delete[${#delete[@]}]=1
 		done
 		
-		j=0; for item in ${arguments[retention]}; do
-			is-number --message "${item}" || exit 1
-			[[ $(( ${j} % 2 )) -eq 0 ]] && retention_days[${#retention_days[@]}]="${item}"
-			[[ $(( ${j} % 2 )) -eq 1 ]] && retention_hours[${#retention_hours[@]}]="${item}"
-			j=$(( $j + 1))
+		for i in seconds minutes days hours days weeks months years; do
+			[[ ${arguments[$i]:-0} -eq -0 ]] && continue
+			intervals=( ${datessecond[$(( ${#datessecond[@]} - 1 ))]} )
+			for (( j=1; j<=${arguments[${i}]}; j++ )); do
+				intervals[${#intervals[@]}]=$(( ${intervals[$(( ${#intervals[@]} - 1 ))]} + ${times[$i]} ))
+				intervals_used[${#intervals_used[@]}]=0
+			done
+			for (( j=0; j<$(( ${#intervals[@]} - 1 )); j++ )); do
+				for (( k=0; k<${#datessecond[@]}; k++ )); do
+					if [[ ${datessecond[$k]} -ge ${intervals[$j]} && ${datessecond[$k]} -lt ${intervals[$(( ${j} + 1 ))]} ]]; then
+						delete[$k]=0; intervals_used[$j]=1; continue 2
+					fi
+				done
+			done
 		done
 		
-		[[ $(( ${j} % 2 )) -eq 1 ]] && echo "Error in retention string." && exit 1
-		
-		dates_counter="${#dates[@]}"
-		
-		# Initialize end of interval to most recent day
-		interval_end="${date[$(( $dates_counter - 1 ))]}"
-		# Sustract one day to it
-		interval_end="$(date -d "${interval_end} + 1 days" +'%Y%m%d')"
-		
-		# For every retention range
-		for (( i=0; i<${#retention_days[@]}; i++ )); do
-			# Start of interval is the prior day to the last day of last interval
-			dateIntervalStart="$(date -d "${interval_end} - 1 days" +'%Y%m%d')"
-			interval_end="$(date -d "${dateIntervalStart} - $(( ${retention_days[$i]} - 1 )) days" +'%Y%m%d')"
-			# Search for the oldest day for this interval in the date[] array and mark them
-			_processInterval $dateIntervalStart $interval_end ${retention_hours[$i]}
-		done
-		
-		for (( i=0;i<$dates_counter;i++ )); do
-			if [[ ${delete[$i]} -eq 0 ]]; then
-				[[ ${arguments[print_pretty]:-0} -eq 1 ]] && echo "[keep]   ${dates[$i]}" || true
-			else
-				[[ ${arguments[print_pretty]:-0} -eq 1 ]] && echo "[delete] ${dates[$i]}" || printf "${dates[$i]} "
-			fi
-		done
-		[[ ${arguments[print_pretty]:-0} -eq 1 ]] || printf "\n"
+		if [[ ${arguments[-v]:-0} -eq 0 ]]; then
+			for (( i=0; i<${#dates[@]}; i++ )); do
+				[[ ${delete[$i]} -eq 0 ]] || echo "${dates[$i]}"
+			done
+		else
+			for (( i=0; i<${#dates[@]}; i++ )); do
+				printf "${dates[$i]} "
+				[[ ${delete[$i]} -eq 0 ]] && echo keep || echo delete
+			done
+		fi
 	}
 
 	# lvmthinsnapshot(){
