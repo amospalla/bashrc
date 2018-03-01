@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=478
-FileVersion=478
+# FileVersion=479
+FileVersion=479
 
 # Environment functions:
 #   perf_start
@@ -1201,9 +1201,9 @@ _source_utilities(){
 					found_free_slot=1
 				fi
 				_lock_sub_unlock
-				if [[ ${found_free_slot} -eq 0 && ${arguments[quiet]:-0} -eq 1 ]]; then
+				if [[ ${found_free_slot} -eq 0 && ${arguments[-q]:-0} -eq 1 ]]; then
 					read -t4 >/dev/null || true
-				elif [[ ${found_free_slot} -eq 0 && ${arguments[quiet]:-0} -eq 0 ]]; then
+				elif [[ ${found_free_slot} -eq 0 && ${arguments[-q]:-0} -eq 0 ]]; then
 					for i in {1..16}; do
 						current_char+=1 && printf "\r${chars:$(( ${current_char} % 4 )):1}"
 						read -t0.25 2>/dev/null || true
@@ -1211,7 +1211,7 @@ _source_utilities(){
 				fi
 			done
 			
-			[[ ${arguments[quiet]:-0} -eq 0 ]] && printf "\r \r" || true
+			[[ ${arguments[-q]:-0} -eq 0 ]] && printf "\r \r" || true
 			if [[ $# -gt 0 ]]; then
 				"$@" && ec=0 || ec=1
 				_lock_sub_lock; _lock_remove_running; _lock_sub_unlock
