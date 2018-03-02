@@ -230,21 +230,6 @@ _source(){
 	[[ -r "${1:-}" ]] && . "${1}" || true
 }
 
-# _bash_update(){
-# 	local url filepath online_text online_version
-# 	url="${1}"; shift
-# 	filepath="${1}"; shift
-# 	
-# 	if online_text="$(wget --timeout=10 ${url} -O - 2> /dev/null)"; then
-# 		online_version="$(echo "${online_text}" | grep -m1 "FileVersion=")"
-# 		[[ ${online_version} =~ [0-9]+ ]] && online_version=${BASH_REMATCH} || return 1
-# 		if [[ ${FileVersion} -lt ${online_version} ]]; then
-# 			echo "${online_text}" > "${filepath}"
-# 			echo "${FileVersion} > ${online_version}" > "/tmp/${UID}.$$.bashrcupdate"
-# 		fi
-# 	fi
-# }
-
 _get_file_version(){
 	local text="${1}" i version=0
 	local -a array
@@ -257,7 +242,7 @@ _get_file_version(){
 
 _update_files(){
 	local i url filename online_text online_version local_version ps1_text
-	for i in {0..3}; do
+	for i in {0..99}; do
 		url=_update_url${i} filename=_update_file${i}
 		[[ -n ${!url} && -n ${!filename} ]] || continue
 		url=${!url} filename=${!filename}
