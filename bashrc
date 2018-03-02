@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=480
-FileVersion=480
+# FileVersion=481
+FileVersion=481
 
 # Environment functions:
 #   perf_start
@@ -369,6 +369,7 @@ _bashrc_show_help(){
 	color blue; printf "beep"; color; echo ": beeps."
 	color blue; printf "is-number"; color; echo ": returns if an input number is an integer."
 	color blue; printf "tmux-send"; color; echo ": sends test to a tmux pane."
+	color blue; printf "notify"; color; echo ": send a message using pushover service."
 	color blue; printf "wait-ping"; color; echo ": Wait until ping to IP succeeds (default interval 1 second)."
 	color blue; printf "grepip"; color; echo ": show lines containing IPs from files/stdin."
 	color blue; printf "sshconnect"; color; echo ": use ssh with ConnectTimeout=1 and ServerAliveInterval=3"
@@ -433,12 +434,6 @@ _check_new_links(){
 		sed -i "s/_FileVersion=[0-9]\+/_FileVersion=${FileVersion}/" $HOME/.bashrc.options
 		make-links
 	fi
-}
-
-notify(){
-	program-exists --message curl || return 1
-	[[ $# -ne 1 ]] && echo "Supply message as a single parameter." && return 1 || true
-	curl -s --form-string "token=${_pushover_token}" --form-string "user=${_pushover_user}" --form-string "message=${1}" https://api.pushover.net/1/messages.json >/dev/null
 }
 
 #====================================================================
@@ -1567,6 +1562,16 @@ _source_utilities(){
 		tmux new-session -s "${arguments[name]}"
 	}
 
+	notify(){
+		arguments_list=(args1); args1='{message}'
+		arguments_description=( 'notify' 'Sends a message through pushover service.')
+		arguments_parameters=( '{message}: message to send.' )
+		argparse "$@" && shift ${arguments_shift}
+		program-exists --message curl || return 1
+		curl -s --form-string "token=${_pushover_token}" --form-string "user=${_pushover_user}" --form-string "message=${arguments[message]}" https://api.pushover.net/1/messages.json >/dev/null
+	}
+
+
 	tmux-send(){
 		arguments_list=(args1); args1='[-l|--loop [interval]] {target} {text...}'
 		arguments_description=( 'tmux-send' 'Sends text to a tmux pane.')
@@ -2376,7 +2381,7 @@ _source_ps1(){
 # Programs
 #====================================================================
 
-_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage)
+_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify)
 
 make-links(){
 	_show_help(){
