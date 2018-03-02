@@ -248,7 +248,7 @@ _update_files(){
 		url=${!url} filename=${!filename}
 		if online_text="$(wget --timeout=10 ${url} -O - 2> /dev/null)"; then
 			online_version="$(_get_file_version "${online_text}")"
-			local_version="$(_get_file_version "$(<"${filename}")")"
+			[[ -r "${filename}" ]] && local_version="$(_get_file_version "$(<"${filename}")")" || local_version=0
 			if [[ ${local_version} -lt ${online_version} ]]; then
 				echo "${online_text}" > "${filename}"
 				ps1_text="${filename}:${local_version}>${online_version} ${ps1_text}"
