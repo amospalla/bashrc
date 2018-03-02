@@ -507,8 +507,8 @@ _source_bash_options(){
 	_bash_options_add _FileVersion ${FileVersion}
 	_bash_options_add commented _update_url0   https://raw.githubusercontent.com/amospalla/bashrc/master/bashrc
 	_bash_options_add commented _update_file0  $HOME/.bashrc
-	_bash_options_add commented _update_url99  http://www.foo.com/vimrc
-	_bash_options_add commented _update_file99 $HOME/.vimrc
+	_bash_options_add commented _update_url1  http://www.foo.com/vimrc
+	_bash_options_add commented _update_file1 $HOME/.vimrc
 	
 	. "${file}"
 	[[ -r "${file}.local" ]] && . "${file}.local"
