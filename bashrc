@@ -402,7 +402,7 @@ _binary[tmuxrc_filepath]="$HOME/.tmux.conf"
 _binary[tmuxrc_filemode]="644"
 _binary[tmuxrc_rootpath]="/etc/tmux.conf"
 _binary[tmuxrc_rootmode]="644"
-_binary[tmuxrc_option]="_binary_tmuxrc"
+_binary[tmuxrc_option]="_binary_tmuxconf"
 
 _binary_decode(){
 	local file localfile i version
@@ -502,7 +502,7 @@ _source_bash_options(){
 	_bash_options_add _ps1_git 0
 	_bash_options_add _ps1_prompt 1
 	_bash_options_add _ps1_bash_update 1
-	_bash_options_add _binary_tmuxrc 1
+	_bash_options_add _binary_tmuxconf 1
 	_bash_options_add _histgrep_compact 1
 	_bash_options_add _FileVersion ${FileVersion}
 	_bash_options_add commented _update_url0   https://raw.githubusercontent.com/amospalla/bashrc/master/bashrc
