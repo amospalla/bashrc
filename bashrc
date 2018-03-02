@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=479
-FileVersion=479
+# FileVersion=480
+FileVersion=480
 
 # Environment functions:
 #   perf_start
@@ -433,6 +433,12 @@ _check_new_links(){
 		sed -i "s/_FileVersion=[0-9]\+/_FileVersion=${FileVersion}/" $HOME/.bashrc.options
 		make-links
 	fi
+}
+
+notify(){
+	program-exists --message curl || return 1
+	[[ $# -ne 1 ]] && echo "Supply message as a single parameter." && return 1 || true
+	curl -s --form-string "token=${_pushover_token}" --form-string "user=${_pushover_user}" --form-string "message=${1}" https://api.pushover.net/1/messages.json >/dev/null
 }
 
 #====================================================================
