@@ -458,8 +458,6 @@ _source_aliases_amospalla(){
 _source_bash_options(){
 	local file="${HOME}/.bashrc.options" file_global="/etc/bashrc.options" file_text
 	
-	[[ -e "${HOME}/.bashrc_options" && ! -e "${file}" ]] && mv -v "${HOME}/.bashrc_options" "${file}"
-	
 	[[ ${EUID} -eq 0 && -e "/etc/ps1_bashrc" && ! -e "${file_global}" ]] && \
 	mv -v "/etc/ps1_bashrc" "${file_global}"
 	
