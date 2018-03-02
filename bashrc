@@ -494,6 +494,7 @@ _source_bash_options(){
 	_bash_options_add _update_url http://www.amospalla.es/rcver/bash
 	
 	. "${file}"
+	. "${file}.local"
 	[[ "${_ps1_virtualenv}" == 1 ]] && export VIRTUAL_ENV_DISABLE_PROMPT=1
 	[[ -r "${file_global}" ]] && . "${file_global}"
 }
