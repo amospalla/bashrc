@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=481
-FileVersion=481
+# FileVersion=482
+FileVersion=482
 
 # Environment functions:
 #   perf_start
@@ -57,7 +57,8 @@ FileVersion=481
 # argparse
 declare -A arguments=() _perf_data=() _binary
 declare -a arguments_list=() arguments_description=() arguments_examples=() arguments_extra_help=() arguments_parameters=()
-declare -i arguments_shift ps1_bash_update=0 _bash_updated=0
+declare -i arguments_shift _files_update_counter=0 _files_updated=0
+declare _files_update_text=""
 _status_changed_intervals="1m 5m 15m 1h 1d"
 
 _ip_regex="(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\."
@@ -85,9 +86,10 @@ _main(){
 		_source_variables_amospalla
 		_source_aliases_amospalla
 		export bashrc_interactive=1
-		[[ "${_update_enable:-0}" -eq 1 ]] && ( _bash_update bashrc  & ) || true
+		# [[ "${_update_enable:-0}" -eq 1 ]] && ( _bash_update ${_update_bash_url}/bashrc $HOME/.bashrc  & ) || true
 		_binary_decode
 		_check_new_links
+		(_update_files &)
 	fi
 }
 
@@ -228,23 +230,51 @@ _source(){
 	[[ -r "${1:-}" ]] && . "${1}" || true
 }
 
-_bash_update(){
-	[[ $# -eq 0 ]] && return 0
-	local name="${1:-}"
-	local filepath="${HOME}/.${name}"
-	local url="${_update_url}/${name}"
-	
-	file-readable "${filepath}" || return
-	
-	local bashrc_online="$(wget --timeout=10 ${url} -O - 2> /dev/null)"
-	local onlineversion="$(echo "${bashrc_online}" | grep -m1 "^# FileVersion=")"
-	onlineversion="${onlineversion//# FileVersion=/}"
-	[[ ${onlineversion} =~ ^[0-9]+$ ]] || return
-	is-number ${onlineversion} || return
-	if [[ ${FileVersion} -lt ${onlineversion} ]]; then
-		echo "${bashrc_online}" > "${filepath}"
-		echo "${FileVersion} > ${onlineversion}" > "/tmp/${UID}.$$.bashrcupdate"
+# _bash_update(){
+# 	local url filepath online_text online_version
+# 	url="${1}"; shift
+# 	filepath="${1}"; shift
+# 	
+# 	if online_text="$(wget --timeout=10 ${url} -O - 2> /dev/null)"; then
+# 		online_version="$(echo "${online_text}" | grep -m1 "FileVersion=")"
+# 		[[ ${online_version} =~ [0-9]+ ]] && online_version=${BASH_REMATCH} || return 1
+# 		if [[ ${FileVersion} -lt ${online_version} ]]; then
+# 			echo "${online_text}" > "${filepath}"
+# 			echo "${FileVersion} > ${online_version}" > "/tmp/${UID}.$$.bashrcupdate"
+# 		fi
+# 	fi
+# }
+
+_get_file_version(){
+	local text="${1}" i version=0
+	local -a array
+	readarray -t array < <(echo "${text}")
+	for (( i=0; i<${#text[@]}; i++ )); do
+		[[ "${text[$i]}" =~ FileVersion=[0-9]+ ]] && [[ "${text[$i]}" =~ [0-9]+ ]] && version=${BASH_REMATCH} && break
+	done
+	echo "${version}"
+}
+
+_update_files(){
+	local i url filename online_text online_version local_version ps1_text
+	for i in {0..3}; do
+		url=_update_url${i} filename=_update_file${i}
+		[[ -n ${!url} && -n ${!filename} ]] || continue
+		url=${!url} filename=${!filename}
+		if online_text="$(wget --timeout=10 ${url} -O - 2> /dev/null)"; then
+			online_version="$(_get_file_version "${online_text}")"
+			local_version="$(_get_file_version "$(<"${filename}")")"
+			if [[ ${local_version} -lt ${online_version} ]]; then
+				echo "${online_text}" > "${filename}"
+				ps1_text="${filename}:${local_version}>${online_version} ${ps1_text}"
+			fi
+		fi
+	done
+	if [[ "${#ps1_text}" -gt 0 ]]; then
+		ps1_text="$(trim "${ps1_text}")"
+		echo "${ps1_text}" > "/tmp/${UID}.$$.bashrcupdate"
 	fi
+	return 0
 }
 
 _source_path_add_home_bin(){
@@ -416,15 +446,15 @@ _binary_decode(){
 	done
 }
 
-_bash_reload(){
-	[[ ${FileVersionOld:-} =~ [0-9]+ ]] && unset FileVersionOld && _bash_updated=0
-	if [[ ${ps1_bash_update} -lt 20 ]]; then
-		ps1_bash_update=$(( ${ps1_bash_update} + 1 ))
+_update_files_notify(){
+	[[ ${#_files_update_text} -gt 0 ]] && _files_updated=0
+	if [[ ${_files_update_counter} -lt 20 ]]; then
+		_files_update_counter=$(( ${_files_update_counter} + 1 ))
 		if [[ -f "/tmp/${UID}.$$.bashrcupdate" ]]; then
-			_bash_updated=1
-			FileVersionOld=${FileVersion}
+			_files_updated=1
+			_files_update_text="$(</tmp/${UID}.$$.bashrcupdate)"
 			rm /tmp/${UID}.$$.bashrcupdate
-			. $HOME/.bashrc
+			[[ ${_files_update_text} =~ $HOME/.bashrc: ]] && . $HOME/.bashrc
 		fi
 	fi
 }
@@ -458,14 +488,14 @@ _source_aliases_amospalla(){
 _source_bash_options(){
 	local file="${HOME}/.bashrc.options" file_global="/etc/bashrc.options" file_text
 	
-	[[ ${EUID} -eq 0 && -e "/etc/ps1_bashrc" && ! -e "${file_global}" ]] && \
-	mv -v "/etc/ps1_bashrc" "${file_global}"
-	
 	_bash_options_add(){
-		local option="${1}"; local default="${2}"
+		[[ ${1} == "commented" ]] && local commented=1 && shift || local commented=0
+		local option="${1}" default="${2}"
+		local text="${option}=${default}"
+		[[ ${commented} -eq 1 ]] && text="# ${text}"
 		if [[ ! "${file_text}" =~ "${option}=" ]]; then
-			printf "New .bashrc.options option: "; color greenred; echo "${option}=${default}"; color
-			echo "${option}=${default}" >> "${file}"
+			printf "New .bashrc.options option: "; color greenred; echo "${text}"; color
+			echo "${text}" >> "${file}"
 		fi
 	}
 	
@@ -489,12 +519,14 @@ _source_bash_options(){
 	_bash_options_add _ps1_bash_update 1
 	_bash_options_add _tmuxrc 1
 	_bash_options_add _histgrep_compact 1
-	_bash_options_add _update_enable 0
 	_bash_options_add _FileVersion ${FileVersion}
-	_bash_options_add _update_url http://www.amospalla.es/rcver/bash
+	_bash_options_add commented _update_url0   https://raw.githubusercontent.com/amospalla/bashrc/master/bashrc
+	_bash_options_add commented _update_file0  $HOME/.bashrc
+	_bash_options_add commented _update_url99  http://www.foo.com/vimrc
+	_bash_options_add commented _update_file99 $HOME/.vimrc
 	
 	. "${file}"
-	. "${file}.local"
+	[[ -r "${file}.local" ]] && . "${file}.local"
 	[[ "${_ps1_virtualenv}" == 1 ]] && export VIRTUAL_ENV_DISABLE_PROMPT=1
 	[[ -r "${file_global}" ]] && . "${file_global}"
 }
@@ -1937,7 +1969,7 @@ _source_histgrep(){
 	# Detect new command being written, through PROMPT_COMMAND, used in save history
 	# With true time diff between commands is achieved as it makes ps1_date_old
 	# evaluated just before real command is executed
-	PROMPT_COMMAND="true; _histgrep_new_history=1; _bash_reload; $PROMPT_COMMAND"
+	PROMPT_COMMAND="true; _histgrep_new_history=1; _update_files_notify; $PROMPT_COMMAND"
 	
 	[[ -d "${path}" ]] || mkdir "${path}"
 	
@@ -2339,8 +2371,8 @@ _source_ps1(){
 
 		if [[ "${_ps1_bash_update}" -eq 1 ]]; then
 			[[ ${_ps2_get_performance} -eq 1 ]] && perf_start bashupdate
-			if [[ ${_bash_updated} -eq 1 ]]; then
-				_color magentabold; printf "(bashrc updated: ${FileVersionOld} > ${FileVersion})"
+			if [[ ${_files_updated} -eq 1 ]]; then
+				_color magentabold; printf "(updated: ${_files_update_text})"
 				ps1_separator=1 && print_separator
 			[[ ${_ps1_get_performance} -eq 1 ]] && _ps1_perf_end bashupdate
 			fi
