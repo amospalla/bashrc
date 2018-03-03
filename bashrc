@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=501
-FileVersion=501
+# FileVersion=500
+FileVersion=500
 
 # Environment functions:
 #   count-lines
@@ -790,6 +790,7 @@ _source_utilities(){
 		arguments_parameters=('[-m|--message]: show a message if check fails.'
 		                      '[-i|--invert]: invert the logic check.'
 		                      '{programs...}: programs to check for.' )
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		local exists failed=""
 		while [[ $# -gt 0 ]]; do
@@ -805,7 +806,6 @@ _source_utilities(){
 		fi
 	}
 
-
 	argparse-create-template(){
 		arguments_list=(args1)
 		args1='[-o|--overwrite] {file}'
@@ -816,6 +816,7 @@ _source_utilities(){
 		                       'Arguments_list[] can not be empty (but they references can).'
 		                       'Parameters like foo... (3 dots) can only be used as the last parameter, and always between brackets or curly brackets.'
 		                       'To see available argument types see the program check-type.')
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		[[ -f "${arguments[file]}" && ${arguments[-o]:-0} -eq 0 ]] && echo "File ${arguments[file]} already exists, use --overwrite to overwrite." && exit 1
 		echo "#!/bin/bash" > "${arguments[file]}"
@@ -857,6 +858,7 @@ _source_utilities(){
 		                       '{unit}: unit to display (ie byte/kb/kib/minutes/day ...)' )
 		arguments_examples=( '$ unit-print diu mb' 'print a mebagyte in bytes.'
 		                        '$ unit-print time hour' 'print an hour in seconds.' )
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		arguments[unit]="$(lowercase "${arguments[unit]}")"
 		if [[ ${arguments[unit-type]} == diu ]]; then
@@ -899,6 +901,7 @@ _source_utilities(){
 		arguments_parameters=('{recipient}: who to send the email.'
 		                      '{binary}: program to execute'
 		                      '[args...]: program arguments' )
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		local ec output
 		if ! program-exists "${arguments[binary]}"; then
@@ -917,6 +920,7 @@ _source_utilities(){
 		arguments_description=('lvm-show-thinpool-usage' 'Show lvm thinpool data/metadata percentage usage.')
 		arguments_parameters=('data|metadata: type to check.'
 		                      '{vg} {lv}: LVM group and volume.' )
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		if [[ ! -e /dev/mapper/${arguments[vg]//-/--}-${arguments[lv]//-/--} ]]; then
 			echo "Error: ${arguments[vg]}/${arguments[lv]} does not exist"
@@ -941,6 +945,7 @@ _source_utilities(){
 								'{vg} {lv}: LVM group and volume.'
 								'[intervals...]: status-changed intervals.' )
 		arguments_examples=( 'check-lvm-thinpool-usage root data 59 vg1 thinpool' 'Notice by email if vg1/thinpool data usage is above 59%.')
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		
 		local usage type ec next_date intervals
@@ -962,6 +967,7 @@ _source_utilities(){
 		arguments_parameters=( '[-m|--message]: show a message if test fails.'
 		                        '[-i|--invert]: fail when get reply.'
 								'{host}: host to check.' )
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		ping -w1 -c1 ${arguments[host]} >/dev/null 2>&1 && local pinged=1 || local pinged=0
 		if [[ ${pinged} -eq 1 && ${arguments[-i]:-0} -eq 1 ]]; then
@@ -981,6 +987,7 @@ _source_utilities(){
 								'[-d|--decimals {decimals}]: print up to specified decimals (by default 2 if --decimals is used).' )
 		arguments_examples=( '$ unit-conversion time -d 2 weeks "24m" "3h"' 'convert to months using with two decimals.'
 		                        '$ unit-conversion diu megabytes 0.25G' 'convert 0.25G to megabytes.' )
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		local i src=0 dst=0 from_value from_base from_type to_base integer decimal decimals=2 this
 		
@@ -1024,6 +1031,7 @@ _source_utilities(){
 		                       '{number1}: first opperand.'
 							   '{operator}: operation to do.'
 							   '{number2}: second opperand.')
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		local result integer decimal
 		case ${arguments[operator]} in
@@ -1053,6 +1061,7 @@ _source_utilities(){
 							   '  diu: {number}[b|bytes|k|kb|kib|kilobytes... (digital information unit).'
 							   '  time: ( {number}[[s[ec[ond[s]]]|m|h|d|w|month|] )*.'
 							   '  ip: x.x.x.x(/yy)?.')
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		local value="$(lowercase "${arguments[string]}")"
 		case "${arguments[type]}" in
@@ -1116,6 +1125,7 @@ _source_utilities(){
 		
 		args1=''; arguments_list=(args1)
 		arguments_description=( 'disksinfo' 'Show disks information. Needs root privileges to run.')
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		[[ ${EUID} -ne 0 ]] && echo "Need root privileges." && exit 1
 		
@@ -1130,6 +1140,7 @@ _source_utilities(){
 		arguments_description=( 'extract' 'Extract all archives into subfolders. Supported extensions: zip, rar.')
 		arguments_parameters=( '[-d|--delete]: delete source archives files after extraction.'
 							   '{path}: path where to look for files (default current path)')
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		
 		folder-writable --message "${arguments[path]:-.}" || exit 1
@@ -1194,6 +1205,7 @@ _source_utilities(){
 							   'list: list ids.')
 		arguments_examples=( '$ lock lock id1 && echo "foo"; lock unlock id1' 'sets an unnamed lock, execute a program and unlock.'
 		                     '$ lock lock id1 echo foo' 'execute echo foo inside a lock and unlock.')
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 			
 		_lock_error(){
@@ -1408,6 +1420,7 @@ _source_utilities(){
 		                       '[-d|--daily {day}]: number of daily copies to mantain.'
 		                       '{dates}: list of dates.' )
 		arguments_examples=( '$ retention -v -h 8 -d 7 -w 4 --months 6 200102040400 200102040300 200102040200 200102040100 200102030000 200102020000 200102010000 200101010000' 'keep 8 hourly copies for the first day, one daily copy for a week, 4 weekly copies and 6 monthly.' )
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		
 		_retention_expand_date(){
@@ -1553,6 +1566,7 @@ _source_utilities(){
 			done
 		}
 		
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		
 		local folder="${HOME}/.local/share/status-changed" # Path where last state files are located
@@ -1619,6 +1633,7 @@ _source_utilities(){
 	rescan-scsi-bus(){
 		arguments_list=(args1); args1=''
 		arguments_description=( 'rescan-scsi-bus' 'Rescan the scsi bus')
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		local host
 		for host in /sys/class/scsi_host/*; do
@@ -1630,6 +1645,7 @@ _source_utilities(){
 		arguments_list=(args1); args1='{name}'
 		arguments_description=( 'tmuxac' 'Attaches to the specified session or creates it')
 		arguments_parameters=( '{name}: session name.' )
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		local i; local -a sessions
 		readarray -t sessions < <(tmux ls 2>&1)
@@ -1643,6 +1659,7 @@ _source_utilities(){
 		arguments_list=(args1); args1='{message}'
 		arguments_description=( 'notify' 'Sends a message through pushover service.')
 		arguments_parameters=( '{message}: message to send.' )
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		program-exists --message curl || return 1
 		curl -s --form-string "token=${_pushover_token}" --form-string "user=${_pushover_user}" --form-string "message=${arguments[message]}" https://api.pushover.net/1/messages.json >/dev/null
@@ -1655,6 +1672,7 @@ _source_utilities(){
 		arguments_parameters=( '[-l|--loop [interval]]: executes in loop mode every [interval] seconds (by default 1 second).'
 		                       '{target}: tmux pane.' '{text}: text to send.' )
 		arguments_examples=( '$ tmux-send 2.1 ls C-m' '')
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		local -a params; local parameter
 		for parameter in "$@"; do
@@ -1678,6 +1696,7 @@ _source_utilities(){
 		arguments_description=( 'try' 'Tries executing a command until it succeeds.')
 		arguments_parameters=( '[-i|--interval {seconds}]: executes in loop mode every {seconds} (by default 1 second).' )
 		arguments_examples=( '$ try ssh 1.2.3.4' 'keeps executing until it succeeds.')
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		if ! program-exists "${1}"; then
 			echo "Program ${1} not found."; exit 1
@@ -1690,6 +1709,7 @@ _source_utilities(){
 		arguments_description=( 'wait-ping' 'Wait until ping succeeds.')
 		arguments_parameters=( '[-i|--interval {seconds}]: interval between tries (1 second by default).' )
 		arguments_examples=( '$ wait-ping 1.2.3.4' 'keeps executing until it succeeds.')
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		program-exists ping || ( echo "ping program not found."; exit 1 )
 		while true; do
@@ -1703,6 +1723,7 @@ _source_utilities(){
 		arguments_description=( 'sshconnect' 'Executes ssh with ConnectTimeout=3 and ServerAliveInterval=3.')
 		arguments_parameters=( '{parameters...}: parameters to pass to ssh.' )
 		arguments_examples=( '$ sshconnect user@host' 'connect to user@host.')
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		ssh -o ConnectTimeout=1 -o ServerAliveInterval=3 $@
 	}
@@ -1710,6 +1731,7 @@ _source_utilities(){
 	beep(){
 		arguments_list=(args1); args1=''
 		arguments_description=( 'beep' 'Beeps')
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		printf $'\a'
 	}
@@ -1725,6 +1747,7 @@ _source_utilities(){
 		arguments_parameters=( '[{mtu}]: start probing with this MTU (minimum value: 28).'
 		                       '{ip}: test path to this IP.' )
 		arguments_examples=( '$ max-mtu 9000 1.2.3.4' '')
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		
 		local timeout=1 mtu
@@ -1763,6 +1786,7 @@ _source_utilities(){
 		arguments_parameters=( '[file]: upload the specified file.' )
 		arguments_examples=( '$ pastebin file1' 'upload a file.'
 		                     '$ echo "foo" | pastebin' 'upload the input text')
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		[[ -t 0 && -z ${arguments[file]:-} ]] && argparse_show_help 1
 		if [[ -t 0 ]]; then
@@ -1793,6 +1817,7 @@ _source_utilities(){
 	# 			echo "Error executing curl."; exit 1
 	# 		fi
 	# 	}
+	#	local -A arguments=()
 	# 	argparse "$@" && shift ${arguments_shift}
 	# 	program-exists --message curl || exit 1
 	# 	if [[ -t 0 ]]; then
@@ -1815,6 +1840,7 @@ _source_utilities(){
 		                       '[-o|--only]: show only IPs instead of whole lines.')
 		arguments_examples=( '$ grepip file1 file2' ''
 		                     '$ echo 1.2.3.4 | grepip' '')
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		local params="" ec
 		[[ ${arguments[-n]:-0} -eq 1 ]] && params="${params} -H"
@@ -1841,6 +1867,7 @@ _source_utilities(){
 		                       '{command...}: command to execute.'
 		                       '{[interval]}: time interval between executions.')
 		arguments_examples=( '$ repeat -d 5s ls -l' '' )
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		
 		local interval
@@ -1867,6 +1894,7 @@ _source_utilities(){
 		arguments_description=( 'testcpu' 'Executes a long math operation.')
 		arguments_parameters=( '{[iterations]}: number of times to iterate.' )
 		arguments_examples=( '$ testcpu 100' '' )
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		for (( i=0; i < ${arguments[iterations]:-1000000}; i++ ))
 		do
@@ -1881,6 +1909,7 @@ _source_utilities(){
 		                       '[-w|--wait]: wait until the port is open, then exits.' )
 		arguments_examples=( '$ testport -c 5s 1.2.3.4 80' '' )
 		arguments_examples=( '$ testport -w 1.2.3.4 80' '' )
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		local interval pid mode ec
 		interval=$(unit-conversion time -d 0 s "${arguments[interval]:-1s}")
@@ -1906,6 +1935,7 @@ _source_utilities(){
 		arguments_description=( 'timer-countdown')
 		arguments_parameters=( '{times...}: time for the count down.' )
 		arguments_examples=( '$ timer-countdown 1h 30m 15s' '' )
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		local seconds=0 datenow timespec="$@"
 		while [[ $# -gt 0 ]]; do seconds=$(( ${seconds} + $(unit-conversion time -d 0 s ${1}) )); shift; done
@@ -1936,6 +1966,7 @@ _source_utilities(){
 		arguments_description=( 'myip' 'Shows the public IP.')
 		arguments_parameters=( '[-m|--monitor [{interval}]]: monitor mode, notice when IP public changes.'
 		                       '[-c|--command {commands...}]: execute a command every time the public IP changes (only applicable to monitor mode).' )
+		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		program-exists --message wget || exit 1
 		local -a urls=(http://www.amospalla.es/ip/ http://ipecho.net/ http://ip.pla1.net http://checkip.dyndns.org http://myip.dnsdynamic.org http://ifconfig.co)
