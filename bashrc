@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=505
-FileVersion=505
+# FileVersion=506
+FileVersion=506
 
 # Environment functions:
 #   count-lines
@@ -1697,16 +1697,20 @@ _source_utilities(){
 	}
 
 	try(){
-		arguments_list=(args1); args1='[-i|--interval {seconds}] {command...}'
+		arguments_list=(args1); args1='[-i|--interval {seconds}] [-m|--max {tries}] {command...}'
 		arguments_description=( 'try' 'Tries executing a command until it succeeds.')
-		arguments_parameters=( '[-i|--interval {seconds}]: executes in loop mode every {seconds} (by default 1 second).' )
+		arguments_parameters=( '[-i|--interval {seconds}]: executes in loop mode every {seconds} (by default 1 second).'
+		                       '[-m|--max {tries}]: maximum number of tries.')
 		arguments_examples=( '$ try ssh 1.2.3.4' 'keeps executing until it succeeds.')
 		local -A arguments=()
+		local -i tries=0
 		argparse "$@" && shift ${arguments_shift}
-		if ! program-exists "${1}"; then
-			echo "Program ${1} not found."; exit 1
-		fi
-		while true; do $@ && break; read -t ${arguments[seconds]:-1} || true; done
+		program-exists -m "${1}" || exit 1
+		while [[ ${arguments[-m]:-0} -eq 0 || ${tries} < ${arguments[tries]} ]]; do
+			$@ && break
+			read -t ${arguments[seconds]:-1} || true
+			tries=$(( ${tries} + 1 ))
+		done
 	}
 
 	wait-ping(){
