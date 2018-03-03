@@ -86,7 +86,6 @@ _main(){
 		_source_variables_amospalla
 		_source_aliases_amospalla
 		export bashrc_interactive=1
-		# [[ "${_update_enable:-0}" -eq 1 ]] && ( _bash_update ${_update_bash_url}/bashrc $HOME/.bashrc  & ) || true
 		_binary_decode
 		_check_new_links
 		(_update_files &)
