@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=495
-FileVersion=495
+# FileVersion=496
+FileVersion=496
 
 # Environment functions:
 #   perf_start
@@ -130,6 +130,10 @@ date_history(){
 
 date_full(){
 	[[ ${_bash_version} -gt 41 ]] && printf "%(%Y%m%d%H%M%S)T" || date +"%Y%m%d%H%M%S"
+}
+
+date_ps1_time(){
+	[[ ${_bash_version} -gt 41 ]] && printf "%(%d/%H:%M:%S)T" || date +"%d/%H:%M:%S"
 }
 
 count-lines(){
