@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=486
-FileVersion=486
+# FileVersion=487
+FileVersion=487
 
 # Environment functions:
 #   perf_start
@@ -363,6 +363,7 @@ _bashrc_show_help(){
 	color blue; printf "disksinfo"; color; echo ": show ata disks information."
 	color blue; printf "retention"; color; echo ": helper to mantain a retention with given dates."
 	color blue; printf "try"; color; echo ": tries executing a command until it succeeds."
+	color blue; printf "run-cron"; color; echo ": wrapper for executing from cron."
 	color blue; printf "float"; color; echo ": execute floating point operations."
 	color blue; printf "unit-print"; color; echo ": print units."
 	color blue; printf "unit-conversion"; color; echo ": convert between unit."
@@ -856,6 +857,25 @@ _source_utilities(){
 				mo*) echo 2628000 ;;
 				y*) echo 31536000 ;;
 			esac
+		fi
+	}
+
+	run-cron(){
+		arguments_list=(args1)
+		args1='{recipient} {binary} [args...]'
+		arguments_description=('run-cron' 'Run a program and send an email if fails.')
+		arguments_parameters=('{recipient}: who to send the email.'
+		                      '{binary}: program to execute'
+		                      '[args...]: program arguments' )
+		argparse "$@" && shift ${arguments_shift}
+		local ec output
+		if ! program-exists "${arguments[binary]}"; then
+			printf "Cron executed on:\n    ${USER}@$(hostname -f)\n\nError when executing from cron:\n    ${arguments[binary]} ${*}\n\nProgram '${arguments[binary]}' does not exist." | mailx -s "[Error] program not available ${arguments[binary]}" "${arguments[recipient]}"
+			exit 1
+		fi
+		if ! output=$("${arguments[binary]}" "$@"); then
+			printf "Cron executed on:\n    ${USER}@$(hostname -f)\n\nError when executing from cron:\n    ${arguments[binary]} ${*}\n\nOutput was:\n\n${output}" | mailx -s "[Error] ${arguments[binary]} execution failed" "${arguments[recipient]}"
+			exit 1
 		fi
 	}
 
@@ -2397,7 +2417,7 @@ _source_ps1(){
 # Programs
 #====================================================================
 
-_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify)
+_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron)
 
 make-links(){
 	_show_help(){
