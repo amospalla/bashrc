@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=489
-FileVersion=489
+# FileVersion=490
+FileVersion=490
 
 # Environment functions:
 #   perf_start
@@ -870,11 +870,11 @@ _source_utilities(){
 		argparse "$@" && shift ${arguments_shift}
 		local ec output
 		if ! program-exists "${arguments[binary]}"; then
-			printf "Cron executed on:\n    $(whoami)@$(hostname -f)\n\nError when executing from cron:\n    ${arguments[binary]} ${*}\n\nProgram '${arguments[binary]}' does not exist." | mailx -s "[Error] program not available ${arguments[binary]}" "${arguments[recipient]}"
+			printf -- "Cron executed on:\n    $(whoami)@$(hostname -f)\n\nError when executing from cron:\n    ${arguments[binary]} ${*}\n\nProgram '${arguments[binary]}' does not exist." | mailx -s "[Error] program not available ${arguments[binary]}" "${arguments[recipient]}"
 			exit 1
 		fi
 		if ! output=$("${arguments[binary]}" "$@" 2>&1); then
-			printf "Cron executed on:\n    $(whoami)@$(hostname -f)\n\nError when executing from cron:\n    ${arguments[binary]} ${*}\n\nOutput was:\n\n${output}" | mailx -s "[Error] ${arguments[binary]} execution failed" "${arguments[recipient]}"
+			printf -- "Cron executed on:\n    $(whoami)@$(hostname -f)\n\nError when executing from cron:\n    ${arguments[binary]} ${*}\n\nOutput was:\n\n${output}" | mailx -s "[Error] ${arguments[binary]} execution failed" "${arguments[recipient]}"
 			exit 1
 		fi
 	}
