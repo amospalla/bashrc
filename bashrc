@@ -2057,9 +2057,7 @@ _source_histgrep(){
 				fi
 			fi
 			local history1="$(date +"%F %H.%M.%S")"
-			shopt -s extglob
 			local history2="${new_history/+([[:blank:]])+([0-9])+([[:blank:]])+([0-9-]) +([0-9.])+([[:blank:]])}"
-			shopt -u extglob
 			echo "${history1} ${history2}" >> "${_histgrep_file}"
 			OLD_HISTORY=${new_history}
 		fi
