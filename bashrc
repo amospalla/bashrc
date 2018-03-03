@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=499
-FileVersion=499
+# FileVersion=500
+FileVersion=500
 
 # Environment functions:
 #   count-lines
@@ -2165,15 +2165,12 @@ _source_ps1(){
 		if [[ "${_ps1_tmux}" -eq 1 ]]
 		then
 			[[ ${_ps1_get_performance} -eq 1 ]] && perf_start tmux
-			[[ -n "${TMUX:-}" || -n "${STY:-}" ]] && inside_tmux=1 || inside_tmux=0
-			# tmux_sessions="$(tmux ls 2>/dev/null | count-lines)"
-			# screen_sessions="$(screen -ls 2>/dev/null| grep "Attached\|Detached" | count-lines)"
-			# total_sessions="$(( $tmux_sessions ))"
+			[[ -n "${TMUX}" ]] && inside_tmux=1 || inside_tmux=0
 			
 			if [[ ${inside_tmux} -eq 1 ]]; then
 				_color blue; printf "["
 			fi
-			if [[ -S /tmp/tmux-${UID}/default ]]; then
+			if [[ $(tmux ls 2>/dev/null | count-lines) -gt 0 ]]; then
 				# printf "\[${color_enabled}\]⑄"
 				_color boldyellow; printf "T"
 				ps1_separator=1
