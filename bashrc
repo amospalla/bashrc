@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=500
-FileVersion=500
+# FileVersion=501
+FileVersion=501
 
 # Environment functions:
 #   count-lines
@@ -680,6 +680,7 @@ _source_utilities(){
 		local i args remaining_args_num
 		local -a substracts=() # Number of input arguments to shift array
 		[[ ("${1:-}" =~ ^-h|--help$ && ${#arguments_list[@]} -eq 0 ) || ($# -eq 0 && ${#arguments_list[@]} -eq 0) ]] && echo "execute argparse-create-template" && exit 0
+		[[ "${1:-}" =~ ^-h|--help$ ]] && argparse_show_help 0
 		for (( i=0; i<${#arguments_list[@]}; i++ )); do
 			args="${arguments_list[$i]}"; arguments_shift=0
 			[[ $# -eq 0 && "${!args}" == "" ]] && return 0       # arguments and argument_template are both empty
