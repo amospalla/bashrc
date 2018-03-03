@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=508
-FileVersion=508
+# FileVersion=509
+FileVersion=509
 
 # Environment functions:
 #   count-lines
@@ -61,6 +61,9 @@ declare -A arguments=() _perf_data=() _binary
 declare -a arguments_list=() arguments_description=() arguments_examples=() arguments_extra_help=() arguments_parameters=()
 declare -i arguments_shift _files_update_counter=0 _files_updated _bash_updated _bash_version="${BASH_VERSION:0:1}${BASH_VERSION:2:1}"
 declare _files_update_text=""
+
+_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron program-exists)
+_program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all)
 
 _status_changed_intervals="1m 5m 15m 1h 1d"
 
@@ -2499,8 +2502,6 @@ _source_ps1(){
 # Programs
 #====================================================================
 
-_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron program-exists)
-
 make-links(){
 	_show_help(){
 		echo "Usage: "
@@ -2554,6 +2555,8 @@ make-links(){
 				fi
 			fi
 		else
+			[[ ${_program_list_user[${program}]} == root && ${UID} -ne 0 ]] && continue
+			[[ ${_program_list_user[${program}]} == user && ${UID} -eq 0 ]] && continue
 			echo "[new]             ${destination_folder}/${program}"
 			ln -s "${source}" "${destination_folder}/${program}"
 		fi
