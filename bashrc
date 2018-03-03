@@ -1,9 +1,11 @@
 #!/bin/bash
 
-# FileVersion=498
-FileVersion=498
+# FileVersion=499
+FileVersion=499
 
 # Environment functions:
+#   count-lines
+#   date_*
 #   perf_start
 #   perf_end
 #   file-readable
