@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=502
-FileVersion=502
+# FileVersion=503
+FileVersion=503
 
 # Environment functions:
 #   count-lines
@@ -1969,7 +1969,7 @@ _source_utilities(){
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		program-exists --message wget || exit 1
-		local -a urls=(http://www.amospalla.es/ip/ http://ipecho.net/ http://ip.pla1.net http://checkip.dyndns.org http://myip.dnsdynamic.org http://ifconfig.co)
+		local -a urls=(https://api.ipify.org http://www.amospalla.es/ip/ http://ipecho.net/ http://ip.pla1.net http://checkip.dyndns.org http://myip.dnsdynamic.org http://ifconfig.co)
 		local interval=$(unit-conversion time -d 0 s ${arguments[interval]:-1m})
 		
 		_myip_query(){
