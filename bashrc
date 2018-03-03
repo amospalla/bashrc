@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=497
-FileVersion=497
+# FileVersion=498
+FileVersion=498
 
 # Environment functions:
 #   perf_start
@@ -2202,7 +2202,7 @@ _source_ps1(){
 		if [[ "${_ps1_time}" -eq 1 ]]; then
 			[[ ${_ps1_get_performance} -eq 1 ]] && perf_start time
 			_color
-			date_ps1_time
+			printf "$(date_ps1_time)"
 			[[  "${ps1_time_diff}" =~ [0-9]+ ]] || ps1_time_diff=0
 			if [[ ${ps1_time_diff} -eq 0 ]]; then
 				_color boldblack; printf " %3d" ${ps1_time_diff}
