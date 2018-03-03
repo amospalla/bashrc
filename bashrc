@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=503
-FileVersion=503
+# FileVersion=504
+FileVersion=504
 
 # Environment functions:
 #   count-lines
@@ -257,6 +257,7 @@ _update_files(){
 			online_version="$(_get_file_version "${online_text}")"
 			[[ -r "${filename}" ]] && local_version="$(_get_file_version "$(<"${filename}")")" || local_version=0
 			if [[ ${local_version} -lt ${online_version} ]]; then
+				[[ -d "$(dirname "${filename}")" ]] || mkdir -p "$(dirname "${filename}")"
 				echo "${online_text}" > "${filename}"
 				ps1_text="${filename}:${local_version}>${online_version} ${ps1_text}"
 			fi
