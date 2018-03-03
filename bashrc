@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=485
-FileVersion=485
+# FileVersion=486
+FileVersion=486
 
 # Environment functions:
 #   perf_start
@@ -1341,12 +1341,12 @@ _source_utilities(){
 
 	retention(){
 		arguments_list=(args1)
-		args1='[-v|--verbose] [-s|--seconds {seconds:integer}] [-m|--minutes {minutes:integer}] [-h|--hours {hours:integer}] [-d|--days {days:integer}] [-w|--weeks {weeks:integer}] [--months {months:integer}] [-y|--years {years:integer}] {dates}'
+		args1='[-v|--verbose] [-s|--seconds {seconds:integer}] [-m|--minutes {minutes:integer}] [-h|--hours {hours:integer}] [-d|--days {days:integer}] [-w|--weeks {weeks:integer}] [--months {months:integer}] [-y|--years {years:integer}] {dates...}'
 		arguments_description=( 'retention' 'Helper for keeping a specified retention with given dates.')
 		arguments_parameters=( '[-v|--verbose]: print all days with a mark "keep" or "delete, else print only dates to be deleted.'
 		                       '[-d|--daily {day}]: number of daily copies to mantain.'
 		                       '{dates}: list of dates.' )
-		arguments_examples=( '$ retention print_pretty -h 8 -d 7 -w 4 -m 6 "200102040400 200102040300 200102040200 200102040100 200102030000 200102020000 200102010000 200101010000"' 'keep 8 hourly copies for the first day, one daily copy for a week, 4 weekly copies and 6 monthly.' )
+		arguments_examples=( '$ retention -v -h 8 -d 7 -w 4 --months 6 200102040400 200102040300 200102040200 200102040100 200102030000 200102020000 200102010000 200101010000' 'keep 8 hourly copies for the first day, one daily copy for a week, 4 weekly copies and 6 monthly.' )
 		argparse "$@" && shift ${arguments_shift}
 		
 		_retention_expand_date(){
@@ -1363,12 +1363,12 @@ _source_utilities(){
 		local i j k year month day hour minute second
 		local -a dates=() datesfull=() datessecond=() delete=() intervals=() intervals_used=()
 		declare -A times=( [seconds]=1 [minutes]=60 [hours]=3600 [days]=86400 [weeks]=604800 [months]=2592000 [years]=31104000 )
-		
-		if ! [[ ${arguments[-s]:-0} -eq 1 || ${arguments[-m]:-0} -eq 1 || ${arguments[-h]:-0} -eq 1 || ${arguments[-d]:-0} -eq 1 || ${arguments[-w]:-0} -eq 1 || ${arguments[-m]:-0} -eq 1 || ${arguments[-y]:-0} -eq 1 ]]; then
+
+		if ! [[ ${arguments[-s]:-0} -eq 1 || ${arguments[-m]:-0} -eq 1 || ${arguments[-h]:-0} -eq 1 || ${arguments[-d]:-0} -eq 1 || ${arguments[-w]:-0} -eq 1 || ${arguments[--months]:-0} -eq 1 || ${arguments[-y]:-0} -eq 1 ]]; then
 			echo "Error: no interval specified."; exit 1
 		fi
 		
-		for i in $(for i in ${arguments[dates]}; do echo "${i}"; done | sort -r); do
+		for i in $(for i in ${@}; do echo "${i}"; done | sort -r); do
 			if ! [[ ${i} =~ ^[0-9]+$ && ${#i} =~ ^8|10|12|14$ ]]; then
 				echo "Error: date '${i}' is not valid." && exit 1
 			fi
