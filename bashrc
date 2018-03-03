@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=493
-FileVersion=493
+# FileVersion=494
+FileVersion=494
 
 # Environment functions:
 #   perf_start
@@ -1991,7 +1991,7 @@ _source_histgrep(){
 	# Detect new command being written, through PROMPT_COMMAND, used in save history
 	# With true time diff between commands is achieved as it makes ps1_date_old
 	# evaluated just before real command is executed
-	PROMPT_COMMAND="true; _histgrep_new_history=1; _update_files_notify; $PROMPT_COMMAND"
+	PROMPT_COMMAND="_histgrep_new_history=1; _update_files_notify; $PROMPT_COMMAND"
 	
 	[[ -d "${path}" ]] || mkdir "${path}"
 	
