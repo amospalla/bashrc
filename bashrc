@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=492
-FileVersion=492
+# FileVersion=493
+FileVersion=493
 
 # Environment functions:
 #   perf_start
@@ -1148,14 +1148,15 @@ _source_utilities(){
 	}
 
 	lock(){
-		arguments_list=(args1 args2 args3 args4 args5 args6 args7)
+		arguments_list=(args1 args2 args3 args4 args5 args6 args7 args8)
 		args1='[-p|--path {path}] [-q|--quiet] lock {id} [command...]'
 		args2='[-p|--path {path}] unlock {id}'
 		args3='[-p|--path {path}] get {id}'
 		args4='[-p|--path {path}] set {id} {max}'
 		args5='[-p|--path {path}] get-running {id}'
 		args6='[-p|--path {path}] get-waiting {id}'
-		args7='[-p|--path {path}] list'
+		args7='[-p|--path {path}] get-total {id}'
+		args8='[-p|--path {path}] list'
 		arguments_description=( 'lock' 'Locks the named identifier so other one trying to acquire a lock waits for it to be unlocked.')
 		arguments_parameters=( '[-p|--path {path}]: path where to store locks (by default /tmp/bashrclock.{uid}.)'
 		                       '[-q|--quiet]: quiet mode.'
@@ -1165,6 +1166,7 @@ _source_utilities(){
 		                       'get {id}: get the maximum number of concurrent accesses.'
 		                       'get-running {id}: get number of running processes.'
 		                       'get-waiting {id}: get number of waiting processes.'
+		                       'get-total {id}: get number of running + waiting processes.'
 							   'list: list ids.')
 		arguments_examples=( '$ lock lock id1 && echo "foo"; lock unlock id1' 'sets an unnamed lock, execute a program and unlock.'
 		                     '$ lock lock id1 echo foo' 'execute echo foo inside a lock and unlock.')
@@ -1357,7 +1359,7 @@ _source_utilities(){
 		mkdir -p ${basefolder} && chmod 0777 ${basefolder} 2>&1 >/dev/null || true
 		[[ ! -w "${basefolder}" ]] && echo "Error: folder '${basefolder}' is not writable or does not exist." && exit 1
 		
-		for i in lock unlock get set list get-running get-waiting; do
+		for i in lock unlock get set list get-running get-waiting get-total; do
 			[[ ${arguments[${i}]:-0} -eq 1 ]] && mode=${i} && break
 		done
 		
@@ -1366,8 +1368,9 @@ _source_utilities(){
 			unlock) _lock_unlock || exit 1;;
 			get)    _lock_sub_lock; _lock_get_max "$@"; _lock_sub_unlock ;;
 			set)    _lock_sub_lock; _lock_set_max "$@"; _lock_sub_unlock ;;
-			get-running) _lock_sub_lock; num_slots="$(_lock_get_used_slots running)"; _lock_sub_unlock; echo ${num_slots} ;;
-			get-waiting) _lock_sub_lock; num_slots="$(_lock_get_used_slots waiting)"; _lock_sub_unlock; echo ${num_slots} ;;
+			get-running) _lock_sub_lock; num_slots=$(_lock_get_used_slots running); _lock_sub_unlock; echo ${num_slots} ;;
+			get-waiting) _lock_sub_lock; num_slots=$(_lock_get_used_slots waiting); _lock_sub_unlock; echo ${num_slots} ;;
+			get-total) _lock_sub_lock; num_slots=$(( $(_lock_get_used_slots running) + $(_lock_get_used_slots waiting) )); _lock_sub_unlock; echo ${num_slots} ;;
 			list)   _lock_sub_lock; _lock_list "$@"; _lock_sub_unlock ;;
 		esac
 		exit $?
