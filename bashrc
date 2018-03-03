@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=507
-FileVersion=507
+# FileVersion=508
+FileVersion=508
 
 # Environment functions:
 #   count-lines
@@ -59,7 +59,7 @@ FileVersion=507
 # argparse
 declare -A arguments=() _perf_data=() _binary
 declare -a arguments_list=() arguments_description=() arguments_examples=() arguments_extra_help=() arguments_parameters=()
-declare -i arguments_shift _files_update_counter=0 _files_updated=0 _bash_version="${BASH_VERSION:0:1}${BASH_VERSION:2:1}"
+declare -i arguments_shift _files_update_counter=0 _files_updated _bash_updated _bash_version="${BASH_VERSION:0:1}${BASH_VERSION:2:1}"
 declare _files_update_text=""
 _status_changed_intervals="1m 5m 15m 1h 1d"
 
@@ -89,7 +89,7 @@ _main(){
 		_source_aliases_amospalla
 		export bashrc_interactive=1
 		_binary_decode
-		_check_new_links
+		[[ ${_bash_updated:-0} -eq 1 ]] && _bash_updated=0 && _check_new_links
 		(_update_files &)
 	fi
 }
@@ -451,7 +451,7 @@ _update_files_notify(){
 			_files_updated=1
 			_files_update_text="$(</tmp/${UID}.$$.bashrcupdate)"
 			rm /tmp/${UID}.$$.bashrcupdate
-			[[ ${_files_update_text} =~ $HOME/.bashrc: ]] && . $HOME/.bashrc
+			[[ ${_files_update_text} =~ $HOME/.bashrc: ]] && _bash_updated=1 && . $HOME/.bashrc
 		fi
 	fi
 }
