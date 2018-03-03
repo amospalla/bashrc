@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=490
-FileVersion=490
+# FileVersion=491
+FileVersion=491
 
 # Environment functions:
 #   perf_start
@@ -10,7 +10,6 @@ FileVersion=490
 #   folder-exists
 #   folder-writable
 #   is-number
-#   program-exists
 #   lowercase
 #   uppercase
 #   trim
@@ -18,6 +17,7 @@ FileVersion=490
 #   color
 #   colors
 # functions:
+#   program-exists
 #   argparse
 #   argparse-create-template
 #   unit-print
@@ -192,22 +192,6 @@ is-number(){
 	fi
 }
 
-program-exists(){
-	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: program-exists [-m|--message] [-i|--invert] {programs...}\n" && return 0
-	[[ "${1}" =~ ^(-m|--message)$ ]] && local message=1 && shift || local message=0
-	[[ "${1}" =~ ^(-i|--invert)$  ]] && local invert=1 && shift  || local invert=0
-	[[ $# -eq 0 ]] && echo "Error: no input supplied." && exit 1
-	while [[ $# -gt 0 ]]; do
-		which "${1:-__None__}" >/dev/null 2>&1 && local exists=1 || local exists=0
-		if [[ ${exists} -eq 1 && ${invert} -eq 1 ]]; then
-			[[ ${message} -eq 1 ]] && echo "Error: program ${1} is available."; return 1
-		elif [[ ${exists} -eq 0 && ${invert} -eq 0 ]]; then
-			[[ ${message} -eq 1 ]] && echo "Error: program ${1} is not available."; return 1
-		fi
-		shift
-	done
-}
-
 lowercase(){ echo "${1,,}"; }
 
 uppercase(){ echo "${1^^}"; }
@@ -362,6 +346,7 @@ _bashrc_show_help(){
 	color blue; printf "make-links"; color; printf " | "; color blue; printf "make-links"; color; echo ": create a link for every available program."
 	color blue; printf "disksinfo"; color; echo ": show ata disks information."
 	color blue; printf "retention"; color; echo ": helper to mantain a retention with given dates."
+	color blue; printf "program-exists"; color; echo ": check if a list of programs are available."
 	color blue; printf "try"; color; echo ": tries executing a command until it succeeds."
 	color blue; printf "run-cron"; color; echo ": wrapper for executing from cron."
 	color blue; printf "float"; color; echo ": execute floating point operations."
@@ -773,6 +758,29 @@ _source_utilities(){
 		[[ ${debug} -eq 1 ]] && set -x
 		exit "${1:-0}"
 	}
+
+	program-exists(){
+		arguments_list=(args1)
+		args1='[-m|--message] [-i|--invert] {programs...}'
+		arguments_description=('program-exists' 'Check if programs in a list is available.')
+		arguments_parameters=('[-m|--message]: show a message if check fails.'
+		                      '[-i|--invert]: invert the logic check.'
+		                      '{programs...}: programs to check for.' )
+		argparse "$@" && shift ${arguments_shift}
+		local exists failed=""
+		while [[ $# -gt 0 ]]; do
+			which "${1:-__None__}" >/dev/null 2>&1 && exists=1 || exists=0
+			[[ ${arguments[-i]:-0} -eq 0 && ${exists} -eq 0 ]] && failed="${failed} ${1}"
+			[[ ${arguments[-i]:-0} -eq 1 && ${exists} -eq 1 ]] && failed="${failed} ${1}"
+			shift
+		done
+		if [[ ${#failed} -gt 0 && ${arguments[-i]:-0} -eq 1 ]]; then
+			[[ ${arguments[-m]:-0} -eq 1 ]] && echo "Error: available programs: $(trim "${failed}")."; exit 1
+		elif [[ ${#failed} -gt 0 && ${arguments[-i]:-0} -eq 0 ]]; then
+			[[ ${arguments[-m]:-0} -eq 1 ]] && echo "Error: unavailable programs: $(trim "${failed}")."; exit 1
+		fi
+	}
+
 
 	argparse-create-template(){
 		arguments_list=(args1)
@@ -2417,7 +2425,7 @@ _source_ps1(){
 # Programs
 #====================================================================
 
-_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron)
+_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron program-exists)
 
 make-links(){
 	_show_help(){
