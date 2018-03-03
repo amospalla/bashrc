@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=504
-FileVersion=504
+# FileVersion=505
+FileVersion=505
 
 # Environment functions:
 #   count-lines
@@ -248,18 +248,20 @@ _get_file_version(){
 }
 
 _update_files(){
-	local i url filename online_text online_version local_version ps1_text
+	local i url filepath user mode online_text online_version local_version ps1_text
 	for i in {0..99}; do
-		url=_update_url${i} filename=_update_file${i}
-		[[ -n ${!url} && -n ${!filename} ]] || continue
-		url=${!url} filename=${!filename}
+		[[ ${#i} -eq 1 ]] && i="0${i}"
+		url=_update_${i}_url filepath=_update_${i}_path user=_update_${i}_user mode=_update_${i}_mode
+		[[ -n ${!url} && -n "${!filepath}" ]] || continue
+		url=${!url} filepath=${!filepath} user=${!user:-all} mode=${!mode:-0644}
+		[[ ( ${user} == root && ${UID} -ne 0 ) || ( ${user} == user && ${UID} -eq 0 ) ]] && continue
 		if online_text="$(wget --timeout=10 ${url} -O - 2> /dev/null)"; then
 			online_version="$(_get_file_version "${online_text}")"
-			[[ -r "${filename}" ]] && local_version="$(_get_file_version "$(<"${filename}")")" || local_version=0
+			[[ -r "${filepath}" ]] && local_version="$(_get_file_version "$(<"${filepath}")")" || local_version=0
 			if [[ ${local_version} -lt ${online_version} ]]; then
-				[[ -d "$(dirname "${filename}")" ]] || mkdir -p "$(dirname "${filename}")"
-				echo "${online_text}" > "${filename}"
-				ps1_text="${filename}:${local_version}>${online_version} ${ps1_text}"
+				[[ -d "$(dirname "${filepath}")" ]] || mkdir -p "$(dirname "${filepath}")"
+				echo "${online_text}" > "${filepath}" && chmod ${mode} "${filepath}"
+				ps1_text="${filepath}:${local_version}>${online_version} ${ps1_text}"
 			fi
 		fi
 	done
@@ -486,7 +488,7 @@ _source_bash_options(){
 	_bash_options_add(){
 		[[ ${1} == "commented" ]] && local commented=1 && shift || local commented=0
 		local option="${1}" default="${2}"
-		local text="${option}=${default}"
+		local text="${option}=\"${default}\""
 		[[ ${commented} -eq 1 ]] && text="# ${text}"
 		if [[ ! "${file_text}" =~ "${option}=" ]]; then
 			printf "New .bashrc.options option: "; color greenred; echo "${text}"; color
@@ -515,10 +517,12 @@ _source_bash_options(){
 	_bash_options_add _binary_tmuxconf 1
 	_bash_options_add _histgrep_compact 1
 	_bash_options_add _FileVersion ${FileVersion}
-	_bash_options_add commented _update_url0   https://raw.githubusercontent.com/amospalla/bashrc/master/bashrc
-	_bash_options_add commented _update_file0  $HOME/.bashrc
-	_bash_options_add commented _update_url1  http://www.foo.com/vimrc
-	_bash_options_add commented _update_file1 $HOME/.vimrc
+	_bash_options_add commented _update_00_url  https://raw.githubusercontent.com/amospalla/bashrc/master/bashrc
+	_bash_options_add commented _update_00_path $HOME/.bashrc
+	_bash_options_add commented _update_99_url  http://www.foo.com/vimrc
+	_bash_options_add commented _update_99_path $HOME/.vimrc
+	_bash_options_add commented _update_99_user "all|user|root"
+	_bash_options_add commented _update_99_mode "0644"
 	
 	. "${file}"
 	[[ -r "${file}.local" ]] && . "${file}.local"
