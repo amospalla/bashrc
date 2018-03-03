@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=494
-FileVersion=494
+# FileVersion=495
+FileVersion=495
 
 # Environment functions:
 #   perf_start
@@ -57,7 +57,7 @@ FileVersion=494
 # argparse
 declare -A arguments=() _perf_data=() _binary
 declare -a arguments_list=() arguments_description=() arguments_examples=() arguments_extra_help=() arguments_parameters=()
-declare -i arguments_shift _files_update_counter=0 _files_updated=0
+declare -i arguments_shift _files_update_counter=0 _files_updated=0 _bash_version="${BASH_VERSION:0:1}${BASH_VERSION:2:1}"
 declare _files_update_text=""
 _status_changed_intervals="1m 5m 15m 1h 1d"
 
@@ -119,6 +119,24 @@ _source_variables_amospalla(){
 #====================================================================
 # Functions
 #====================================================================
+
+date_seconds(){
+	[[ ${_bash_version} -gt 41 ]] && printf "%(%s)T" || date +%s
+}
+
+date_history(){
+	[[ ${_bash_version} -gt 41 ]] && printf "%(%F %H.%M.%S)T" || date +"%F %H.%M.%S"
+}
+
+date_full(){
+	[[ ${_bash_version} -gt 41 ]] && printf "%(%Y%m%d%H%M%S)T" || date +"%Y%m%d%H%M%S"
+}
+
+count-lines(){
+	local text
+	readarray -t text
+	echo "${#text[@]}"
+}
 
 perf_start(){
 	[[ $# -eq 0 || "${1}" =~ "-h|--help" ]] && printf "Usage: perf_start {id}}\n" && return 0
@@ -768,7 +786,7 @@ _source_utilities(){
 		argparse "$@" && shift ${arguments_shift}
 		local exists failed=""
 		while [[ $# -gt 0 ]]; do
-			which "${1:-__None__}" >/dev/null 2>&1 && exists=1 || exists=0
+			type -a "${1:-__None__}" >/dev/null 2>&1 && exists=1 || exists=0
 			[[ ${arguments[-i]:-0} -eq 0 && ${exists} -eq 0 ]] && failed="${failed} ${1}"
 			[[ ${arguments[-i]:-0} -eq 1 && ${exists} -eq 1 ]] && failed="${failed} ${1}"
 			shift
@@ -1205,7 +1223,7 @@ _source_utilities(){
 				for tmp in running waiting; do
 					if [[ -f "${basefolder}/${file}.${tmp}" ]]; then
 						printf "${tmp}:"
-						if [[ $(cat "${basefolder}/${file}.${tmp}" | wc -l) -eq 0 ]]; then
+						if [[ $(cat "${basefolder}/${file}.${tmp}" | count-lines) -eq 0 ]]; then
 							printf " none\n"
 						else
 							printf "\n"; cat "${basefolder}/${file}.${tmp}" | while read line; do
@@ -1338,7 +1356,7 @@ _source_utilities(){
 		
 		_lock_lock(){
 			if [[ $# -gt 0 ]]; then
-				if ! which "${1}" >/dev/null; then
+				if ! type -a "${1}" >/dev/null; then
 					echo "Error: command ${1} does not exist."
 					exit 1
 				fi
@@ -1884,7 +1902,7 @@ _source_utilities(){
 		argparse "$@" && shift ${arguments_shift}
 		local seconds=0 datenow timespec="$@"
 		while [[ $# -gt 0 ]]; do seconds=$(( ${seconds} + $(unit-conversion time -d 0 s ${1}) )); shift; done
-		local datenow="$(date +%s)"
+		local datenow="$(date_seconds)"
 		
 		enddate="$(date --date="$seconds seconds" +%s)"
 		printf "$(date -d @$(( $enddate - $datenow )) -u +'%H:%M:%S') [${timespec}]\n"
@@ -1983,8 +2001,11 @@ _source_histgrep(){
 	export HISTTIMEFORMAT='%F %H.%M.%S ' # history format: "  {history_num}  2013-06-15 13.00.43 {command}"
 	_histgrep_new_history=0
 	_histgrep_ssh_canard=0
-	_tty=$(tty | sed -e "s/\/dev\///" -e "s/\///" -e "s/not a tty/notatty/")
-	_histgrep_filename="$(date +"%Y%m%d%H%M%S").$$.${_tty}" # 20130615125716.nanoseconds.pts18
+	_tty=$(tty)
+	_tty=${_tty/\/dev\/}
+	_tty=${_tty/\/}
+	_tty=${_tty/not a tty/notatty}
+	_histgrep_filename="$(date_full).$$.${_tty}" # 20130615125716.nanoseconds.pts18
 	_histgrep_file="${path}/${_histgrep_filename}" # /home/user/.history/20130615125716pts18
 	
 	# Detect new command being written, through PROMPT_COMMAND, used in save history
@@ -2044,7 +2065,7 @@ _source_histgrep(){
 			if [[ ${_histgrep_ssh_canard} -eq 0 ]]; then
 				_histgrep_ssh_canard=1
 				if [[ -n "$SSH_CLIENT" ]]; then
-					if program-exists host && ssh_client="$(host -W 1 $(echo $SSH_CLIENT | awk '{print $1}') 2>/dev/null)"; then
+					if type -a host >/dev/null 2>&1 && ssh_client="$(host -W 1 $(for i in $SSH_CLIENT; do echo ${i}; break; done) 2>/dev/null)"; then
 						true
 					else
 						ssh_client=no_reverse_dns_information
@@ -2056,18 +2077,18 @@ _source_histgrep(){
 					fi
 				fi
 			fi
-			local history1="$(date +"%F %H.%M.%S")"
+			local history1="$(date_history)"
 			local history2="${new_history/+([[:blank:]])+([0-9])+([[:blank:]])+([0-9-]) +([0-9.])+([[:blank:]])}"
 			echo "${history1} ${history2}" >> "${_histgrep_file}"
 			OLD_HISTORY=${new_history}
 		fi
 		if [[ -z "$ps1_date_new" ]]
 		then
-			export ps1_date_new="$(date +'%s')"
+			export ps1_date_new="$(date_seconds)"
 			export ps1_date_old="$ps1_date_new"
 		else
 			export ps1_date_old="$ps1_date_new"
-			export ps1_date_new="$(date +'%s')"
+			export ps1_date_new="$(date_seconds)"
 		fi
 		ps1_time_diff="$(( $ps1_date_new - $ps1_date_old))"
 	}
@@ -2105,7 +2126,7 @@ _source_ps1(){
 
 	color_default="$color_gray"
 
-	export ps1_date_new="$(date +'%s')"
+	export ps1_date_new="$(date_seconds)"
 	[[ ${_ps1_get_performance} -eq 1 ]] && _abpp=()
 
 	_ps1_perf_end(){
@@ -2139,14 +2160,14 @@ _source_ps1(){
 		then
 			[[ ${_ps1_get_performance} -eq 1 ]] && perf_start tmux
 			[[ -n "${TMUX:-}" || -n "${STY:-}" ]] && inside_tmux=1 || inside_tmux=0
-			tmux_sessions="$(tmux ls 2>/dev/null | wc -l)"
-			screen_sessions="$(screen -ls 2>/dev/null| grep "Attached\|Detached" | wc -l)"
-			total_sessions="$(( $tmux_sessions + screen_sessions ))"
+			# tmux_sessions="$(tmux ls 2>/dev/null | count-lines)"
+			# screen_sessions="$(screen -ls 2>/dev/null| grep "Attached\|Detached" | count-lines)"
+			# total_sessions="$(( $tmux_sessions ))"
 			
 			if [[ ${inside_tmux} -eq 1 ]]; then
 				_color blue; printf "["
 			fi
-			if [[ $total_sessions -gt 0 ]]; then
+			if [[ -S /tmp/tmux-${UID}/default ]]; then
 				# printf "\[${color_enabled}\]⑄"
 				_color boldyellow; printf "T"
 				ps1_separator=1
@@ -2163,7 +2184,8 @@ _source_ps1(){
 		###############
 		if [[ "${_ps1_x11_display}" -eq 1 ]]; then
 			[[ ${_ps1_get_performance} -eq 1 ]] && perf_start x11
-			if [[ -n "${DISPLAY}" ]] && xhost +si:localuser:$USER >&/dev/null; then
+			# if [[ -n "${DISPLAY}" ]] && xhost +si:localuser:$USER >&/dev/null; then
+			if [[ -n "${DISPLAY}" ]]; then
 				_color boldyellow; printf "X"
 				ps1_separator=1 && print_separator
 			fi
@@ -2176,7 +2198,7 @@ _source_ps1(){
 		if [[ "${_ps1_time}" -eq 1 ]]; then
 			[[ ${_ps1_get_performance} -eq 1 ]] && perf_start time
 			_color
-			echo -n "$(date +"%d")/\t"
+			printf "%(%d/%H:%M:%S)T"
 			[[  "${ps1_time_diff}" =~ [0-9]+ ]] || ps1_time_diff=0
 			if [[ ${ps1_time_diff} -eq 0 ]]; then
 				_color boldblack; printf " %3d" ${ps1_time_diff}
