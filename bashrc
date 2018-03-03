@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=491
-FileVersion=491
+# FileVersion=492
+FileVersion=492
 
 # Environment functions:
 #   perf_start
@@ -1148,12 +1148,14 @@ _source_utilities(){
 	}
 
 	lock(){
-		arguments_list=(args1 args2 args3 args4 args5)
+		arguments_list=(args1 args2 args3 args4 args5 args6 args7)
 		args1='[-p|--path {path}] [-q|--quiet] lock {id} [command...]'
 		args2='[-p|--path {path}] unlock {id}'
 		args3='[-p|--path {path}] get {id}'
 		args4='[-p|--path {path}] set {id} {max}'
-		args5='[-p|--path {path}] list'
+		args5='[-p|--path {path}] get-running {id}'
+		args6='[-p|--path {path}] get-waiting {id}'
+		args7='[-p|--path {path}] list'
 		arguments_description=( 'lock' 'Locks the named identifier so other one trying to acquire a lock waits for it to be unlocked.')
 		arguments_parameters=( '[-p|--path {path}]: path where to store locks (by default /tmp/bashrclock.{uid}.)'
 		                       '[-q|--quiet]: quiet mode.'
@@ -1161,6 +1163,8 @@ _source_utilities(){
 		                       'unlock {id}: unlock the specified id.'
 		                       'set {id} {max}: set the maximum number of concurrent accesses.'
 		                       'get {id}: get the maximum number of concurrent accesses.'
+		                       'get-running {id}: get number of running processes.'
+		                       'get-waiting {id}: get number of waiting processes.'
 							   'list: list ids.')
 		arguments_examples=( '$ lock lock id1 && echo "foo"; lock unlock id1' 'sets an unnamed lock, execute a program and unlock.'
 		                     '$ lock lock id1 echo foo' 'execute echo foo inside a lock and unlock.')
@@ -1224,8 +1228,8 @@ _source_utilities(){
 		
 		_lock_get_used_slots(){
 			local file
-			if [[ -f "${basefolder}/${id}.running" ]]; then
-				readarray -t file < "${basefolder}/${id}.running"
+			if [[ -f "${basefolder}/${id}.${1}" ]]; then
+				readarray -t file < "${basefolder}/${id}.${1}"
 				echo "${#file[@]}"
 			else
 				echo 0
@@ -1239,7 +1243,7 @@ _source_utilities(){
 			while [[ ${found_free_slot} -eq 0 ]]; do
 				_lock_sub_lock
 				max_slots=$(_lock_get_max ${id})
-				used_slots=$(_lock_get_used_slots)
+				used_slots=$(_lock_get_used_slots running)
 				if [[ ${used_slots} -lt ${max_slots} ]] && _lock_am_i_next; then
 					_lock_add_running "$@"
 					_lock_remove_waiting
@@ -1347,13 +1351,13 @@ _source_utilities(){
 			return ${ec}
 		}
 		
-		local sub_lock=0 ec found_free_slot=0 i id="${arguments[id]:-SomeRandomStringFoo123}"
+		local sub_lock=0 ec found_free_slot=0 i id="${arguments[id]:-SomeRandomStringFoo123}" num_slots
 		
 		local basefolder="${arguments[path]:-/tmp/bashrclock.${EUID}}"
 		mkdir -p ${basefolder} && chmod 0777 ${basefolder} 2>&1 >/dev/null || true
 		[[ ! -w "${basefolder}" ]] && echo "Error: folder '${basefolder}' is not writable or does not exist." && exit 1
 		
-		for i in lock unlock get set list; do
+		for i in lock unlock get set list get-running get-waiting; do
 			[[ ${arguments[${i}]:-0} -eq 1 ]] && mode=${i} && break
 		done
 		
@@ -1362,6 +1366,8 @@ _source_utilities(){
 			unlock) _lock_unlock || exit 1;;
 			get)    _lock_sub_lock; _lock_get_max "$@"; _lock_sub_unlock ;;
 			set)    _lock_sub_lock; _lock_set_max "$@"; _lock_sub_unlock ;;
+			get-running) _lock_sub_lock; num_slots="$(_lock_get_used_slots running)"; _lock_sub_unlock; echo ${num_slots} ;;
+			get-waiting) _lock_sub_lock; num_slots="$(_lock_get_used_slots waiting)"; _lock_sub_unlock; echo ${num_slots} ;;
 			list)   _lock_sub_lock; _lock_list "$@"; _lock_sub_unlock ;;
 		esac
 		exit $?
