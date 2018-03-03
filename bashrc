@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=487
-FileVersion=487
+# FileVersion=488
+FileVersion=488
 
 # Environment functions:
 #   perf_start
@@ -873,7 +873,7 @@ _source_utilities(){
 			printf "Cron executed on:\n    ${USER}@$(hostname -f)\n\nError when executing from cron:\n    ${arguments[binary]} ${*}\n\nProgram '${arguments[binary]}' does not exist." | mailx -s "[Error] program not available ${arguments[binary]}" "${arguments[recipient]}"
 			exit 1
 		fi
-		if ! output=$("${arguments[binary]}" "$@"); then
+		if ! output=$("${arguments[binary]}" "$@" 2>&1); then
 			printf "Cron executed on:\n    ${USER}@$(hostname -f)\n\nError when executing from cron:\n    ${arguments[binary]} ${*}\n\nOutput was:\n\n${output}" | mailx -s "[Error] ${arguments[binary]} execution failed" "${arguments[recipient]}"
 			exit 1
 		fi
