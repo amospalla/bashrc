@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=518
-FileVersion=518
+# FileVersion=519
+FileVersion=519
 
 # Environment functions:
 #   count-lines
@@ -467,7 +467,7 @@ _update_files_notify(){
 
 _check_new_links(){
 	if [[ ${FileVersion} -gt ${_FileVersion} ]]; then
-		sed -i "s/_FileVersion=[0-9]\+/_FileVersion=${FileVersion}/" $HOME/.bashrc.options
+		sed -i -e "s/_FileVersion=[0-9]\+/_FileVersion=${FileVersion}/" -e "s/_FileVersion=\"[0-9]\+\"/_FileVersion=\"${FileVersion}\"/" $HOME/.bashrc.options
 		make-links
 	fi
 }
