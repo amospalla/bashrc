@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=514
-FileVersion=514
+# FileVersion=515
+FileVersion=515
 
 # Environment functions:
 #   count-lines
@@ -2640,7 +2640,7 @@ make-links(){
 		[[ "$(readlink -f "${link}")" == "${source}" ]] || continue
 		found=0
 		for name in ${_program_list[@]}; do
-			[[ "$(basename ${link})" == "${name}" ]] && found=1 && break
+			[[ "${link/*\/}" == "${name}" ]] && found=1 && break
 		done
 		[[ ${found} -eq 0 ]] && echo "[remove old]      ${link}" && rm "${link}" || true
 	done
