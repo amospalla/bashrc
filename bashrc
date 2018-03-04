@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=528
-FileVersion=528
+# FileVersion=529
+FileVersion=529
 
 # Environment functions:
 #   count-lines
@@ -1278,7 +1278,7 @@ _source_utilities(){
 
 	lock(){
 		arguments_list=(args1 args2 args3 args4 args5 args6 args7 args8)
-		args1='[-p|--path {path}] [-q|--quiet] lock {id} [command...]'
+		args1='[-p|--path {path}] lock [-q|--quiet] [-f|--fast] {id} [command...]'
 		args2='[-p|--path {path}] unlock {id}'
 		args3='[-p|--path {path}] get {id}'
 		args4='[-p|--path {path}] set {id} {max}'
@@ -1289,6 +1289,7 @@ _source_utilities(){
 		arguments_description=( 'lock' 'Locks the named identifier so other one trying to acquire a lock waits for it to be unlocked.')
 		arguments_parameters=( '[-p|--path {path}]: path where to store locks (by default /tmp/bashrclock.{uid}.).'
 		                       '[-q|--quiet]: quiet mode.'
+		                       '[-f|--fast]: try to lock but exit already locked.'
 		                       'lock {id} [command]: lock the specified id and optionally execute a command and unlock at once.'
 		                       'unlock {id}: unlock the specified id.'
 		                       'set {id} {max}: set the maximum number of concurrent accesses.'
@@ -1474,8 +1475,16 @@ _source_utilities(){
 					exit 1
 				fi
 			fi
-			_lock_sub_lock; _lock_add_waiting "$@"; _lock_sub_unlock
-			_lock_wait "$@"
+			_lock_sub_lock
+			if [[ ${arguments[-f]:-0} -eq 1 && $(_lock_get_max ${id}) -le $(_lock_get_used_slots running) ]]; then
+				# -f and no free slots
+				_lock_sub_unlock
+				exit 1
+			else
+				_lock_add_waiting "$@"
+				_lock_sub_unlock
+				_lock_wait "$@"
+			fi
 		}
 		
 		_lock_unlock(){
