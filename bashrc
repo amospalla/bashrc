@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=522
-FileVersion=522
+# FileVersion=523
+FileVersion=523
 
 # Environment functions:
 #   count-lines
@@ -419,7 +419,7 @@ _bashrc_show_help(){
 	color blue; printf "notify"; color; echo ": send a message using pushover service."
 	color blue; printf "wait-ping"; color; echo ": Wait until ping to IP succeeds (default interval 1 second)."
 	color blue; printf "grepip"; color; echo ": show lines containing IPs from files/stdin."
-	color blue; printf "sshconnect"; color; echo ": use ssh with ConnectTimeout=1 and ServerAliveInterval=3"
+	color blue; printf "sshconnect"; color; echo ": use ssh with ConnectTimeout=1 and ServerAliveInterval=3."
 	color blue; printf "myip"; color; echo ": shows public IP and optionally notices when changes and/or executes a command."
 	color blue; printf "status-changed"; color; echo ": given an identifier and the current status exits with return code 1 if status has changed."
 	color blue; printf "rescan-scsi-bus"; color; echo ": rescan scsi bus."
@@ -825,8 +825,8 @@ _source_utilities(){
 	argparse-create-template(){
 		arguments_list=(args1)
 		args1='[-o|--overwrite] {file}'
-		arguments_description=('argparse-create-template' 'Creates a bash skeleton to use argparse')
-		arguments_parameters=( '[-o|--overwrite]: overwrite file.' '{file}: path to create file' )
+		arguments_description=('argparse-create-template' 'Creates a bash skeleton to use argparse.')
+		arguments_parameters=( '[-o|--overwrite]: overwrite file.' '{file}: path to create file.' )
 		arguments_extra_help=( 'Argparse will exit correctly if input arguments match some of the templates in arguments_list[].'
 		                       'When using a parameter like foo... its content will remain in $@ (everything else is shifted).'
 		                       'Arguments_list[] can not be empty (but they references can).'
@@ -915,8 +915,8 @@ _source_utilities(){
 		args1='{recipient} {binary} [args...]'
 		arguments_description=('run-cron' 'Run a program and send an email if fails.')
 		arguments_parameters=('{recipient}: who to send the email.'
-		                      '{binary}: program to execute'
-		                      '[args...]: program arguments' )
+		                      '{binary}: program to execute.'
+		                      '[args...]: program arguments.' )
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		local ec output
@@ -939,7 +939,7 @@ _source_utilities(){
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		if [[ ! -e /dev/mapper/${arguments[vg]//-/--}-${arguments[lv]//-/--} ]]; then
-			echo "Error: ${arguments[vg]}/${arguments[lv]} does not exist"
+			echo "Error: ${arguments[vg]}/${arguments[lv]} does not exist."
 			exit 1
 		fi
 		local value
@@ -1050,7 +1050,7 @@ _source_utilities(){
 	float(){
 		arguments_list=(args1); args1='[-d|--decimals {decimals:number}] {number1:number} {operator} {number2:number}'
 		arguments_description=('float' 'Execute a floating point operation')
-		arguments_parameters=( '[-d|--decimals {decimals}]: specify number to decimals to display (by default all)'
+		arguments_parameters=( '[-d|--decimals {decimals}]: specify number to decimals to display (by default all).'
 		                       '{number1}: first opperand.'
 		                       '{operator}: operation to do.'
 		                       '{number2}: second opperand.')
@@ -1075,7 +1075,7 @@ _source_utilities(){
 	check-type(){
 		arguments_list=(args1); args1='{type} {string}'
 		arguments_description=('check-type' 'Checks if the supplied string is of a certain type.')
-		arguments_parameters=( '{type}: bool[ean] | integer | number | time'
+		arguments_parameters=( '{type}: bool[ean] | integer | number | time.'
 		                       '{string}: string to check.')
 		arguments_extra_help=( 'Types:'
 		                       '  bool: true|false|0|1|on|off'
@@ -1162,7 +1162,7 @@ _source_utilities(){
 		args1='[-d|--delete] {path}'; arguments_list=(args1)
 		arguments_description=( 'extract' 'Extract all archives into subfolders. Supported extensions: zip, rar.')
 		arguments_parameters=( '[-d|--delete]: delete source archives files after extraction.'
-		                       '{path}: path where to look for files (default current path)')
+		                       '{path}: path where to look for files (default current path).')
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		
@@ -1216,7 +1216,7 @@ _source_utilities(){
 		args7='[-p|--path {path}] get-total {id}'
 		args8='[-p|--path {path}] list'
 		arguments_description=( 'lock' 'Locks the named identifier so other one trying to acquire a lock waits for it to be unlocked.')
-		arguments_parameters=( '[-p|--path {path}]: path where to store locks (by default /tmp/bashrclock.{uid}.)'
+		arguments_parameters=( '[-p|--path {path}]: path where to store locks (by default /tmp/bashrclock.{uid}.).'
 		                       '[-q|--quiet]: quiet mode.'
 		                       'lock {id} [command]: lock the specified id and optionally execute a command and unlock at once.'
 		                       'unlock {id}: unlock the specified id.'
@@ -1713,7 +1713,7 @@ _source_utilities(){
 
 	rescan-scsi-bus(){
 		arguments_list=(args1); args1=''
-		arguments_description=( 'rescan-scsi-bus' 'Rescan the scsi bus')
+		arguments_description=( 'rescan-scsi-bus' 'Rescan the scsi bus.')
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		local host
@@ -1724,7 +1724,7 @@ _source_utilities(){
 
 	tmuxac(){
 		arguments_list=(args1); args1='{name}'
-		arguments_description=( 'tmuxac' 'Attaches to the specified session or creates it')
+		arguments_description=( 'tmuxac' 'Attaches to the specified session or creates it.')
 		arguments_parameters=( '{name}: session name.' )
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
@@ -1815,7 +1815,7 @@ _source_utilities(){
 
 	beep(){
 		arguments_list=(args1); args1=''
-		arguments_description=( 'beep' 'Beeps')
+		arguments_description=( 'beep' 'Beeps.')
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		printf $'\a'
@@ -1920,7 +1920,7 @@ _source_utilities(){
 
 	grepip(){
 		arguments_list=(args1); args1='[-n|--name] [-o|--only] [files...]'
-		arguments_description=( 'grepip' 'Print lines containng IPs. Reads from files or stdin')
+		arguments_description=( 'grepip' 'Print lines containng IPs. Reads from files or stdin.')
 		arguments_parameters=( '[-n|--name]: show file names.'
 		                       '[-o|--only]: show only IPs instead of whole lines.')
 		arguments_examples=( '$ grepip file1 file2' ''
@@ -1944,7 +1944,7 @@ _source_utilities(){
 
 	repeat(){
 		arguments_list=(args1); args1='[-s|--separator] [-d|--date] [-c|--clear] [-p|--pcommand] [{interval:time}] {command...}'
-		arguments_description=( 'repeat' 'Execute a command continuously')
+		arguments_description=( 'repeat' 'Execute a command continuously.')
 		arguments_parameters=( '[-s|--separator]: empty lines between executions.'
 		                       '[-d|--date]: print date on every execution.'
 		                       '[-c|--clear]: clear screen between executions.'
@@ -1989,7 +1989,7 @@ _source_utilities(){
 
 	testport(){
 		arguments_list=(args1); args1='[-c|--continuous [{interval:time}]] [-w|--wait] {host} {port}'
-		arguments_description=( 'testport' 'Test if a TCP port is open')
+		arguments_description=( 'testport' 'Test if a TCP port is open.')
 		arguments_parameters=( '[-c|--continuous [{interval}]]: executes continuously.'
 		                       '[-w|--wait]: wait until the port is open, then exits.' )
 		arguments_examples=( '$ testport -c 5s 1.2.3.4 80' '' )
