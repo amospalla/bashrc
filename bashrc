@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=523
-FileVersion=523
+# FileVersion=524
+FileVersion=524
 
 # Environment functions:
 #   count-lines
@@ -62,8 +62,8 @@ declare -a arguments_list=() arguments_description=() arguments_examples=() argu
 declare -i arguments_shift _files_update_counter=0 _files_updated _bash_version="${BASH_VERSION:0:1}${BASH_VERSION:2:1}"
 declare _files_update_text=""
 
-declare -a _program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists )
-declare -A _program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root)
+declare -a _program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email)
+declare -A _program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all )
 
 _status_changed_intervals="1m 5m 15m 1h 1d"
 
@@ -400,6 +400,7 @@ _bashrc_show_help(){
 	color blue; printf "unit-conversion"; color; echo ": convert between unit."
 	color blue; printf "check-ping"; color; echo ": check ping to a host."
 	color blue; printf "show-lvm-thinpool-usage"; color; echo ": show thinpool metadata/data usage in percentage."
+	color blue; printf "status-changed-email"; color; echo ": send an email noticing a recovery or error condition."
 	color blue; printf "check-lvm-thinpool-usage"; color; echo ": notify by email when lvm thinpool data/metadata usage is below a threshold."
 	color blue; printf "argparse"; color; echo ": argument parser."
 	color blue; printf "lowercase"; color; echo ": prints args in lowercase."
@@ -976,7 +977,7 @@ _source_utilities(){
 		else
 			program-exists -m mailx || exit 1
 			[[ $# -gt 0 ]] && intervals="$@" || intervals=${_status_changed_intervals}
-			if next_date="$(status-changed set lvm-thinpool-${type}-${arguments[vg]}-${arguments[pool]}-${arguments[threshold]} ${ec} -l ok ${intervals})"; then
+			if next_date="$(status-changed set lvm-thinpool-${type}-${arguments[vg]}-${arguments[pool]}-${arguments[threshold]} ${ec} -l ok -i "${intervals}")"; then
 				[[ $ec == "ok"    ]] && echo "$(hostname -f): LVM ${arguments[vg]}/${arguments[pool]} ${type} usage ${usage} below threshold ${arguments[threshold]}" | mailx -s "$(hostname): LVM ${arguments[vg]}/${arguments[pool]} ${type} recover" ${arguments[recipient]} || true
 				[[ $ec == "error" ]] && echo "$(hostname -f): LVM ${arguments[vg]}/${arguments[pool]} ${type} usage ${usage} above threshold ${arguments[threshold]}" | mailx -s "$(hostname): LVM ${arguments[vg]}/${arguments[pool]} ${type} problem" ${arguments[recipient]} || true
 			fi
@@ -1569,16 +1570,44 @@ _source_utilities(){
 		fi
 	}
 
+	status-changed-email(){
+		arguments_list=(args1)
+		args1='{recipient} {id} [-l|--last {last_state}] [-i|--intervals {intervals}] [-o|--ok {ok_message}] [-e|--error {error_message}] {command...}'
+		arguments_description=( 'status-changed-email' 'Send an email when an error or recovery occurs.')
+		arguments_parameters=( '{recipient}: who to send emails.'
+		                       '{id}: job identifier.'
+		                       '[-l|--last {last_state}]: if not last state was saved use this value (ok by default).'
+		                       "[-i|--intervals {intervals}]: intervals between notifications, if no unit is used assume minutes (default ${_status_changed_intervals})"
+		                       '[-o|--ok {ok_message}]: email subject when condition is recovery.'
+		                       '[-e|--error {error_message}]: email subject when condition is error.'
+		                       '{command...}: command to execute' )
+		local -A arguments=()
+		argparse "$@" && shift ${arguments_shift}
+		local ec next_date ok_message error_message output command
+		command="$@"
+		[[ ${#command} -lt 20 ]] && command="${command}" || command="${command:0:15} ..."
+		ok_message="${arguments[ok_message]:-"$(hostname): recovery: ${command:0:20}"}"
+		error_message="${arguments[error_message]:-"$(hostname): error: ${command:0:20}"}"
+		output="$( "$@" 2>&1 )" && ec=ok || ec=error
+		if next_date="$("$(dirname "${0}")"/status-changed set ${arguments[id]} ${ec} --intervals "${arguments[intervals]:-${_status_changed_intervals}}")"; then
+			if [[ $ec == "ok"    ]]; then
+				echo -e "Command:\n${@}\n\nOutput was:\n\n${output}" | mailx -s "${ok_message}" "${arguments[recipient]}"
+			elif [[ $ec == "error" ]]; then
+				echo -e "No new emails noticing the problem will be sent until ${next_date}.\n\nCommand:\n$@\n\nOutput was:\n\n${output}" | mailx -s "${error_message}" "${arguments[recipient]}"
+			fi
+		fi
+
+	}
+
 	status-changed(){
 		arguments_list=(args1 args2)
-		args1='set {id} {state} [-l|--last {last_state}] [intervals...]'
+		args1='set {id} {state} [-l|--last {last_state}] [-i|--intervals {intervals}]'
 		args2='reset {id}'
-		arguments_description=( 'lock' 'Locks the named identifier so other one trying to acquire a lock waits for it to be unlocked.')
 		arguments_parameters=( '{id}: job identifier.'
 		                       '{state}: current state (must be "ok" or "error").'
 		                       '[-l|--last {last_state}]: if not last state was saved use this value (ok by default).'
 		                       'reset {id}: removes last known state for the specified identifier.'
-		                       "[intervals...]: intervals between notifications, if no unit is used assume minutes (default ${_status_changed_intervals})" )
+		                       "[-i|--intervals {intervals}]: intervals between notifications, if no unit is used assume minutes (default ${_status_changed_intervals})" )
 		arguments_description=( 'status-changed'
 		                        'Case scenario: do not send repeatedly emails when the problem has already been notified.'
 		                        'If state is changed and new state is error, prints the date until no new notifications will be shown.'
@@ -1661,7 +1690,8 @@ _source_utilities(){
 		fi
 		
 		local -i i; local -a intervals=()
-		[[ $# -eq 0 ]] && intervals=( ${_status_changed_intervals} ) || intervals=("$@")
+		[[ ${arguments[-i]:-0} -eq 0 ]] && intervals=( ${_status_changed_intervals} ) || intervals=( ${arguments[intervals]} )
+
 		for (( i=0; i<${#intervals[@]}; i++ )); do
 			if ! check-type time "${intervals[$i]}"; then echo "Error with intervals, token '${intervals[$i]}' not valid time."; exit 1; fi
 			intervals[$i]=$(unit-conversion time -d 0 s "${intervals[$i]}")
@@ -2587,8 +2617,8 @@ make-links(){
 		printf "\nCreates links to bashrc programs into specified folder (HOME/bin if none specified).\n"
 		printf "When using the system-wide option, copy source file and generate links on /usr/local/bin.\n"
 	}
-	declare -a _program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists )
-	declare -A _program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root)
+	declare -a _program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email )
+	declare -A _program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all )
 	
 	[[ "${1:-}" == "-h" ]] && _show_help && return 0
 	
