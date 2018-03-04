@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=511
-FileVersion=511
+# FileVersion=512
+FileVersion=512
 
 # Environment functions:
 #   count-lines
@@ -57,13 +57,13 @@ FileVersion=511
 #====================================================================
 
 # argparse
-declare -A arguments=() _perf_data=() _binary _program_list_user
-declare -a arguments_list=() arguments_description=() arguments_examples=() arguments_extra_help=() arguments_parameters=() _program_list=()
+declare -A arguments=() _perf_data=() _binary
+declare -a arguments_list=() arguments_description=() arguments_examples=() arguments_extra_help=() arguments_parameters=()
 declare -i arguments_shift _files_update_counter=0 _files_updated _bash_updated _bash_version="${BASH_VERSION:0:1}${BASH_VERSION:2:1}"
 declare _files_update_text=""
 
-_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron program-exists lvmthinsnapshots)
-_program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root)
+declare -ag _program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists )
+declare -Ag _program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root)
 
 _status_changed_intervals="1m 5m 15m 1h 1d"
 
@@ -2606,24 +2606,24 @@ make-links(){
 	[[ ! -d "${destination_folder}" ]] && echo "Error, specified path does not exist." && return 1
 	
 	# echo "Source: ${source}, destination: ${destination_folder}"
-	local program
+	local name
 	local source_old
 	# add links
-	for program in ${_program_list[@]}; do
-		if [[ -f "${destination_folder}/${program}" || -L "${destination_folder}/${program}" ]]; then
-			source_old="$(readlink -f "${destination_folder}/${program}")"
+	for name in ${_program_list[@]}; do
+		if [[ -f "${destination_folder}/${name}" || -L "${destination_folder}/${name}" ]]; then
+			source_old="$(readlink -f "${destination_folder}/${name}")"
 			if [[ "${source_old}" != "${source}" ]]; then
-				if [[ -L "${destination_folder}/${program}" ]]; then
-					echo "[already present] ${program} (linked from ${source_old})"
+				if [[ -L "${destination_folder}/${name}" ]]; then
+					echo "[already present] ${name} (linked from ${source_old})"
 				else
-					echo "[already present] ${program} (independent binary)"
+					echo "[already present] ${name} (independent binary)"
 				fi
 			fi
 		else
-			[[ ${_program_list_user[${program}]} == root && ${UID} -ne 0 ]] && continue
-			[[ ${_program_list_user[${program}]} == user && ${UID} -eq 0 ]] && continue
-			echo "[new]             ${destination_folder}/${program}"
-			ln -s "${source}" "${destination_folder}/${program}"
+			[[ ${_program_list_user[${name}]} == root && ${UID} -ne 0 ]] && continue
+			[[ ${_program_list_user[${name}]} == user && ${UID} -eq 0 ]] && continue
+			echo "[new]             ${destination_folder}/${name}"
+			ln -s "${source}" "${destination_folder}/${name}"
 		fi
 	done
 	
@@ -2632,8 +2632,8 @@ make-links(){
 	find "${destination_folder}" -type l | while read link; do
 		[[ "$(readlink -f "${link}")" == "${source}" ]] || continue
 		found=0
-		for program in ${_program_list[@]}; do
-			[[ "$(basename ${link})" == "${program}" ]] && found=1 && break
+		for name in ${_program_list[@]}; do
+			[[ "$(basename ${link})" == "${name}" ]] && found=1 && break
 		done
 		[[ ${found} -eq 0 ]] && echo "[remove old]      ${link}" && rm "${link}" || true
 	done
