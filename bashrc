@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=509
-FileVersion=509
+# FileVersion=510
+FileVersion=510
 
 # Environment functions:
 #   count-lines
@@ -1217,7 +1217,7 @@ _source_utilities(){
 		                       'get-running {id}: get number of running processes.'
 		                       'get-waiting {id}: get number of waiting processes.'
 		                       'get-total {id}: get number of running + waiting processes.'
-							   'list: list ids.')
+		                       'list: list ids.')
 		arguments_examples=( '$ lock lock id1 && echo "foo"; lock unlock id1' 'sets an unnamed lock, execute a program and unlock.'
 		                     '$ lock lock id1 echo foo' 'execute echo foo inside a lock and unlock.')
 		local -A arguments=()
@@ -1429,12 +1429,12 @@ _source_utilities(){
 
 	retention(){
 		arguments_list=(args1)
-		args1='[-v|--verbose] [-s|--seconds {seconds:integer}] [-m|--minutes {minutes:integer}] [-h|--hours {hours:integer}] [-d|--days {days:integer}] [-w|--weeks {weeks:integer}] [--months {months:integer}] [-y|--years {years:integer}] {dates...}'
+		args1='[-v|--verbose] [-s|--seconds {seconds:integer}] [-m|--minutes {minutes:integer}] [--hours {hours:integer}] [-d|--days {days:integer}] [-w|--weeks {weeks:integer}] [--months {months:integer}] [-y|--years {years:integer}] {dates...}'
 		arguments_description=( 'retention' 'Helper for keeping a specified retention with given dates.')
 		arguments_parameters=( '[-v|--verbose]: print all days with a mark "keep" or "delete, else print only dates to be deleted.'
 		                       '[-d|--daily {day}]: number of daily copies to mantain.'
 		                       '{dates}: list of dates.' )
-		arguments_examples=( '$ retention -v -h 8 -d 7 -w 4 --months 6 200102040400 200102040300 200102040200 200102040100 200102030000 200102020000 200102010000 200101010000' 'keep 8 hourly copies for the first day, one daily copy for a week, 4 weekly copies and 6 monthly.' )
+		arguments_examples=( '$ retention -v --hours 8 -d 7 -w 4 --months 6 200102040400 200102040300 200102040200 200102040100 200102030000 200102020000 200102010000 200101010000' 'keep 8 hourly copies for the first day, one daily copy for a week, 4 weekly copies and 6 monthly.' )
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		
@@ -1453,7 +1453,7 @@ _source_utilities(){
 		local -a dates=() datesfull=() datessecond=() delete=() intervals=() intervals_used=()
 		declare -A times=( [seconds]=1 [minutes]=60 [hours]=3600 [days]=86400 [weeks]=604800 [months]=2592000 [years]=31104000 )
 
-		if ! [[ ${arguments[-s]:-0} -eq 1 || ${arguments[-m]:-0} -eq 1 || ${arguments[-h]:-0} -eq 1 || ${arguments[-d]:-0} -eq 1 || ${arguments[-w]:-0} -eq 1 || ${arguments[--months]:-0} -eq 1 || ${arguments[-y]:-0} -eq 1 ]]; then
+		if ! [[ ${arguments[-s]:-0} -eq 1 || ${arguments[-m]:-0} -eq 1 || ${arguments[--hours]:-0} -eq 1 || ${arguments[-d]:-0} -eq 1 || ${arguments[-w]:-0} -eq 1 || ${arguments[--months]:-0} -eq 1 || ${arguments[-y]:-0} -eq 1 ]]; then
 			echo "Error: no interval specified."; exit 1
 		fi
 		
