@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=524
-FileVersion=524
+# FileVersion=525
+FileVersion=525
 
 # Environment functions:
 #   count-lines
@@ -528,7 +528,6 @@ _source_bash_options(){
 	_bash_options_add _ps1_bash_update 1
 	_bash_options_add _binary_tmuxconf 1
 	_bash_options_add _histgrep_compact 1
-	_bash_options_add _FileVersion ${FileVersion}
 	_bash_options_add commented _update_00_url  https://raw.githubusercontent.com/amospalla/bashrc/master/bashrc
 	_bash_options_add commented _update_00_path $HOME/.bashrc
 	_bash_options_add commented _update_99_url  http://www.foo.com/vimrc
