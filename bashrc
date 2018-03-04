@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=512
-FileVersion=512
+# FileVersion=513
+FileVersion=513
 
 # Environment functions:
 #   count-lines
@@ -1529,7 +1529,7 @@ _source_utilities(){
 				threshold=${arguments[${name}]}
 				for (( j=0; j<${#vgs[@]}; j++ )); do
 					if ! $(dirname "${0}")/check-lvm-thinpool-usage ${i} ${threshold} ${vgs[$j]} ${thinpools[$j]}; then
-						echo "Error: ${vgs[$j]/${thinpools[$j]}} usage below threshold ${threshold}."
+						echo "Error: ${vgs[$j]/${thinpools[$j]}} usage above threshold ${threshold}."
 						exit 1
 					fi
 				done
