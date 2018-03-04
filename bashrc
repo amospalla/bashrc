@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=526
-FileVersion=526
+# FileVersion=527
+FileVersion=527
 
 # Environment functions:
 #   count-lines
@@ -51,7 +51,6 @@ FileVersion=526
 #   timer-countdown
 #   myip
 
-
 #====================================================================
 # Main
 #====================================================================
@@ -62,8 +61,8 @@ declare -a arguments_list=() arguments_description=() arguments_examples=() argu
 declare -i arguments_shift _files_update_counter=0 _files_updated _bash_version="${BASH_VERSION:0:1}${BASH_VERSION:2:1}"
 declare _files_update_text=""
 
-declare -a _program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email)
-declare -A _program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all )
+declare -a _program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email bashrc-update)
+declare -A _program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all [bashrc-update]=all )
 
 _status_changed_intervals="1m 5m 15m 1h 1d"
 
@@ -394,6 +393,7 @@ _bashrc_show_help(){
 	color blue; printf "retention"; color; echo ": helper to mantain a retention with given dates."
 	color blue; printf "program-exists"; color; echo ": check if a list of programs are available."
 	color blue; printf "try"; color; echo ": tries executing a command until it succeeds."
+	color blue; printf "bashrc-update"; color; echo ": manage files updated by bashrc."
 	color blue; printf "run-cron"; color; echo ": wrapper for executing from cron."
 	color blue; printf "float"; color; echo ": execute floating point operations."
 	color blue; printf "unit-print"; color; echo ": print units."
@@ -550,6 +550,77 @@ _source_utilities(){
 	_exit(){
 		printf "\nError at line: ${2}\n"
 		exit ${1}
+	}
+
+	bashrc-update(){
+		arguments_list=(args1 args2 args3 args4 args5)
+		args1='list'
+		args2='add {url} {path}'
+		args3='remove {id}'
+		args4='enable {id}'
+		args5='disable {id}'
+		arguments_description=('bash-update' 'Manages files updated by bashrc.')
+		local -A arguments=()
+		argparse "$@" && shift ${arguments_shift}
+		local mode options_file="$HOME/.bashrc.options" i
+		[[ ${arguments[list]:-0}    -eq 1 ]] && mode=list
+		[[ ${arguments[enable]:-0}  -eq 1 ]] && mode=enable
+		[[ ${arguments[disable]:-0} -eq 1 ]] && mode=disable
+		[[ ${arguments[add]:-0}     -eq 1 ]] && mode=add
+		[[ ${arguments[remove]:-0}  -eq 1 ]] && mode=remove
+		local -a line=() url=() index=() enabled=() path=()
+		
+		readarray -t line < <(grep -E "^[[:blank:]]*(#[[:blank:]]*)?_update_[0-9]{2}_url=" "${options_file}")
+		for (( i=0; i<${#line[@]}; i++ )); do
+			[[ ${line[$i]} =~ ^[[:blank:]]*# ]] && enabled[$i]=0 || enabled[$i]=1
+			url[$i]="${line[$i]/*[0-9][0-9]_url=}"
+			url[$i]="${url[$i]//\"}"
+			[[ ${line[$i]} =~ _update_[0-9][0-9]_url= ]] && [[ ${BASH_REMATCH} =~ [0-9]+ ]] && index[$i]=${BASH_REMATCH}
+			path[$i]="$(grep -E "^[[:blank:]]*(#[[:blank:]]*)?_update_${index[$i]}_path=" "${options_file}")"
+			path[$i]="${path[$i]/*_update_[0-9][0-9]_path=}"
+			path[$i]="${path[$i]//\"}"
+		done
+		
+		_list(){
+			echo "id enabled path url"
+			for (( i=0; i<${#url[@]}; i++ )); do
+				echo "${index[$i]} ${enabled[$i]} ${path[$i]} ${url[$i]}"
+			done | sort
+		}
+		
+		_disable(){
+			sed -i "s/^[[:blank:]]*_update_${arguments[id]}_/# _update_${arguments[id]}_/" "${options_file}"
+		}
+		
+		_enable(){
+			sed -i "s/^[[:blank:]]*#[[:blank:]]*_update_${arguments[id]}_/_update_${arguments[id]}_/" "${options_file}"
+		}
+		
+		_add(){
+			local text="$(<"${options_file}")" found
+			for i in 00 01 02 03 04 05 06 07 08 09 {10..99}; do
+				[[ ! ${text} =~ _update_${i}_url ]] && found=${i} && break
+			done
+			if [[ -n ${found:-} ]]; then
+				echo "_update_${found}_url=\"${arguments[url]}\""   >> "${options_file}"
+				echo "_update_${found}_path=\"${arguments[path]}\"" >> "${options_file}"
+			else
+				echo "No free slots."
+				exit 1
+			fi
+		}
+		
+		_remove(){
+			sed -i "/_update_${arguments[id]}_/d" "${options_file}"
+		}
+		
+		case "${mode}" in
+			list) _list | column -t ;;
+			disable) _disable ;;
+			enable) _enable ;;
+			add) _add ;;
+			remove) _remove ;;
+		esac
 	}
 
 	argparse(){
@@ -2616,8 +2687,8 @@ make-links(){
 		printf "\nCreates links to bashrc programs into specified folder (HOME/bin if none specified).\n"
 		printf "When using the system-wide option, copy source file and generate links on /usr/local/bin.\n"
 	}
-	declare -a _program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email )
-	declare -A _program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all )
+	declare -a _program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email bashrc-update )
+	declare -A _program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all [bashrc-update]=all )
 	color magentabold
 	
 	[[ "${1:-}" == "-h" ]] && _show_help && return 0
