@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=525
-FileVersion=525
+# FileVersion=526
+FileVersion=526
 
 # Environment functions:
 #   count-lines
@@ -2618,6 +2618,7 @@ make-links(){
 	}
 	declare -a _program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email )
 	declare -A _program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all )
+	color magentabold
 	
 	[[ "${1:-}" == "-h" ]] && _show_help && return 0
 	
@@ -2684,6 +2685,7 @@ make-links(){
 		[[ ${found} -eq 0 ]] && echo "[remove old]      ${link}" && rm "${link}" || true
 	done
 	# [[ ${EUID} -eq 0 && "${destination_folder}" != "system-wide" ]] && echo "" && make-links --system-wide || true
+	color
 }
 
 #====================================================================
