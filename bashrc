@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=513
-FileVersion=513
+# FileVersion=514
+FileVersion=514
 
 # Environment functions:
 #   count-lines
@@ -2618,8 +2618,15 @@ make-links(){
 				else
 					echo "[already present] ${name} (independent binary)"
 				fi
+			else
+				# Remove link when user is not correct
+				if [[ ${_program_list_user[${name}]} == root && ${UID} -ne 0 || ${_program_list_user[${name}]} == user && ${UID} -eq 0 ]]; then
+					rm "${destination_folder}/${name}"
+					echo "[remove]          ${destination_folder}/${name}"
+				fi
 			fi
 		else
+			# Do not create links when user is not correct
 			[[ ${_program_list_user[${name}]} == root && ${UID} -ne 0 ]] && continue
 			[[ ${_program_list_user[${name}]} == user && ${UID} -eq 0 ]] && continue
 			echo "[new]             ${destination_folder}/${name}"
