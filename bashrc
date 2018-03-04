@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=520
-FileVersion=520
+# FileVersion=521
+FileVersion=521
 
 # Environment functions:
 #   count-lines
@@ -267,6 +267,7 @@ _get_file_version(){
 }
 
 _update_files(){
+	. ${HOME}/.bashrc.options
 	local i url filepath user mode online_text online_version local_version ps1_text
 	for i in {0..99}; do
 		[[ ${#i} -eq 1 ]] && i="0${i}"
