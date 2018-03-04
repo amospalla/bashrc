@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=515
-FileVersion=515
+# FileVersion=516
+FileVersion=516
 
 # Environment functions:
 #   count-lines
@@ -59,7 +59,7 @@ FileVersion=515
 # argparse
 declare -A arguments=() _perf_data=() _binary
 declare -a arguments_list=() arguments_description=() arguments_examples=() arguments_extra_help=() arguments_parameters=()
-declare -i arguments_shift _files_update_counter=0 _files_updated _bash_updated _bash_version="${BASH_VERSION:0:1}${BASH_VERSION:2:1}"
+declare -i arguments_shift _files_update_counter=0 _files_updated _bash_version="${BASH_VERSION:0:1}${BASH_VERSION:2:1}"
 declare _files_update_text=""
 
 declare -ag _program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists )
@@ -454,7 +454,7 @@ _update_files_notify(){
 			_files_updated=1
 			_files_update_text="$(</tmp/${UID}.$$.bashrcupdate)"
 			rm /tmp/${UID}.$$.bashrcupdate
-			[[ ${_files_update_text} =~ $HOME/.bashrc: ]] && _bash_updated=1 && . $HOME/.bashrc
+			[[ ${_files_update_text} =~ $HOME/.bashrc: ]] && declare -g _bash_updated=1 && . $HOME/.bashrc
 		fi
 	fi
 }
