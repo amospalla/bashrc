@@ -980,8 +980,8 @@ _source_utilities(){
 		args1='[-m|--message] [-i|--invert] {host}'
 		arguments_description=('check-ping' 'Check if host replies to ping.')
 		arguments_parameters=( '[-m|--message]: show a message if test fails.'
-		                        '[-i|--invert]: fail when get reply.'
-								'{host}: host to check.' )
+		                       '[-i|--invert]: fail when get reply.'
+		                       '{host}: host to check.' )
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		ping -w1 -c1 ${arguments[host]} >/dev/null 2>&1 && local pinged=1 || local pinged=0
@@ -999,7 +999,7 @@ _source_utilities(){
 		arguments_description=('unit-conversion' 'Convert between units.')
 		arguments_parameters=( 'time: do time conversion to the specified unit.'
 		                        'diu: do digital information unit conversion to the specified unit.'
-								'[-d|--decimals {decimals}]: print up to specified decimals (by default 2 if --decimals is used).' )
+		                        '[-d|--decimals {decimals}]: print up to specified decimals (by default 2 if --decimals is used).' )
 		arguments_examples=( '$ unit-conversion time -d 2 weeks "24m" "3h"' 'convert to months using with two decimals.'
 		                        '$ unit-conversion diu megabytes 0.25G' 'convert 0.25G to megabytes.' )
 		local -A arguments=()
@@ -1044,8 +1044,8 @@ _source_utilities(){
 		arguments_description=('float' 'Execute a floating point operation')
 		arguments_parameters=( '[-d|--decimals {decimals}]: specify number to decimals to display (by default all)'
 		                       '{number1}: first opperand.'
-							   '{operator}: operation to do.'
-							   '{number2}: second opperand.')
+		                       '{operator}: operation to do.'
+		                       '{number2}: second opperand.')
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		local result integer decimal
@@ -1068,14 +1068,14 @@ _source_utilities(){
 		arguments_list=(args1); args1='{type} {string}'
 		arguments_description=('check-type' 'Checks if the supplied string is of a certain type.')
 		arguments_parameters=( '{type}: bool[ean] | integer | number | time'
-							   '{string}: string to check.')
+		                       '{string}: string to check.')
 		arguments_extra_help=( 'Types:'
 		                       '  bool: true|false|0|1|on|off'
-							   '  integer: n'
-							   '  number: (-)?{n | n.n | .n}'
-							   '  diu: {number}[b|bytes|k|kb|kib|kilobytes... (digital information unit).'
-							   '  time: ( {number}[[s[ec[ond[s]]]|m|h|d|w|month|] )*.'
-							   '  ip: x.x.x.x(/yy)?.')
+		                       '  integer: n'
+		                       '  number: (-)?{n | n.n | .n}'
+		                       '  diu: {number}[b|bytes|k|kb|kib|kilobytes... (digital information unit).'
+		                       '  time: ( {number}[[s[ec[ond[s]]]|m|h|d|w|month|] )*.'
+		                       '  ip: x.x.x.x(/yy)?.')
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		local value="$(lowercase "${arguments[string]}")"
@@ -1154,7 +1154,7 @@ _source_utilities(){
 		args1='[-d|--delete] {path}'; arguments_list=(args1)
 		arguments_description=( 'extract' 'Extract all archives into subfolders. Supported extensions: zip, rar.')
 		arguments_parameters=( '[-d|--delete]: delete source archives files after extraction.'
-							   '{path}: path where to look for files (default current path)')
+		                       '{path}: path where to look for files (default current path)')
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		
@@ -1570,7 +1570,7 @@ _source_utilities(){
 		                       '{state}: current state (must be "ok" or "error").'
 		                       '[-l|--last {last_state}]: if not last state was saved use this value (ok by default).'
 		                       'reset {id}: removes last known state for the specified identifier.'
-							   "[intervals...]: intervals between notifications, if no unit is used assume minutes (default ${_status_changed_intervals})" )
+		                       "[intervals...]: intervals between notifications, if no unit is used assume minutes (default ${_status_changed_intervals})" )
 		arguments_description=( 'status-changed'
 		                        'Case scenario: do not send repeatedly emails when the problem has already been notified.'
 		                        'If state is changed and new state is error, prints the date until no new notifications will be shown.'
