@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=521
-FileVersion=521
+# FileVersion=522
+FileVersion=522
 
 # Environment functions:
 #   count-lines
@@ -103,7 +103,7 @@ _main(){
 		_binary_decode
 		if [[ -f /tmp/${UID}.$$.bashrcupdate ]]; then
 			rm /tmp/${UID}.$$.bashrcupdate
-			_check_new_links
+			_post_bash_update
 		fi
 		(_update_files &)
 	fi
@@ -470,11 +470,8 @@ _update_files_notify(){
 	fi
 }
 
-_check_new_links(){
-	if [[ ${FileVersion} -gt ${_FileVersion} ]]; then
-		sed -i -e "s/_FileVersion=[0-9]\+/_FileVersion=${FileVersion}/" -e "s/_FileVersion=\"[0-9]\+\"/_FileVersion=\"${FileVersion}\"/" $HOME/.bashrc.options
-		make-links
-	fi
+_post_bash_update(){
+	make-links
 }
 
 #====================================================================
