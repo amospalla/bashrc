@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=527
-FileVersion=527
+# FileVersion=528
+FileVersion=528
 
 # Environment functions:
 #   count-lines
@@ -512,7 +512,7 @@ _source_bash_options(){
 	
 	_bash_options_add _ps1_enable 1
 	_bash_options_add _ps1_get_performance 0
-	_bash_options_add _ps1_performance_file $HOME/.bashrc.performance
+	_bash_options_add _ps1_performance_file '${HOME}/.bashrc.performance'
 	_bash_options_add _ps1_exit_code 1
 	_bash_options_add _ps1_tmux 1
 	_bash_options_add _ps1_x11_display 1
@@ -528,12 +528,12 @@ _source_bash_options(){
 	_bash_options_add _ps1_bash_update 1
 	_bash_options_add _binary_tmuxconf 1
 	_bash_options_add _histgrep_compact 1
-	_bash_options_add commented _update_00_url  https://raw.githubusercontent.com/amospalla/bashrc/master/bashrc
-	_bash_options_add commented _update_00_path $HOME/.bashrc
-	_bash_options_add commented _update_99_url  http://www.foo.com/vimrc
-	_bash_options_add commented _update_99_path $HOME/.vimrc
-	_bash_options_add commented _update_99_user "all|user|root"
-	_bash_options_add commented _update_99_mode "0644"
+	_bash_options_add commented _update_00_url  'https://raw.githubusercontent.com/amospalla/bashrc/master/bashrc'
+	_bash_options_add commented _update_00_path '${HOME}/.bashrc'
+	_bash_options_add commented _update_99_url  'http://www.foo.com/vimrc'
+	_bash_options_add commented _update_99_path '${HOME}/.vimrc'
+	_bash_options_add commented _update_99_user 'all|user|root'
+	_bash_options_add commented _update_99_mode '0644'
 	
 	. "${file}"
 	[[ -r "${file}.local" ]] && . "${file}.local"
