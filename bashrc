@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=519
-FileVersion=519
+# FileVersion=520
+FileVersion=520
 
 # Environment functions:
 #   count-lines
@@ -116,7 +116,11 @@ _main(){
 _source_variables(){
 	# If system doesn't have terminfo for me, use a generic TERM like linux
 	[[ "$(tput cols 2>&1)" =~ 'unknown terminal' ]] && export TERM=linux || true
-	export PS4='DEBUG: $(printf "%(%H:%M:%S)T") ${0/*\/}:$( printf "%$(( 4 - ${#LINENO} ))s" "" )${LINENO}: ' # Pretty debug
+	if [[ ${_bash_version} -gt 41 ]]; then
+		export PS4='DEBUG: $(printf "%(%H:%M:%S)T") ${0/*\/}:$( printf "%$(( 4 - ${#LINENO} ))s" "" )${LINENO}: ' # Pretty debug
+	else
+		export PS4='DEBUG: ${0/*\/}:$( printf "%$(( 4 - ${#LINENO} ))s" "" )${LINENO}: ' # Pretty debug
+	fi
 	
 	! shopt -oq posix && _source "/etc/profile.d/bash-completion"
 	! shopt -oq posix && _source "/etc/profile.d/bash-completion.sh"
