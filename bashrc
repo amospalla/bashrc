@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=510
-FileVersion=510
+# FileVersion=511
+FileVersion=511
 
 # Environment functions:
 #   count-lines
@@ -57,8 +57,8 @@ FileVersion=510
 #====================================================================
 
 # argparse
-declare -A arguments=() _perf_data=() _binary
-declare -a arguments_list=() arguments_description=() arguments_examples=() arguments_extra_help=() arguments_parameters=()
+declare -A arguments=() _perf_data=() _binary _program_list_user
+declare -a arguments_list=() arguments_description=() arguments_examples=() arguments_extra_help=() arguments_parameters=() _program_list=()
 declare -i arguments_shift _files_update_counter=0 _files_updated _bash_updated _bash_version="${BASH_VERSION:0:1}${BASH_VERSION:2:1}"
 declare _files_update_text=""
 
