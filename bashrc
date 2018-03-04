@@ -33,7 +33,7 @@ FileVersion=509
 #   extract
 #   lock
 #   retention
-#   lvmthinspahosts *
+#   lvmthinsnapshots
 #   status-changed
 #   rescan-scsi-bus
 #   tmuxac
@@ -62,8 +62,8 @@ declare -a arguments_list=() arguments_description=() arguments_examples=() argu
 declare -i arguments_shift _files_update_counter=0 _files_updated _bash_updated _bash_version="${BASH_VERSION:0:1}${BASH_VERSION:2:1}"
 declare _files_update_text=""
 
-_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron program-exists)
-_program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all)
+_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron program-exists lvmthinsnapshots)
+_program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root)
 
 _status_changed_intervals="1m 5m 15m 1h 1d"
 
@@ -945,26 +945,33 @@ _source_utilities(){
 
 	check-lvm-thinpool-usage(){
 		arguments_list=(args1)
-		args1='{recipient} data|metadata {threshold:integer} {vg} {lv} [intervals...]'
+		args1='[-e|--email {recipient}] data|metadata {threshold:integer} {vg} {pool} [intervals...]'
 		arguments_description=('check-lvm-usage' 'Check data or metadata for a LVM thinpool is below a given value.')
-		arguments_parameters=( '{recipient}: email recipient.'
-								'data|metadata: type to check.'
-								'{threshold}: threshold.'
-								'{vg} {lv}: LVM group and volume.'
-								'[intervals...]: status-changed intervals.' )
-		arguments_examples=( 'check-lvm-thinpool-usage root data 59 vg1 thinpool' 'Notice by email if vg1/thinpool data usage is above 59%.')
+		arguments_parameters=( '[-e|--email {recipient}]: send an email if needed (uses status-changed).'
+		                       'data|metadata: type to check.'
+		                       '{threshold}: threshold.'
+		                       '{vg} {pool}: LVM group and pool.'
+		                       '[intervals...]: status-changed intervals.' )
+		arguments_examples=( 'check-lvm-thinpool-usage -e root data 59 vg1 thinpool' 'Notice by email if vg1/thinpool data usage is above 59%%.'
+		                     'check-lvm-thinpool-usage data 59 vg1 thinpool' 'Return exit code if condition is not met.')
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		
 		local usage type ec next_date intervals
-		program-exists -m mailx || exit 1
-		[[ $# -gt 0 ]] && intervals="$@" || intervals=${_status_changed_intervals}
+		
 		[[ ${arguments[data]:-0} -eq 1 ]] && type=data || type=metadata
-		usage=$(show-lvm-thinpool-usage ${type} ${arguments[vg]} ${arguments[lv]})
+		usage=$(show-lvm-thinpool-usage ${type} ${arguments[vg]} ${arguments[pool]})
 		[[ ${usage/.*} -lt ${arguments[threshold]} ]] && ec=ok || ec=error
-		if next_date="$(status-changed set lvm-thinpool-${type}-${arguments[vg]}-${arguments[lv]}-${arguments[threshold]} ${ec} -l ok ${intervals})"; then
-			[[ $ec == "ok"    ]] && echo "$(hostname -f): LVM ${arguments[vg]}/${arguments[lv]} ${type} usage ${usage} below threshold ${arguments[threshold]}" | mailx -s "$(hostname): LVM ${arguments[vg]}/${arguments[lv]} ${type} recover" ${arguments[recipient]} || true
-			[[ $ec == "error" ]] && echo "$(hostname -f): LVM ${arguments[vg]}/${arguments[lv]} ${type} usage ${usage} above threshold ${arguments[threshold]}" | mailx -s "$(hostname): LVM ${arguments[vg]}/${arguments[lv]} ${type} problem" ${arguments[recipient]} || true
+		
+		if [[ ${arguments[--email]:-0} -eq 0 ]]; then
+			[[ ${ec} == ok ]] && exit 0 || exit 1
+		else
+			program-exists -m mailx || exit 1
+			[[ $# -gt 0 ]] && intervals="$@" || intervals=${_status_changed_intervals}
+			if next_date="$(status-changed set lvm-thinpool-${type}-${arguments[vg]}-${arguments[pool]}-${arguments[threshold]} ${ec} -l ok ${intervals})"; then
+				[[ $ec == "ok"    ]] && echo "$(hostname -f): LVM ${arguments[vg]}/${arguments[pool]} ${type} usage ${usage} below threshold ${arguments[threshold]}" | mailx -s "$(hostname): LVM ${arguments[vg]}/${arguments[pool]} ${type} recover" ${arguments[recipient]} || true
+				[[ $ec == "error" ]] && echo "$(hostname -f): LVM ${arguments[vg]}/${arguments[pool]} ${type} usage ${usage} above threshold ${arguments[threshold]}" | mailx -s "$(hostname): LVM ${arguments[vg]}/${arguments[pool]} ${type} problem" ${arguments[recipient]} || true
+			fi
 		fi
 	}
 
@@ -1489,12 +1496,70 @@ _source_utilities(){
 		fi
 	}
 
-	# lvmthinsnapshot(){
-	# 	arguments_list=(args1); args1='{vg} {lv}'
-	# 	arguments_description=( 'lvmthinsnapshot' 'Creates snapshots with custom retention.')
-	# 	arguments_parameters=( '{name}: session name.' )
-	# 	argparse "$@" && shift ${arguments_shift}
-	# }
+	lvmthinsnapshots(){
+		arguments_list=(args1); args1='[--data {datathreshold:integer}] [--metadata {metadatathreshold:integer}] [-p|--prefix {prefix}] [-s|--seconds {seconds:integer}] [-m|--minutes {minutes:integer}] [--hours {hours:integer}] [-d|--days {days:integer}] [-w|--weeks {weeks:integer}] [--months {months:integer}] [-y|--years {years:integer}] {vg/lv...}'
+		arguments_description=( 'lvmthinsnapshot' 'Creates snapshots with optional custom retention.')
+		arguments_parameters=( '[--data {datathreshold}]: abort execution if any thinpool data usage is above this value.'
+		                       '[--metadata {datathreshold}]: abort execution if any thinpool metadata usage is above this value.'
+		                       '[-p|--prefix {prefix}]: prefix to use on snapshots name.'
+		                       '[--hours {seconds}]: mantain one copy for each of the first 5 hours (same with the rest of the time arguments).'
+		                       '{vg/lv...}: list of vg/lv pairs.')
+		arguments_examples=( '$ lvmthinsnapshots --data 60 --metadata 80 --prefix foo --hours 8 -d 7 -w 4 --months 6' 'keep 8 hourly copies for the first day, one daily copy for a week, 4 weekly copies and 6 monthly.' )
+		local -A arguments=() vgs=() lvs=() thinpools=()
+		argparse "$@" && shift ${arguments_shift}
+		local prefix=${arguments[prefix]:-snapshot}
+		local -a snapshots
+		local use_retention name i delete vg lv threshold
+		
+		for name in $@; do
+			vg="${name/\/*}"
+			lv="${name/*\/}"
+			vgs[${#vgs[@]}]="${vg}"
+			lvs[${#lvs[@]}]="${lv}"
+			thinpools[${#thinpools[@]}]=$(trim $(/sbin/lvs --noheadings -opool_lv ${vg}/${lv}))
+			if ! /sbin/lvs "${name}" >/dev/null 2>&1; then
+				echo "Error: logical volume '${name}' does not exist."
+				exit 1
+			fi
+		done
+		
+		for i in data metadata; do
+			if [[ ${arguments[--${i}]:-0} -eq 1 ]]; then
+				name=${i}threshold
+				threshold=${arguments[${name}]}
+				for (( j=0; j<${#vgs[@]}; j++ )); do
+					if ! $(dirname "${0}")/check-lvm-thinpool-usage ${i} ${threshold} ${vgs[$j]} ${thinpools[$j]}; then
+						echo "Error: ${vgs[$j]/${thinpools[$j]}} usage below threshold ${threshold}."
+						exit 1
+					fi
+				done
+			fi
+		done
+		
+		[[ ${arguments[-s]:-0} -eq 1 || ${arguments[-m]:-0} -eq 1 || ${arguments[--hours]:-0} -eq 1 || ${arguments[-d]:-0} -eq 1 || ${arguments[-w]:-0} -eq 1 || ${arguments[--months]:-0} -eq 1 || ${arguments[-y]:-0} -eq 1 ]] && use_retention=1 || use_retention=0
+		for (( i=0; i<${#lvs[@]}; i++ )); do
+			echo "${vgs[$i]}/${lvs[$i]} ${thinpools[$i]}"
+			if ! /sbin/lvcreate -s -n ${lvs[$i]}-${prefix}-$(date_full) ${vgs[$i]}/${lvs[$i]}; then
+				echo "Error creating snapshot with:"
+				echo "/sbin/lvcreate -s -n ${lvs[$i]}-${prefix}-$(date_full) ${vgs[$i]}/${lvs[$i]}"
+				exit 1
+			fi
+		done
+		
+		if [[ ${use_retention} -eq 1 ]]; then
+			for (( i=0; i<${#lvs[@]}; i++ )); do
+				snapshots=()
+				for j in $(/sbin/lvs -olv_name --noheadings ${vgs[$i]} | \
+					grep -E "^[[:blank:]]*${lvs[$i]}-${prefix}-[0-9]{14}[[:blank:]]*$" \
+					| sed "s/^\s\+${lvs[$i]}-${prefix}-//"); do
+					snapshots[${#snapshots[@]}]="${j}"
+				done
+				for delete in $(retention -s ${arguments[seconds]:-0} -m ${arguments[minutes]:-0} --hours ${arguments[hours]:-0} -d ${arguments[days]:-0} -w ${arguments[weeks]:-0} --months ${arguments[months]:-0} -y ${arguments[years]:-0} ${snapshots[@]}); do
+					/sbin/lvremove -y ${vgs[$i]}/${lvs[$i]}-${prefix}-${delete}
+				done
+			done
+		fi
+	}
 
 	status-changed(){
 		arguments_list=(args1 args2)
