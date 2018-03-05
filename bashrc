@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=534
-FileVersion=534
+# FileVersion=535
+FileVersion=535
 
 # Environment functions:
 #   count-lines
@@ -552,7 +552,7 @@ _source_bash_options(){
 	_bash_options_add commented _update_99_path '${HOME}/.vimrc           #example (mandatory)'
 	_bash_options_add commented _update_99_user 'all|user|root            #example (optional)'
 	_bash_options_add commented _update_99_mode '0644                     #example (optional)'
-	_bash_options_add commented _update_99_pass 'foo                      #example (optinal)'
+	_bash_options_add commented _update_99_pass 'foo                      #example (optional)'
 	_bash_options_add commented _encrypt1 'Encrypt files with: openssl aes-256-cbc -e -a -in plain_file -out encrypted_file'
 	_bash_options_add commented _encrypt2 'Decrypt files with: openssl aes-256-cbc -d -a -in encrypted_file -out plain_file'
 	
