@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=531
-FileVersion=531
+# FileVersion=532
+FileVersion=532
 
 # Environment functions:
 #   count-lines
@@ -2058,7 +2058,7 @@ _source_utilities(){
 				shift
 			done
 		fi
-		return $ec
+		exit $ec
 	}
 
 	repeat(){
