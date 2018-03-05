@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=532
-FileVersion=532
+# FileVersion=533
+FileVersion=533
 
 # Environment functions:
 #   count-lines
@@ -366,8 +366,8 @@ colors(){
 }
 
 _program_load(){
-	declare program_name filename="${0/*\/}"
-	if [[ "${filename}" =~ ^\.?bashrc$ ]]; then                              ## $0 is (.)?bashrc
+	declare program_name filename="${0/*\/}" bashrc_path="$(readlink -f "${0}")"
+	if [[ "${filename}" =~ ^\.?bashrc$ ]]; then                              ## $1 is (.)?bashrc
 		if [[ "${_program_list[@]}" =~ (^| )${1:-__None__}( |$) ]]; then     ##   $1 is a program in list
 			program_name="${1}"; shift
 		else
@@ -2177,7 +2177,7 @@ _source_utilities(){
 		local interval=$(unit-conversion time -d 0 s ${arguments[interval]:-1m})
 		
 		_myip_query(){
-			wget -q -T 5 "${1}" -O - | grepip -o
+			wget -q -T 5 "${1}" -O - | "${bashrc_path}" grepip -o
 		}
 		
 		_myip_get_ip(){
