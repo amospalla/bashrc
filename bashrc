@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=535
-FileVersion=535
+# FileVersion=536
+FileVersion=536
 
 # Environment functions:
 #   count-lines
@@ -279,9 +279,13 @@ _update_files(){
 			if [[ -n "${pass}" ]]; then
 				if type -a openssl >/dev/null 2>&1; then
 					export pass
-					online_text="$(echo "${online_text}" | openssl aes-256-cbc -d -a -pass env:pass)" || continue
+					if ! online_text="$(echo "${online_text}" | openssl aes-256-cbc -d -a -pass env:pass 2>&1)"; then
+						ps1_text="${filepath}-error-decrypting ${ps1_text}"
+					fi
+					continue
 				else
 					ps1_text="${filepath}-ignored-no-openssl ${ps1_text}"
+					continue
 				fi
 			fi
 			online_version="$(_get_file_version "${online_text}")"
