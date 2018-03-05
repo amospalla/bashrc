@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=529
-FileVersion=529
+# FileVersion=530
+FileVersion=530
 
 # Environment functions:
 #   count-lines
@@ -100,6 +100,7 @@ _main(){
 		_source_aliases_amospalla
 		export bashrc_interactive=1
 		_binary_decode
+		_check_first_run
 		if [[ -f /tmp/${UID}.$$.bashrcupdate ]]; then
 			rm /tmp/${UID}.$$.bashrcupdate
 			_post_bash_update
@@ -475,6 +476,14 @@ _post_bash_update(){
 	make-links
 }
 
+_check_first_run(){
+	. ${HOME}/.bashrc.options
+	if [[ ${_first_run} -eq 0 ]]; then
+		sed -i 's/_first_run="0"/_first_run="1"/' "${HOME}/.bashrc.options"
+		make-links
+	fi
+}
+
 #====================================================================
 # Aliases
 #====================================================================
@@ -510,6 +519,7 @@ _source_bash_options(){
 	
 	[[ -r "${file}" ]] && file_text="$(<"${file}")"
 	
+	_bash_options_add _first_run 0
 	_bash_options_add _ps1_enable 1
 	_bash_options_add _ps1_get_performance 0
 	_bash_options_add _ps1_performance_file '${HOME}/.bashrc.performance'
