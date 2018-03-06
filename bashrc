@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=538
-FileVersion=538
+# FileVersion=539
+FileVersion=539
 
 # Environment functions:
 #   count-lines
@@ -1339,7 +1339,7 @@ _source_utilities(){
 		
 		_lock_sub_lock(){
 			while ! mkdir "${basefolder}/${id}.sublock" 2>/dev/null; do
-				sleep 0.1 || exit 1
+				sleep 1 || exit 1
 			done
 			sub_lock=1
 			_lock_remove_stalled
@@ -1413,7 +1413,7 @@ _source_utilities(){
 				elif [[ ${found_free_slot} -eq 0 && ${arguments[-q]:-0} -eq 0 ]]; then
 					for i in {1..16}; do
 						current_char+=1 && printf "\r${chars:$(( ${current_char} % 4 )):1}"
-						read -t0.25 2>/dev/null || true
+						read -t1 2>/dev/null || true
 					done
 				fi
 			done
