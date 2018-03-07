@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=539
-FileVersion=539
+# FileVersion=540
+FileVersion=540
 
 # Environment functions:
 #   count-lines
@@ -267,35 +267,42 @@ _get_file_version(){
 }
 
 _update_files(){
-	. ${HOME}/.bashrc.options
-	local i url filepath user mode online_text online_version local_version ps1_text pass
-	for i in {0..99}; do
-		[[ ${#i} -eq 1 ]] && i="0${i}"
-		url=_update_${i}_url filepath=_update_${i}_path user=_update_${i}_user mode=_update_${i}_mode pass=_update_${i}_pass
-		[[ -n ${!url} && -n "${!filepath}" ]] || continue
-		url=${!url} filepath=${!filepath} user=${!user:-all} mode=${!mode:-0644} pass=${!pass}
-		[[ ( ${user} == root && ${UID} -ne 0 ) || ( ${user} == user && ${UID} -eq 0 ) ]] && continue
-		if online_text="$(wget --timeout=10 ${url} -O - 2> /dev/null)"; then
-			if [[ -n "${pass}" ]]; then
-				if type -a openssl >/dev/null 2>&1; then
-					export pass
-					if ! online_text="$(echo "${online_text}" | openssl aes-256-cbc -d -a -pass env:pass 2>&1)"; then
-						ps1_text="${filepath}-error-decrypting ${ps1_text}"
+	local run=1 updates=1
+	while [[ ${run} -le 2 && ${updates} -eq 1 ]]; do
+		updates=0
+		[[ -r "${HOME}/.bashrc.options" ]] && . ${HOME}/.bashrc.options
+		[[ -r "${HOME}/.bashrc.options.local" ]] && . ${HOME}/.bashrc.options.local
+		local i url filepath user mode online_text online_version local_version ps1_text pass
+		for i in {0..99}; do
+			[[ ${#i} -eq 1 ]] && i="0${i}"
+			url=_update_${i}_url filepath=_update_${i}_path user=_update_${i}_user mode=_update_${i}_mode pass=_update_${i}_pass
+			[[ -n ${!url} && -n "${!filepath}" ]] || continue
+			url=${!url} filepath=${!filepath} user=${!user:-all} mode=${!mode:-0644} pass=${!pass}
+			[[ ( ${user} == root && ${UID} -ne 0 ) || ( ${user} == user && ${UID} -eq 0 ) ]] && continue
+			if online_text="$(wget --timeout=10 ${url} -O - 2> /dev/null)"; then
+				if [[ -n "${pass}" ]]; then
+					if type -a openssl >/dev/null 2>&1; then
+						export pass
+						if ! online_text="$(echo "${online_text}" | openssl aes-256-cbc -d -a -pass env:pass 2>&1)"; then
+							ps1_text="${filepath}-error-decrypting ${ps1_text}"
+							continue
+						fi
+					else
+						ps1_text="${filepath}-ignored-no-openssl ${ps1_text}"
 						continue
 					fi
-				else
-					ps1_text="${filepath}-ignored-no-openssl ${ps1_text}"
-					continue
+				fi
+				online_version="$(_get_file_version "${online_text}")"
+				[[ -r "${filepath}" ]] && local_version="$(_get_file_version "$(<"${filepath}")")" || local_version=0
+				if [[ ${local_version} -lt ${online_version} ]]; then
+					[[ -d "$(dirname "${filepath}")" ]] || mkdir -p "$(dirname "${filepath}")"
+					echo "${online_text}" > "${filepath}" && chmod ${mode} "${filepath}"
+					updates=1
+					ps1_text="${ps1_text} ${filepath}:${local_version}>${online_version}"
 				fi
 			fi
-			online_version="$(_get_file_version "${online_text}")"
-			[[ -r "${filepath}" ]] && local_version="$(_get_file_version "$(<"${filepath}")")" || local_version=0
-			if [[ ${local_version} -lt ${online_version} ]]; then
-				[[ -d "$(dirname "${filepath}")" ]] || mkdir -p "$(dirname "${filepath}")"
-				echo "${online_text}" > "${filepath}" && chmod ${mode} "${filepath}"
-				ps1_text="${filepath}:${local_version}>${online_version} ${ps1_text}"
-			fi
-		fi
+			run=$(( run + 1))
+		done
 	done
 	if [[ "${#ps1_text}" -gt 0 ]]; then
 		ps1_text="$(trim "${ps1_text}")"
