@@ -940,9 +940,9 @@ _source_utilities(){
 		local text=() i part=0 start=0 end=0
 		readarray -t text <"${arguments[file]}"
 		for (( i=0; i<${#text[@]}; i++ )); do
-			if [[ ${part} -eq 0 && "${text[$i]}" =~ ${arguments[startmark]} ]]; then
+			if [[ ${part} -eq 0 && "${text[$i]}" =~ ^${arguments[startmark]}$ ]]; then
 				start=$i; part=1
-			elif [[ ${part} -eq 1 && "${text[$i]}" =~ ${arguments[endmark]} ]]; then
+			elif [[ ${part} -eq 1 && "${text[$i]}" =~ ^${arguments[endmark]}$ ]]; then
 				end=$i; part=2
 				break
 			fi
