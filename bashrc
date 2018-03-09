@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=544
-FileVersion=544
+# FileVersion=545
+FileVersion=545
 
 # Environment functions:
 #   count-lines
@@ -985,7 +985,7 @@ _source_utilities(){
 			sed -n -e 's/^# //' -e "${start},${end}p" "${HOME}/.muttrc.global" > "${HOME}/.muttrc"
 			if [[ ${arguments[-n]:-0} -eq 0 ]]; then
 				if grep -q "^\s*set\s*mbox_type\s*=\s*Maildir" "${HOME}/.muttrc"; then
-					if folder="$(grep "^\s*set\s*folder\s*=" "${HOME}/.muttrc" | sed 's/.*=\s*//')"; then
+					if folder="$(grep "^\s*set\s*folder\s*=" "${HOME}/.muttrc" | sed -e 's/.*=\s*//' -e "s;\~;${HOME};")"; then
 						folder-exists -m "${folder}" || exit 1
 					fi
 				fi
