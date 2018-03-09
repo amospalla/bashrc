@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=547
-FileVersion=547
+# FileVersion=548
+FileVersion=548
 
 # Environment functions:
 #   count-lines
@@ -1705,11 +1705,12 @@ _source_utilities(){
 		                       '[--hours {seconds}]: mantain one copy for each of the first 5 hours (same with the rest of the time arguments).'
 		                       '{vg/lv...}: list of vg/lv pairs.')
 		arguments_examples=( '$ lvmthinsnapshots --data 60 --metadata 80 --prefix foo --hours 8 -d 7 -w 4 --months 6' 'keep 8 hourly copies for the first day, one daily copy for a week, 4 weekly copies and 6 monthly.' )
+		arguments_extra_help=( 'If no retention is specified do not delete any date.' )
 		local -A arguments=() vgs=() lvs=() thinpools=()
 		argparse "$@" && shift ${arguments_shift}
 		local prefix=${arguments[prefix]:-snapshot}
 		local -a snapshots
-		local use_retention name i delete vg lv threshold
+		local use_retention name i delete vg lv threshold current_date
 		
 		for name in $@; do
 			vg="${name/\/*}"
@@ -1736,29 +1737,43 @@ _source_utilities(){
 			fi
 		done
 		
-		[[ ${arguments[-s]:-0} -eq 1 || ${arguments[-m]:-0} -eq 1 || ${arguments[--hours]:-0} -eq 1 || ${arguments[-d]:-0} -eq 1 || ${arguments[-w]:-0} -eq 1 || ${arguments[--months]:-0} -eq 1 || ${arguments[-y]:-0} -eq 1 ]] && use_retention=1 || use_retention=0
+		[[ ${arguments[seconds]:-0} -gt 0 || ${arguments[minutes]:-0} -gt 0 || ${arguments[hours]:-0} -gt 0 || ${arguments[days]:-0} -gt 0 || ${arguments[weeks]:-0} -gt 0 || ${arguments[months]:-0} -gt 0 || ${arguments[years]:-0} -gt 0 ]] && use_retention=1 || use_retention=0
+		
+		_get_snapshots_current(){
+			local vg="${1}" lv="${2}"
+			for j in $(/sbin/lvs -olv_name --noheadings ${vg} | \
+				grep -E "^[[:blank:]]*${lv}-${prefix}-[0-9]{14}[[:blank:]]*$" \
+				| sed "s/^\s\+${lv}-${prefix}-//"); do
+				snapshots[${#snapshots[@]}]="${j}"
+			done
+		}
+		
 		for (( i=0; i<${#lvs[@]}; i++ )); do
+			# Ignore if current date not needed according to retention
+			if [[ ${use_retention} -eq 1 ]]; then
+				snapshots=()
+				_get_snapshots_current ${vgs[$i]} ${lvs[$i]}
+				current_date="$(date_full)"
+				if \retention -s ${arguments[seconds]:-0} -m ${arguments[minutes]:-0} --hours ${arguments[hours]:-0} -d ${arguments[days]:-0} -w ${arguments[weeks]:-0} --months ${arguments[months]:-0} -y ${arguments[years]:-0} $(date_full) ${snapshots[@]} | grep -q ${current_date}; then
+					echo "Current date not needed by retention, skip ${vg}/${lv}."
+					continue
+				fi
+			fi
+			# Create snapshot
 			echo "${vgs[$i]}/${lvs[$i]} ${thinpools[$i]}"
 			if ! /sbin/lvcreate -s -n ${lvs[$i]}-${prefix}-$(date_full) ${vgs[$i]}/${lvs[$i]}; then
 				echo "Error creating snapshot with:"
 				echo "/sbin/lvcreate -s -n ${lvs[$i]}-${prefix}-$(date_full) ${vgs[$i]}/${lvs[$i]}"
 				exit 1
 			fi
-		done
-		
-		if [[ ${use_retention} -eq 1 ]]; then
-			for (( i=0; i<${#lvs[@]}; i++ )); do
+			if [[ ${use_retention} -eq 1 ]]; then
 				snapshots=()
-				for j in $(/sbin/lvs -olv_name --noheadings ${vgs[$i]} | \
-					grep -E "^[[:blank:]]*${lvs[$i]}-${prefix}-[0-9]{14}[[:blank:]]*$" \
-					| sed "s/^\s\+${lvs[$i]}-${prefix}-//"); do
-					snapshots[${#snapshots[@]}]="${j}"
-				done
+				_get_snapshots_current ${vgs[$i]} ${lvs[$i]}
 				for delete in $(retention -s ${arguments[seconds]:-0} -m ${arguments[minutes]:-0} --hours ${arguments[hours]:-0} -d ${arguments[days]:-0} -w ${arguments[weeks]:-0} --months ${arguments[months]:-0} -y ${arguments[years]:-0} ${snapshots[@]}); do
 					/sbin/lvremove -y ${vgs[$i]}/${lvs[$i]}-${prefix}-${delete}
 				done
-			done
-		fi
+			fi
+		done
 	}
 
 	status-changed-email(){
