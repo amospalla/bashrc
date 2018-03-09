@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=542
-FileVersion=542
+# FileVersion=543
+FileVersion=543
 
 # Environment functions:
 #   count-lines
@@ -959,11 +959,11 @@ _source_utilities(){
 		arguments_list=(args1 args2 args3)
 		args1='get'
 		args2='list'
-		args3='{profile}'
+		args3='[-n|--do-not-run] {profile} [args...]'
 		arguments_description=('muttrc' 'Manages mutt profiles embedded inside ~/.muttrc.global')
 		arguments_parameters=('get: prints current profile.'
 		                      'list: list profiles embedded into .muttrc.globbal.'
-		                      '{profile}: sets ~/.muttrc with specified profile and executes mutt.')
+		                      '[-n|--do-not-run] {profile} [args...]: sets ~/.muttrc with specified profile and executes mutt with specified arguments.')
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		file-readable -m "${HOME}/.muttrc.global" || exit 1
@@ -983,6 +983,7 @@ _source_utilities(){
 				[[ ${start} -eq 0 ]] && start="${i}" || end="${i}"
 			done
 			sed -n -e 's/^# //' -e "${start},${end}p" "${HOME}/.muttrc.global" > "${HOME}/.muttrc"
+			[[ ${arguments[-n]:-0} -eq 0 ]] && exec mutt "$@"
 		else
 			echo "Error: profile '${arguments[profile]}' not found."
 			exit 1
