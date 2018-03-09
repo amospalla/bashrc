@@ -5,3 +5,4 @@ bashrc2
 *.swp
 update.sh
 file_versions
+bashrc.local.plain
