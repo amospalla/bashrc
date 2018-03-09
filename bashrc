@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=543
-FileVersion=543
+# FileVersion=544
+FileVersion=544
 
 # Environment functions:
 #   count-lines
@@ -967,7 +967,7 @@ _source_utilities(){
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		file-readable -m "${HOME}/.muttrc.global" || exit 1
-		local section start=0 end=0
+		local section start=0 end=0 folder
 
 		### account: user@tld.com-type
 		if [[ ${arguments[get]:-0} -eq 1 ]]; then
@@ -983,7 +983,14 @@ _source_utilities(){
 				[[ ${start} -eq 0 ]] && start="${i}" || end="${i}"
 			done
 			sed -n -e 's/^# //' -e "${start},${end}p" "${HOME}/.muttrc.global" > "${HOME}/.muttrc"
-			[[ ${arguments[-n]:-0} -eq 0 ]] && exec mutt "$@"
+			if [[ ${arguments[-n]:-0} -eq 0 ]]; then
+				if grep -q "^\s*set\s*mbox_type\s*=\s*Maildir" "${HOME}/.muttrc"; then
+					if folder="$(grep "^\s*set\s*folder\s*=" "${HOME}/.muttrc" | sed 's/.*=\s*//')"; then
+						folder-exists -m "${folder}" || exit 1
+					fi
+				fi
+				exec mutt "$@"
+			fi
 		else
 			echo "Error: profile '${arguments[profile]}' not found."
 			exit 1
