@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=546
-FileVersion=546
+# FileVersion=547
+FileVersion=547
 
 # Environment functions:
 #   count-lines
@@ -1698,7 +1698,7 @@ _source_utilities(){
 
 	lvmthinsnapshots(){
 		arguments_list=(args1); args1='[--data {datathreshold:integer}] [--metadata {metadatathreshold:integer}] [-p|--prefix {prefix}] [-s|--seconds {seconds:integer}] [-m|--minutes {minutes:integer}] [--hours {hours:integer}] [-d|--days {days:integer}] [-w|--weeks {weeks:integer}] [--months {months:integer}] [-y|--years {years:integer}] {vg/lv...}'
-		arguments_description=( 'lvmthinsnapshot' 'Creates snapshots with optional custom retention.')
+		arguments_description=( 'lvmthinsnapshots' 'Creates snapshots with optional custom retention.')
 		arguments_parameters=( '[--data {datathreshold}]: abort execution if any thinpool data usage is above this value.'
 		                       '[--metadata {datathreshold}]: abort execution if any thinpool metadata usage is above this value.'
 		                       '[-p|--prefix {prefix}]: prefix to use on snapshots name.'
