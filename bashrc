@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=545
-FileVersion=545
+# FileVersion=546
+FileVersion=546
 
 # Environment functions:
 #   count-lines
@@ -1645,8 +1645,8 @@ _source_utilities(){
 		local i j k year month day hour minute second
 		local -a dates=() datesfull=() datessecond=() delete=() intervals=() intervals_used=()
 		declare -A times=( [seconds]=1 [minutes]=60 [hours]=3600 [days]=86400 [weeks]=604800 [months]=2592000 [years]=31104000 )
-
-		if ! [[ ${arguments[-s]:-0} -eq 1 || ${arguments[-m]:-0} -eq 1 || ${arguments[--hours]:-0} -eq 1 || ${arguments[-d]:-0} -eq 1 || ${arguments[-w]:-0} -eq 1 || ${arguments[--months]:-0} -eq 1 || ${arguments[-y]:-0} -eq 1 ]]; then
+		
+		if ! [[ ${arguments[seconds]:-0} -gt 0 || ${arguments[minutes]:-0} -gt 0 || ${arguments[hours]:-0} -gt 0 || ${arguments[days]:-0} -gt 0 || ${arguments[weeks]:-0} -gt 0 || ${arguments[months]:-0} -gt 0 || ${arguments[years]:-0} -gt 0 ]]; then
 			echo "Error: no interval specified."; exit 1
 		fi
 		
@@ -1655,6 +1655,12 @@ _source_utilities(){
 				echo "Error: date '${i}' is not valid." && exit 1
 			fi
 			_retention_expand_date
+			for (( j=0; j<${#datesfull[@]}; j++ )); do
+				if [[ ${itemfull} == ${datesfull[$j]} ]]; then
+					echo "Error: date repeated: '${itemfull}'."
+					exit 1
+				fi
+			done
 			dates[${#dates[@]}]=${i}
 			datesfull[${#datesfull[@]}]=${itemfull}
 			datessecond[${#datessecond[@]}]=$(date --date "${itemfull}" +'%s')
@@ -1663,14 +1669,15 @@ _source_utilities(){
 		
 		for i in seconds minutes days hours days weeks months years; do
 			[[ ${arguments[$i]:-0} -eq -0 ]] && continue
-			intervals=( ${datessecond[$(( ${#datessecond[@]} - 1 ))]} )
-			for (( j=1; j<=${arguments[${i}]}; j++ )); do
-				intervals[${#intervals[@]}]=$(( ${intervals[$(( ${#intervals[@]} - 1 ))]} + ${times[$i]} ))
+			intervals=( ${datessecond[0]} ) # first interval = most recent date
+			for (( j=1; j<=${arguments[${i}]}; j++ )); do # Generate intervals
+				intervals[${#intervals[@]}]=$(( ${intervals[$(( ${#intervals[@]} - 1 ))]} - ${times[$i]} ))
 				intervals_used[${#intervals_used[@]}]=0
 			done
 			for (( j=0; j<$(( ${#intervals[@]} - 1 )); j++ )); do
-				for (( k=0; k<${#datessecond[@]}; k++ )); do
-					if [[ ${datessecond[$k]} -ge ${intervals[$j]} && ${datessecond[$k]} -lt ${intervals[$(( ${j} + 1 ))]} ]]; then
+				for (( k=$(( ${#datessecond[@]} -1 )); k>=0; k-- )); do
+					if [[ ${datessecond[$k]} -le ${intervals[$j]} && \
+						  ${datessecond[$k]} -gt ${intervals[$(( ${j} + 1 ))]} ]]; then
 						delete[$k]=0; intervals_used[$j]=1; continue 2
 					fi
 				done
