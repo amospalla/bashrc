@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=548
-FileVersion=548
+# FileVersion=549
+FileVersion=549
 
 # Environment functions:
 #   count-lines
@@ -273,12 +273,12 @@ _update_files(){
 		updates=0
 		[[ -r "${HOME}/.bashrc.options" ]] && . ${HOME}/.bashrc.options
 		[[ -r "${HOME}/.bashrc.options.local" ]] && . ${HOME}/.bashrc.options.local
-		local i url filepath user mode online_text online_version local_version ps1_text pass
+		local i url filepath user mode online_text online_version local_version ps1_text pass gzip
 		for i in {0..99}; do
 			[[ ${#i} -eq 1 ]] && i="0${i}"
-			url=_update_${i}_url filepath=_update_${i}_path user=_update_${i}_user mode=_update_${i}_mode pass=_update_${i}_pass
+			url=_update_${i}_url filepath=_update_${i}_path user=_update_${i}_user mode=_update_${i}_mode pass=_update_${i}_pass gzip=_update_${i}_gzip
 			[[ -n ${!url} && -n "${!filepath}" ]] || continue
-			url=${!url} filepath=${!filepath} user=${!user:-all} mode=${!mode:-0644} pass=${!pass}
+			url=${!url} filepath=${!filepath} user=${!user:-all} mode=${!mode:-0644} pass=${!pass} gzip=${!gzip:-no} 
 			[[ ( ${user} == root && ${UID} -ne 0 ) || ( ${user} == user && ${UID} -eq 0 ) ]] && continue
 			if online_text="$(wget --timeout=10 ${url} -O - 2> /dev/null)"; then
 				if [[ -n "${pass}" ]]; then
@@ -290,6 +290,17 @@ _update_files(){
 						fi
 					else
 						ps1_text="${filepath}-ignored-no-openssl ${ps1_text}"
+						continue
+					fi
+				fi
+				if [[ ${gzip} =~ ^yes|Yes|true|True|1$ ]]; then
+					if type -a gzip >/dev/null 2>&1; then
+						if ! online_text="$(echo "${online_text}" | gzip -d -c 2>&1)"; then
+							ps1_text="${filepath}-error-uncompressing ${ps1_text}"
+							continue
+						fi
+					else
+						ps1_text="${filepath}-ignored-no-gzip ${ps1_text}"
 						continue
 					fi
 				fi
@@ -567,6 +578,7 @@ _source_bash_options(){
 	_bash_options_add commented _update_99_user 'all|user|root            #example (optional)'
 	_bash_options_add commented _update_99_mode '0644                     #example (optional)'
 	_bash_options_add commented _update_99_pass 'foo                      #example (optional)'
+	_bash_options_add commented _update_99_gzip 'no                       #example (optional)'
 	_bash_options_add commented _encrypt1 'Encrypt files with: openssl aes-256-cbc -e -a -in plain_file -out encrypted_file'
 	_bash_options_add commented _encrypt2 'Decrypt files with: openssl aes-256-cbc -d -a -in encrypted_file -out plain_file'
 	
