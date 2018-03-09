@@ -1,6 +1,10 @@
-U2FsdGVkX19ok14ea/B63XDGkFfm+5q0TiTZaEucYBgrZWRD9weGQMUjh8Q3oPMu
-RpSUSZ8faxSzIBEaPoj1pKnVfbtibkcdQpqmYclGv0SwWkcZbldMo9ILkCbgriL1
-xq7BSF60O25Ku4WovyElodQPUqYLSq0U9UuQDaLzsX4kCnusqVZoT5TL0DEO6s/U
-//irGSLhtEmJDKitGGw3bDBFR4nh6APg+JMqChn6vZaC/tCEAbimk2Tmujrm5hCI
-V2WeAi1wkGSEqE3eq1FIQs7WfEMiUhSeJp09gIlWmur09X7Lh9D+gKMP9Keg8Fo+
-B4fcQ6s0PL+aRSZAIpPVzQ==
+# FileVersion=1
+# set default-bg "#999999"
+# set default-fg "#020202"
+set recolor-darkcolor "#BEBEBE"
+set recolor-lightcolor "#585858"
+set recolor "false"
+
+set font "terminus 8px"
+# set show-inputbar "false"
+set adjust-open "width"

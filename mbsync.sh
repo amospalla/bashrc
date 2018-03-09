@@ -1,13 +1,26 @@
-U2FsdGVkX19j2MG7QcMk4Cg1uzVXOyaFDFCJNFmEC7ffDmRJDqMbRckhF7DqDgLE
-HNdENf4QjGs+t9VXFLMyqbUv/arOyAMCcrKFnQ6FjfnzUjD8P6Z9+Vls5FRrOjIr
-AAYfnvuCQyJDRtO8JMbkmdE1rH7WqwfQsvxyUXPiPxnm/TZ9pgDLgfa0gBaxwVvI
-5QKJye81AYKDnVa94aLOqJjGa6bfL3T+A2k0bwdYH4XpQjbJjXF8t9phJiORfWWm
-8M1PRDSPOfhrX/tqENrqj83QJs3+1zFsq8ME5QfnwafIW8/G2zmQuaojDryHIoKx
-8ZhpDux0lrXhq/a19S/IgvIS0Fu9mifnvs4k5JW8AcCrAEQvOtYvzAvrA35W5gas
-VIQv5eJRFZzZvwr62SxFbv+h4+7WtUZBtR5pVrtK4bzwKatNli1LnL/ND1a3qUFT
-TLITsoMuI0L/J13uZ/ESSReZMca9LK+nApuOJQoUfVIgHhiu2QH4155dFbU60yTq
-0dpvCc61YJ5tHN+NVELrlsb0eSifYBkHwbtki92set9fFpOf9r0flyZDIkatCMhf
-7RYFa7+8UFbAFiMKzlhCTU08Sxyfe6sWBx35ugY6zCXiu0T9A88x29CchbFZ/ZXD
-1n0+eMa+ydktgHniPcW9ZwEanIN+mmi4QdbQ16VnThTbOt+x93MpAPSDHUZ0HEem
-/4zKUvjiQ1JyvRBcjqlcJh4yRYGu2UL3zlaY/ZWX3Xwf3ssxVqEVH2n80Kv7pEvq
-RodJ1HuxOsBSPwRiMgJQOTTUgqmYwm1ZpCOsKV11hQ4=
+#!/bin/bash
+
+# FileVersion=3
+
+set -euo pipefail
+_error(){
+	local ec=$?
+	${HOME}/bin/lock unlock "${lock}"
+	exit ${ec}
+}
+
+account="${1}" GPGKEY="${2}"
+
+trap _error ERR SIGINT SIGHUP SIGTERM
+declare lock
+lock="mbsync-${account}"
+if ${HOME}/bin/lock lock -q -f "${lock}"; then
+	export GPGKEY
+	eval $(keychain --noask --agents gpg id_rsa $GPGKEY)
+	mbsync "${account}"
+	${HOME}/bin/program-exists notmuch && grep -q "^path=${HOME}/.Mail/${account}$" "${HOME}/.notmuch-config" && notmuch new || true
+	${HOME}/bin/lock unlock "${lock}"
+else
+	echo "Error: cound not lock '${lock}'."
+	exit 1
+fi

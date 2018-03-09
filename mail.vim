@@ -1,10 +1,22 @@
-U2FsdGVkX1/hWH+hSPWkSlZtSSW4IiCiBZab83XBA4+ZmPMsBOXcx/GEwQfnDn6R
-vXoVevLoSLb/BA+Uvh8HCDxy6VrQFQgZAAtokKLzUGV9bcPIxevoOuyabR/zek2z
-bP/djxMvu3nTlU9GppXUxIcWbNIaNzwTqzRA9iBol9M425qhfZdMKadNYyDkk9LC
-8LM53Hj3sWVxIlxikRtHE1gFQH+Q2L/Vx0xFjKExxZ2RuDQt2P/hck4fnNMJP6/X
-Wvpt+EskWYIuptsN9x9dF64l8A5mT0kluzmWaJU76vKtQ9Fcc9U8RLu+u8yVkYjt
-ovx3NV7wLVeKqctiySUN9sexM0e8LKt7c+bFUGSLZtQGVJfvbZQ6Xp0Ox97nM35w
-+JCW3x8kB6pC0yDB1mm9oUNX3YC/r6jIj/nKZmEnCVqdy/w53hmHI4gz96meFp8W
-RlJV5ZH68M+HM2VBP7F4NAAcWUyEOOwKBkt/Wu9YS41K+vuocKvLCcuEmDOipaBa
-BOr7KyzHB1frDw46HvMTz7nGL6w+B3Klyu59c+sMlNXcVIJR/y+AGKbEs0i+9hfS
-tuNTJgNNMp47p2J61ixC4gcTkAc6hirpM6fA7q9PESg=
+" ftplugin/mail.vim
+" FileVersion=1
+function IsReply()
+    if line('$') > 1
+        :g/^>\s\=--\s\=$/,$ delete
+        :%!par w72q
+        :%s/^.\+\ze\n\(>*$\)\@!/\0 /e
+        :%s/^>*\zs\s\+$//e
+        :1
+        :put! =\"\n\n\"
+        :1
+    endif
+endfunction
+
+augroup mail_filetype
+    autocmd!
+    autocmd VimEnter /tmp/mutt* :call IsReply()
+    autocmd VimEnter /tmp/mutt* :exe 'startinsert'
+augroup END
+
+setl tw=72
+setl fo=aw

@@ -1,13 +1,25 @@
-U2FsdGVkX19GelJ7KWmARBffrzH+jXwFKHO4lp9/ZdvrSgq6smWwvXjwk/tlTIje
-JSXkqAmoZ2PjvrTgkG0GHwLGUPpxkKpctLZDKXJvKHdq+6pHMWuRQehsCEVtEVdK
-lmAWx9TSckCjXpeKu4JW1e5DJyKiMII3KCPPGTs18rqxuHMP1b7dKAWu+BizwH+U
-YoMTNZRHlqsNqSuChyim98jxyjM8UyYSDEWU9UKwIJKWK9rcEKtP/gWG+5gqBvy0
-IjW10Zxh2K5DXwyvBO66NGhQd1JptG/jEDAK/90p6FBG1kpQ1kaai9vDN1g0aNhS
-gNF4APzd8l1HjhI+X+QKSWKPBl7oHHTmE2eMI96p+I0Ii15MqIHUtqBDAUxDrasb
-ViKPosyxaGfMCGDtmQ6Si89D2o+WFaNFh31p9LmYk6Pven8d4ZL2+4m6BvHn84VK
-H+QjIxSjXpTvI9MBgW1FmJN7Y0Zhq4A3IkXoegSV81bLdV6q7BqgnKqxhOlsp40B
-RTj9VGLaY3luozlS2H4BoPzt7Scy/oPYIUd6lhRCY95d6ESKQxyX8HF1cRPJWqx8
-7/bGixMfSSRneL6VYb23Igst2tBIqWjxiLerHNbD/8YVuV0IG6F5gMtm4qsabqQD
-zoFKiNWGl1fNAmHudIXqenu0qR3EvK0qYAyF1Qn0N0DHRu/ceP16+ZNvJg14wMki
-Zg62afruOv1Tf5mWwZ0Vrq983F1fki8B4QZL9eUhooygDKVRfBuCAzGc3bfsUa5a
-uEhmYVWx9+RO+K8tbHZ/vwZSviY3SfK0AGAXGofbThQehnXqbmIEMqvInN9LVZYr
+#!/bin/bash
+
+# FileVersion=1
+
+display_available(){
+	[[ -n "${DISPLAY:-}" ]] && xset -q >/dev/null 2>&1
+}
+
+path="${HOME}/.cache/mutt/attachment"
+mkdir -p "${path}"
+
+type="${1}"
+file="${2}"
+echo "'${type}' '${file}'" >> /tmp/file
+
+mv -f "${file}" "${path}"
+file="${path}/$(basename "${file}")"
+
+case "${type}" in
+	image) display_available && feh --scale-down "${file}" || cacaview "${file}";;
+	audio) mpv "${file}" ;;
+	video) display_available && mpv "${file}" || mpv -vo caca "${file}";;
+	pdf) display_available && zathura "${file}" || pdf2text "${file}";;
+	html) display_available && firefox "${file}"
+esac

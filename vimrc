@@ -1,249 +1,359 @@
-U2FsdGVkX1/vXKQJBDUy98krY2xiLRhK4moYi5iLeQx7UyV5+InikaEuUN1pyOJc
-VPJu4dgQMcTmdTCMJ/U9JT9PWKLVoQyxmXiogSCgcXQEYO0gIGL3BonPnrQVSmda
-+TetvLj3LA1+ZGB9ou4E8tJqY3hmdpHEfxCLIqx9gbd315U83YSQACSBEhFB07Z8
-ZVEe8KkpJ0WhvqzSF2w98CuZ3eBeGX2yrFWDucRkXhDDjIJexM2boplQXASiVEsm
-q38978MlX2DFtVASh5J04/YL7OS0EsDSoy8wtGafyREsGK+qSlz7lMecsDIlFmm3
-vWJYuru81H4UePfejbFcTVvZNWURsSMpUBCROC0wfidWPfSepdLGZHzCz4uAvz9Y
-DTX9UMwFcyPHzQpjsOiUeb0vgM4nvaCaGDCPI3kCR3Ehy5GoC1OQqMIJ0xH/833S
-RYZzLApeWeTDMQrZP2CdqFu7UJT4AEDgVkQy2TqT3z45SjAaIAMRFmPwUQ82JHYw
-abh7V678cD34gaC9DjWsfCYXPm7GYzhJbWOCfgPjN8Qfd3SqYttpQkerKPSLgYTz
-A8eG9C1T86dT7PYBvI11T4PTXdY4XRc2y8SRkVVFqlXUiYCv5QW1S/Sfgm2i378k
-5zWg1usiW089UjtWqHHKXFEzGRyIAndsCQH8DDi5uove2IUgWGPS5Nq+npOOjgx/
-vfCOXGUefwzE9P2ckk/nqk3UQPkb6TW7rrBzb0mT0LuXxIRcZ+w5ELI1hWUH9FZT
-IUc9igb9v6s2bLddxrOrWyGL9g9A+RxXeHy0rJNb357heR2KsnoLmrecEfYk7CfI
-7mrPklSfmgbuFCVaX2HqEMurG6Wv4llPxR312psv6esYVja5Ge7HE8rNfgGS/xYO
-4Fb8RQs3HJhoFRpqSHLrSpuTyZOtUX4Y722zC3Ie1h5q8ev61u2kO0c51IjtD24g
-zRQgGtrBfZmwIxJEBbuqujxlDzCB0mprC06qMpv1k2ODib11B/ZkrQpHRupT5Syq
-nabmEhJGtOZEJjDNvXS87JAftwWqhmGLQq2NfrVHFZ9h9xUmmW86AX3zMEjUVIJH
-KkJBWQtgqHRNluwy9WuIPlE8Aj/Pzhz/RvbcsmAv0PlTxA1kKSFOzetyFerZQYA/
-6vDD+BZEbA3bJoxEWJ8XfbsAPozx8wNYz/QfovsunTPrf68Lb6OvN93Bo+dCBHsg
-499nFizANk4WAMHELmg1o3jM8JCu4nlJXdpS7lw6y11Vc2fSpGgmfXoBd2xkihUl
-7lVYhvx8ImSxZXVIsGhdgWFn9c9g0SWIfzfyjtX31RyDekzvFJ3XMlZb8iJMFmZg
-1sTd2zGHGmoBdFEgpcxnHro59fjN+O48PDAxWTdFJ73iqY3IuilhNKsxMGYsF6eQ
-l9f6aDmxJibslAkUxUOVrw74daaL9u2JVW0FkN1cYn0G2T75lYGSv1m6MThqQACQ
-BA5Dw4QeIkUb/zv14uThnqAiW6EcK9+ZDmuGdq9kzRSuoF/BKELmjQ3gJSfzEvgJ
-EwuDS6Udwvy0z4CIYs5XraiFSY511pRWzkKhs92DnFt+L/9wzbaj8e2FNMCfWPQ7
-HtotQglMsc2yuGuCcK14v6tVb4L4spJ4uWUqjw9NeWzCB8WJD3XJgc6TmZ8Jat6D
-ffXqdWodtN9grgxTLQcPX027oWC4sW/PekO3UME8d2oak6LkqQIhdi7scVb/j/rO
-l7UTyUbTHiJxbM33UhOAxEsOwdOKutx0Yt4kYIExkvQL4Jjm3gltjbmNVSw/Skgt
-N5khO5G5QYySULYNd+gnLlRgujh2xYQH1c3jiWsy0wayy1zS+B7baPQFIExCeevi
-RVlGpTUePcCyLNVFXd4BiRhe2UE+2ZyVKwnACtOS1UmpHPxX2OuFHxpUeeLzL+Lo
-Z48x64s69xQzsVo8blMczlPXE77BgoM5ZcmuwZWlwJc8Kbmb6TatjF4TadPEqjH1
-F7ZTDMeiQ8WE7nIsta12rjO9Ms01++22UsmAaw5vxOg9iBwT9yyGgTLPOOJrHbi3
-u1YPvC8N+0j9teAiwVspmQnBJPHlhN+mYqeUkno3tLQScNGeJXX9LbrUQs2m1WkW
-3ZwxqN49g3FXH6i1O/T1X8gsuHv/mkzWaUK2YbyvJL5VEwOEUEzkeM1JL/HwhCA9
-zUlnfPnYbjgmOdlyAd5DrZs7ChqmYsvfx0DhFhZg9J8uKHVhSra6yEuxYaUeCCd9
-omzVE+gimaGur38/s7cpkNqUVgsBe0KXnU4uh8SmEkM8GG9iH1IIHEfMT3G3iRrl
-SxQp8Pm38vb3s7F9h3wbApRk23vJtXGeUleA/J7lS7YkBuJvWtR4fp7rAJdpziMP
-87hg0ayg1MrnZv5P5qQaLltgBpkVHkVaOlNL0M4FxbPO5jWZZypxzeOih6eumuA6
-0H9HJJIBPq9FgHMZjkadlzWp27tWH3ddZAr172pXbr+dX0U7xmzoRyI/TwG/Il2M
-55SAWBGvzKsSSy4DtoS43eB3iH/13o1zO/YaquBzIB4VVl98wsxgMFfZoHN//IwR
-U3Kr+/77DF34isQSLi4Tn6arLdBS9wu2Tml/e8E1JG39CtYRJofPKEVoasLmmepW
-mEOQtYe8KjGlqZnG7FEYijt+bIoc9E1sLuz98WDQ6M8bAuJC3I0T9tWnvw8rZL3z
-JveBE6bQ3Oyn3lgvRK0I4ULcdggunvHwXC44qQUvTF82oQINXIQpfcO912vW+KSG
-92yGE2aDH/DKo7gch8KT8Esc04vZ4QVngAH0J0wuK7CHBfDXCQfqNPMzapcC0VIA
-lAHhXR6BIHXD2XRCtliFViVFDfN50hCaaBs0p1JkNSuOhxG4jjQ1WsgtJduHt3L3
-egWq4xoZJW8zZEzN8X+v60IpW/GqMp/hoOdLypoPqov5IvLfQ2/wCK2ERCHiqhLr
-HQGEUqu8IzI10saCsNAd2Qxr1W9ERYzsLriHd7b08/FMLC3DTOooXM24WuSmFpUe
-7SEeTisFS395vVluAYHkfjqcA/1RfTv06SnN2dneCk57qEPP8Xj4GjGbscZDis0x
-E4TkQWXOO+1FP1OL28OE+Qhy2Gt1cHj5bI5pRToAwI4cSnXsRQnrJx/WpiiRWRR7
-YSw/iLXWzo69bwgADAyzvGuZPiCG9wHiobjtNTvJHORB+xtqzD/mrudQgfpS6GYf
-p22e3agSs+leCwv/CJgYUNv45lnPbeBhnCMG+3pkaCgTXJWRmDeCAtzOk4SCajP+
-B+Os9xDKfC9j6s7LEOav33p1eJ0UhHTJKF3QbW8/mxcA1/OAczrcdJm0cqPQu7rj
-C/9zHtvxuPwT87+4FpX7Z8+4o+O+zZUr22itVCyqiTU/bL0yARd35KgOmdPwc4mM
-lxc/s2yCBbjTYST26fBtf3DC91beeXHajroo+SMshpd+5D51HcpYUauwwkYwjQOj
-aPlR6XVpEG6xZ6/8dHi9wRBhGOu8OtpqxiA7DG236/FVoBRixvT4HGKeoGti1tiO
-trBtfX+R8TzpfmMA70buZfKrBYZhu5JVwXQk/Sb7R9szHsB5qYyLea7R+k2uNWDF
-/qZsFq2FQsjIo0BysBdYZRJzTSVEtGv7nZP12mJHEmOBeUgR0M1Vi6nBuLrOnq4T
-6Gp3iLSP8kyqON30A/+8U5cji7STERt3LRZThoZSCdQ4yCEWzmUilG3hTqYNZb4X
-hruUpS+Jg4U1QTMgPadzaOTC6if1DqjX6A/SuTczf0S6UjeinnGIIMqjyKgrkua9
-MyptbzCuscNdqYvVR7PdnMkDc+veqbkfDHJNR399XykE+wRjEXN+t8JUseOnhI++
-AxaZ+BtbMEUXB1rzrs1WGm8mkfYtNxoMEY6wUWIXKqCeJqYfZ9KlZXn7ZVLPVMb5
-RL8vPTyUiP3Zyaep6Me0KmjomHWDi4PVBnajEJrndzLIUX+ELEVMediP2CL9l5fb
-APPKxUQ1ciMC29rlBb30VluBogPxnCwEAUPb25QafA1tD7R2lyAI8FL4GTvW6hDs
-mOG8BulRieuYbSW/TiD+BFc1W3g2LlSgiM8aQYT7VYyDZOonzuMs+iEod4FpEo7u
-6vkbYKFxln0q2QpApCw5a+YtraX47qNTdKGgJvWWFQQiU869a/oeP2g/sEfbCO54
-jQoqtvudwPp3GucrGf2j2oQoOyGv0fjO9YNRvrCeRBeB2ppPhUSbus2WVpG3qnRW
-untHHzSDUEbIRmhr1P/3brjDiYYEdSjQ4uWK+atE+mlYiuJMsOnHucWvTzZ8G09q
-FXT4R5sR/GGjZ/P9/u1oUcDn2SvT6LgpykI47+kaoCgG1p1wJ3kFm41ushXz32Q+
-mWzTsxpOTzBA2hjlcABSbE63pV6qUrFG6tRgl6Tj5kKnWXovRNYOiJPJ6tXPAaIk
-r2DP3Tql8kDt03f4sMgf4+BV0khF+h9swbxtR20ff76ljh7AbNEcYtSlHF4gFKla
-jNxEBvg7eAoJ4+kHDc4J4vPXmwBFSnR45CkgkRHUnnmGbMXe7miwlOWhlNOHVb27
-u/PYNhL7sZY4L1vRUInX05VIZXBZbMdIwcfWpSQZYN+wAlgc8hf9x6RDG3sY9Crj
-uF976GRxIEww3aelcruWwcichCXNsREVoDpHH4dQ+rZU61Jkjfkw8CLP3B9vDFzB
-FstNNKg+DLu37JvyZYIljekpFPXS+EF5uRzbin3eP4LCfnbNdxWXtACQjVJXqzEi
-9k3M+isT1Xtr/XdlU+/Pza/tiEk2i5q5jC9RIeVg0yQaRx8J9tOsMloeTe/45mUv
-yl+hyV9T9Q5UCD/o+g0x3qY2DkbUGdn97yRdRn9F0zSWkoFUHtULv3oPwBRz8aSB
-nFPg57omoXWzXLUnR+IcYdm7t9a1tqu/tseKW03jTJ4OGkgSBm6aHBvMjAZCKKfs
-5b9u8KwKanQhYqr1UGDuAbYXpzKCnMKNHit65qHjUHQxg8MxeEUBO+1d+X7Ploqx
-fNTADlaGlx+axMVbib6WPZ+uiF4t7cegCwvl6Jkrus0E5oWtRlMIKSJ/26XmFkZO
-9JhC8UdMl0wECsDedVolE1v6Jfw5Cov+/14l4VaYtOvrTV7nRoNqAFWMWTu4Jror
-ccK50ZPKO15PVV5CiubYcDjgPA32emycb/O9ucS6OrawrH4EIagrwSlTrlNqernJ
-44QxufKmL3o04qteG82be2xZPaRCBY1Hc5avUo3yz9ELZdGwTOyVE4iQmVTvy8L/
-HFyddaTTaXSoxHNeUt9sGmJlE2QfY4XjvG5MkiINmrVp0l2dqaKvmCDrCVUW1b7z
-1vTEbBaNn4wyQMe0RbNSu2bFdXJZlXMqdjTFL+GGskDsvAMBR+1Bf+y3R2r+SWz3
-Fd1WpzsueF5X3X0lnVhjKBTFlZzX2rh8CkE+wY2N+7XBbYg2WuIkZ6gDoDRAsrit
-XOycKaHVcPckMQKSMDKL27jQ6CRlm9adn7buHIml87lEVC5gSaUuCDqrhzbIV2cf
-jT3TsiYDwm1FlyaSrAU61Dw+V1x3E/ZERTTS26o3z+U0FaWCQUfkcH9zLsDVelzu
-G33NJTSS2bUOJXSE1F4xYb29RKR7lOHHL9lhVmjSOSHSjs9f0biVocX7MbaCmiCI
-XnJ9gSh7cAb7dZhqKlICxDtE6UvGo1tlFhnjWT4EXvo1xGknx7nqZ/8twuMG/kqZ
-v68xl2s2ZaOESxikD46I1Ts4ERHxHV/h8bmVMDyD1ollb2nZ9OwqhjXWp+o0+eNS
-FQjh7vaAisnJRXX5WcOtNRKvzp6ouSeL3l311Y/jL0aci8760mD48t9VsiTQkeFA
-Fp38UlXUw2yfcemZBvQNhmiZBsHVyNW5wLCAM2eAyowPacsE6oDbXLBAHWzD4d8q
-1ce2WbB1JDyJIZLXmx6qIooBRyb4tzu9UYUzLLLZcU5sgkjbRk7xH+tATF5W0spD
-xAZz2A0MaZe7h5xf7YLOa6rLXQYNd/Yl3uSXWcrm0D2Ty+pMLfLbQ8EPt7560URp
-oKc/ZdajngidOVH0NuuAUMjUuRi32JK2od90ouBu4ZU41XUf0XOsPY0WnPCx7cki
-ybou8DyG/yOe2KuE7qXkbD0Lnu/jl49gMwClfnOCUntiL0bF+Na7p2qHWQK7TZwK
-dbGUO+jVuIbeyeItQrOU7gR2NZA0c1b3svK5MhmoQYMQ0ILLzGI8BxYEe/8Ujriu
-xjTZkvF18zVPZSzgpOYSsTVJeHMbGbhkA/OD96aDWXrEme0I9cKQ8OuOhP3Kqk1f
-UPcnVsUr6lL8qCJGHk3hdPCIKuS/pf1ZfLtQXmnoD4QUegZCjgIjfkNmCFYHz+ee
-lG20ERiv7ZxJ0maBWWW8R9WMtdQSTfKXXTRuWa6PN/kohm8vQihUKig/MAj+wqSL
-bUA7NJD4RKU3v/KVoUBlCW8DDGB+BHR7rv0gP+MbXXhhz936PYk6FQFnJ50Q5tr3
-P5MCbbBL4GawSVAU7shRnN5zz+Cd637/6koFwuST6bLaV3r3EagG26qlDiT1WfzX
-CEdgRFTXfvTYJHboxXkKksy2HQHCSjP0Uu8z7kyoTqAjK1EBAI8Ehy+dgSnVHXRz
-2luhwbXIfqRrnzayuH9rBjzRX6Oykw9LliSuI4Ycs9ysjPPJLHkHTQiTXmR1dmYg
-yV2YZYFehFf6tffQRkIUMcYiXbkzj3ArZAl86VMPHYFiVMuzxSiS/YWJkOeGDA9G
-jSzirwc8aitgK+k9IBHqP0yKBVMthQM6aoX8Pjz7TEll4xI+3E7IMr/utXx4nUB0
-yEQIIf5sM+M09tfZppxM6KZbaCkyxKI2kbPSvszn/xTRSLzdTBY9Ac418Tb04YWX
-rGH3VfzJnfXTbmXa6zs5iLVfMZm8r+f+k7tKPpspxYY+bGRGuC0ZVzs4kTMZadB8
-5lBcxVO8oXhIztXPUkBgHUQQ+vFTI8KK2UcLFsLnc91jNztsqOe7kmyrQdSmqi5p
-hP6Qv0iXepb7o5rdNFWLpFmmSc+vYVcyw5QsKBQu09fTWEXComr5YtHVUqqUx+2D
-qTmA1gS3o7lPpasuMnsdSi+aLRCkmgnEzxFhvlgXMM0TWQAuGuMTEojxEEPW2Eaw
-E+8oFe/VnvGiCwW3T7VqNfjU62oHvA+npL3HozR2VdtyS3c7uAlSIeGtqxbe02cY
-ttMVSmXjH4h+tg5/ifqmxppvOjjV9PhVCjqwmpJZ6pco0HrG7sG5C09Pwy6DEIVz
-SWEWpLDmr/plPa53PmZi9SZ/AjpTMcdpMkz6uWCB14/C9GMVxLUMvyZw2UEG9N+n
-jouTv0nh3Pxg6s6uYd6ZF5zRnHYubmLRKeoSs1wLP2LyZgYWGiHGRTBJfioDJ3w8
-vqFnSJg7i0pkDwf25YGR51PsqibgQcZELQ6ENg++Q5KGB8McSP1vheEuUy3b+3QQ
-GIAic/xoe8jePUPHsJ2gBFO6FdHfkmyVBRL5m+y8cx0DM02sWTxuzHXKZrjSMhyE
-4FhY7hgTSApZPPN8MH5gIaXd3yVKj6+zT5EP7XRE4odtdTg0NgdZm9hM3YrUUit0
-mmw3/snNfYYuf8C9BB+Txoec4YSbVCZkuiQhvcQhpd1J3lqtFt3DT4Sa+Ao26Und
-WEbdw5uFWAoZQlx3nfD0j/v/vEzpJFqOKfLup6knWXTJCe8a0vGx3Z2LdXf0GfXm
-uV8MrBr5Z5H1i0BN7DxOudbluKi/pSIgSIpoOo8jwWvA1A+1wRNJ6Am59xl+bEp2
-uRfw6oo7AyVQJN8cCnKh/x0e+Aqdy0ctXyRG0bOhKCVR8b6ojj+wpiItXWBHj5aw
-i0GdcLjRoWye8M7n2QWqYWApfpxpjeXdNRFKzUyKFXxd6TtfBjlSyXYHvT4n2cFx
-v/GslFvmyel4jCa6RFPrV4hvFXaaSm4gRPtbmbYA77KsFIZx6F5O4z7Kja1xUJQO
-8KMFliGlhGdq4iCr/6n49eamDlm2Dn5Mqf7bC7+GG1CCEbMAHvsDphGOn7777yGo
-gWFWp/eBL+QLIKtag64J0qjL46L6lXjT9jkQnan8IVrmYarb0PNwUpzS9soAyeUU
-5fNnmYTML4yflKOQi4i0b/R/9VZHHXVwXuof/zTSsi/+GuCovd+juiXBgoQHOFoe
-HzuYHm+VAe1UY4VEtPo1GBMyQuKvmM4/ERB6crJbrPxKC5GEYx3rMqFM7XrIXipY
-25bHx8DFJBBQTwX5jDN/BNjlWF4RBCw5BXQoC/ksxQg10gTIOWH33FmuK2/8fyfU
-h8i9VE98iChWK6UWD3HvqNN0a3i+iLn/HnVEPMVvQsURTom7hTP5uj35NWVKQ1yo
-pcOSkR4Igvp/XnZGxvKvmDFZtkxYUdJ4wpQVkR53Hg+MMlsxgG3zYJ64Z6kH1OIN
-DUVEu0fEe2HnIxNYh9kGhgFrbwQGhl0ukXq+22MEBpGzieIjuME6s0ZX9XqDzQNn
-cHuIQVkjvmwz0q7fErYuH13zvedBdODq6+1IWJZH2GP0/KaXiu60XyF7ZxDOFT0x
-guL7l+/JumNBEO3AHk9SP8duab8MdbI15rrO/ByaN9L3Xa2XLGP16GjsFQ5DGsXZ
-IowOOlK6jobgMpqGicPGQ1tjftv7JjZdD2BqXfeRrKMgWybCGo7YtHS0CFPPRjYR
-OB0zoajQP4utiDWVh5Uw4DzmnROckHROz98NidV+YCvmTIWzqV/dghnpFepVtZdU
-4qVQaUd48W9lBPNWYFI34hXVIh0l2iPx4ZtOfi5njL7eItNYG53zFwESTOG5ofBo
-Ulxho5tuYio0YR1SQx+th50o9ek7WRk27ueTw/llOeB1bXDDkySsJibDYR0wEx4G
-is0hdlQs4/qGtIaxz3AA2x67/ERdBoEORKpvSMHKdj0br7s0tg3ypBIdzeSXWOA2
-nT8ujTjbAu+FZVld0VxY43nABL9417pxw7tewPvqxfRACqUfvTNGjCj5gQ8iMfdh
-a5OQDiuME7+NCKv+iguWztm/xuM/lebNnqWxhscQ9fl/fTRteSxXdqLM3DSWkPog
-+tQWZ33oOiXqyw2McpXQnNhQgH+nFn5yQDuU6cdQhqIvdFdVSVvmIAfbUmf1bNKm
-S/bNsOu76J/lrYiZ+egG7TTeZ3btxQ+8LXdjRA0jKAJJoKuIUNkjCm9j/BbHYi+h
-dD4+KqnaQ8CHPU3fMegBHd5q8WCUHZHuQJZSKDo8lbyHdfdaEkN8tTG2vv8teOTD
-QbrlTf9rgveJc5MuU/d1sFIgE4JSSVl8CjVSMDe7jvMO/CPvWvfuyRvm0l+SuD8n
-S+YKmijzSZ/IfFw2AOuoIKQR/dtavnHc4CdLxsxfwBJWJyYpuATVUvot99OWMK/o
-rTAW54NA+cveC75y551DvJxzC/VPf+eM3VZVrcRibedeKKPHQMPlaZnj6qJ1IIdI
-C2wDqi3YaHXoJyxveKG9OPzw1Sqvg1bqVk5PriNzONy8XHJn+zNtJYSITiR9+a3p
-b3kHmDAYtYOVvzzgIoUKgnOTzVNw2VGglvpziPa9u9DPsGrFBURyWeDec1qUhaya
-MhT5Cp2y+6iK/DXWnHGdAhkfZboWHrU0jjQXSsbSm9vHlPMYtUE2e5QFZnIkrqDJ
-hYCU4ijVglwmTyqcC3JncrvTKPgmI8bu8zdbF1bNANjnAGdNVdYdQ4cc+OEGdX2M
-N3F+r5q1hvAE1X5/9YJ0aGAw3R+bIl/dgxDnthR0hOLtoFKjMS8xsnTw9T/xyHh+
-l/5cklqhjAFz3QLjoQdTDrYEpSfNj6RGgOtNeNeH1c7qwaHpViQbsjeR3X06h5ba
-IE4aTmYHXHGDJw/68cNdUjJ/rux12q+ENnwvJuMv83WSWiGH44i3/7tMwEb3z5+2
-eG8EBRmp9OYQKADyPqaw6DRWqwDAzy9BFuiqbnFlZUE+5hadJlzgFBZGBKqKy/Rd
-aqbisy+ZEOLmru/iUjPWGjBlkk/xG7UqkV9otrlWQbCvCy5i7varbB3bIzRTIBOP
-z/rtYxiy27se+JwB27nqONxAPsCOnBfyiH5BCilJX2mki56Caf53IYWH/lyxaiRN
-8lEjSCHeUyZfxl/TNxQIsIT2scYwK6DXPod6sqsJJd8tqf4r8ClD0SRPL4u+w4yC
-+hsYopYJoE/Jz5VKz36wdHs/3e55iGBu0vtn4gfbQPmzZuNc9RZ3OOciDZZ3lK+y
-gTqwAYE89ZhrWwqfW4ntANcjgO158Tz+mDIY3z2MMRV1FJ4qspKVYJPU11A3JUld
-MuygPjmtQAV3XKmYAi45GJmu7FL0PqC4ZASTB4Lz9Del+9HC2wk3DsKKRgshLMmp
-J3ohtt3OsmJ4BeNzQRs4N6J2tHXlzFaKAncrgBurEq3/C0DXhwEFzFU+AbQ9dEqW
-KbIJtgdSxqPFa+ePyR+b1PYLg66rM1PswrmZthnAb3xzbPOpg4eSUcWTIS0PtoVL
-4/GYqZT8LxwcznwLNGPYOm1ltXM5SVnLulb/rJ4w0Hegm/4qNWM2KdXEc+EiO2x7
-JHYa5wlwxFbGXjxG/WGT2bIfddDYmw7tlgzW1AvRVwRavYy/h87zLqU9jtTvL/4b
-9Ge7DSeN10JhvtkTz575asdsUW3PzO3Iiv9N3ak08IS86TcahFGdp0lMm4hdgchX
-UvLa4Xa3fCS0+J9T1NQ4Fg1N0tOR6H8CxzPfAtoNbwWVwZzVacaZqHfAHdwatIXn
-3EdnYrSyvGVMV59S3lwxJ5km9QHSS7Ole/Hdz26AUNPpizyZKGQ5mfSPkkXLgSp+
-bSLKlZBtqRtOpPTNBX9CXekihj9jE+Og8ZSs+7igLHOwQKq/bONpQmICIM4OqZMf
-7UItuIbvjkstuw+4/3bEJt6kk4QVNOJknPYIiMvov2KfO8Epm4vNVdWB0YGs+RZ5
-r+1KiL71h+DaZeJ3ap1FwXEnUL/nZ6xxCFHwSjmB6Htd5tAWZVeDnVKia28XnJr9
-qIMkTmD4p5FutLUb3kwhtt3jIWcL/EwXHmdkKy6eEaytTYvG1KOVkmG21xuGP3gA
-fiuHEQQJ/NsSU7AtmDLfy2BuL+TTFJezCLj4kibwlExpn6INJiRFuPD7r4vT0imc
-AAbRx/ztZYW630+pmOyTbAADxowbM7XJhiQc2DrP04Bg6pIaPr+WzXlOBfW4Pxew
-b1zCO6JS2VlV/BXbW1sCiII+Q3Q+etqd1a1/0mB+u6yffefGsW1Jwq90ywsVps4f
-PM0GQI/YIDx+ctRw5dXmoEv+A5dd0eA7twe1g0+Z0vMUYguzqH/Pho6dbjMvLSOI
-6e5FJMGIbbschVMdB0lN5jYbRNguyjK5d5mIaVfC8L+C67oBg7t32iOsV9WzVWYz
-nB+QKdXv6zGbNl8u5PSfhcI26lLUGP/8EKe+zhQdoygyBVMmhEDj/NRL1vRqwcM/
-9nc4xeH3l28JpdGKlfdo0jIpBCzxlTC9B3LdWU9QfcB5U47zf2Tw91zimAe+YE5W
-JzkwtLH2tAbEuv/9c68ibnnlq1ddv7cYwF6+2XU9hrTpOqioyD9M4gcaYimbJjzu
-np+iB1HQr2tcch0FQMdiR1qpGelHCqAvpjK0m5NvVO37o6QhPa/bpozOFh/ZYNAn
-s8mkLf2cDa+LU9PQ/HbL/GgFW7+I83711613Gz+/Zw/qDwUc7r8A1lJ24dOA6x41
-jIj2a49Dk9160Ub7Z6xWnL3LWBXdWxhVblhq0fs3PjciSmYkBI7f2n+cPKguR57N
-QgZpd22wcwOKVFT4kmPtnfj99WZ5wBueXvtH7xg91Mb8tJqFYimECrsXOHgC80AQ
-9qec9aqA9jpvJxeqmet8qOzmt0DzG1hIzVaN4oURHCsp4INQ+NlYWNjF5JmOa/Es
-481TuDu1iGJN0A3TBcbvdsDFD2eKhbKjX5HHqyihjnei3R6TnwIOr4V4+oBvAmLt
-fb86x/Q9MzEATDSUoOo1RDHuV+Fk93N5m9ejoUd6taAhCDvCzVfXWxcDWE0CwEPA
-hJkcb2J4uawkFSFISKKc/qjE3cX8Upw4NzY+HG3s43GVkqHR7QqPT2DeGinw6i9g
-zFm8kFEh59i7i9jXpIYU89h2EdY7Qcf/PHhQt1rZdPkdTcHA29Kk3qwWLhvXmDeZ
-SjUjBKsuQzIFhRTtd+r3kFU7UY5S+kbk8iWAKuXWOWaJ4Q5AgXG+H1+sxuDvhj6S
-UKGUSaal1RiXc4X/cmfLbMkuvfY517oWz/g7+JncPxbFWI/i7hHZlWgj1C7OG/dF
-IV0CxXBNOtU1OMabxdAMlrpZwne1AUD5g5i1GeiREMXWI5s/7fiuFs0aURJ1tYmW
-rsWpP1iH8EwOj/DcVWOlMVuvUiyrl4ZLyfsoynpwbFL7eYuN6JndjTf12C3u+uGm
-9Yk/w6JEoLfdEwoGXSEJg8xU+nerWzqQV1vRuh8obLKdG/kLFFo5mg/9KL5ncqz7
-vMh0ejtqg782HYYzkdD7uwh2g2Dr2hQVhBzfMr+VunOWwdABbGKnZ3v5+Tv6jpvc
-OxSTpPk9ocFInde2gr5QKcYxXS41qBc4JrYegpWZ5MJGQWhSbQWEoeIXI0+SwyDz
-aKDG0EaO0+aNvP6bHVV2lfw4tpcrPV8VnH/UlmVCTEYCk4HGL2CiTTSL0PW0cbI+
-Zk9euSWQcNTubv0jihMxq7l9zvd7JweJwpCEn4L7eJKShhcny243VU0nQD93IUZz
-LvOIffRk3Gbp7uKtI7s5PjNQ+ThNR4VByBhfjlLabLAbP1v2g8uHI+e3ouvvE090
-bsOlVtsLamnQmxqluqNHAhMjxYVYvq5IVy2vJ2OMy/1VtqXXDcBJbOXI9Zhs2beJ
-bLtBzVdGVQsg4csIVfTtqhZpnFueWiNutpaJ3xDK0Sr2Dx5aa8eazPozi1Y0+/TB
-p0XqlvmUAfuY9G4hNGPxXIlrUWY+NpWI7ARUY8YogSaaBmqDO2IZlvuQCq6h7Fp/
-ihZ+BNeZTzn7mo1CeThuSEcWke6KzOqp3y9+a+R6U2N+1/SCOwEZ5WyswYNeLTy8
-KoVsG5SQCQEAcRyDzKmm1WOJ4UaCdJ0erbtECHSJzfhofGatgxF8LVFM7pn3HAve
-yFh2u1K2ekiPRXYtNOF2hqqIMGxh2HfLspHq48AUy8sb6kMPqIFdm8EzDBdA2aZl
-uhB3BZDTYcyMiB5PTIlLAZlZHDulaR33c0lzkHYuq0HwIhMpomN+tLNjscIOZHRF
-L4rYOr5DEdHwuqlQU2X13n+2pZJm9CvRAfDYD5pfKISJciTTJIXknXSyUT1+Sxx+
-JwjWkxnZgWaV/aQ7v+UvpjcpIJfaO30cijkTCL3sXTiR7c0LU6ZMHf3qIq2JF48X
-65CgxhgNkM7YC5vk4tqalNlyX6s5vsrEjaxkGhAKGkhdTGF1IJHKrwwpW4AdoX2m
-kay/48HAFNUP1OpuFcinqN5NQsUAl5uHoiUwdR2OiJJ4FzEJia8amnI2zoLRkBXa
-eP4F+9msoBhJJ+JJwDJYKD0n45gmaD+/pKHPYQrogd0/SNKBYUdHKeEtblDMdLLn
-w4CkLz0UC18o0ZJ0yInfenRmM5V0D+3iUn/fFuYBdHUDPrjz+D0l4/sSJrn7vQN8
-t0lo7G3IbWavPytEsqj9eTQZRwWeaCU5fV+YHuuzWbPAW64qDe7f34Nj3tVTtAa1
-oQ6dUg7RlbKUWLyMah9F8LUvmNoHJ6plW0vDWL5ATQjvNcAlft6kv82xkY/ta0mf
-s2Z8vLa++9tYX3px+TLciVPtfUM+dd1+U8YpsbadvvYwiaMXqhM7so3FUVmO8sLV
-kJT5cze/0hgyNGXYpQeyDJOtTrOKVzP+bISTX0Edg/RX2+gN94UazPH2pbVpKzns
-EIxPFP5lb2TbhTa9GQvUdESmHxhxwOoqEjspErpAg10GAd995kKw2WmpP6UqkdvB
-zSFipNO0KgLDo5dKtj0wNi7rMwsnUmkbOGay3IXA0fZabXSf2jNGnyq0luEZ1FDZ
-ebrf8zKGd6+X2Tn5o+p0MSzXs65gvu4XxFhpcWbnrwSA63rHi1nArlBIGg5iufRu
-F29ReA9EJXYVM0CMQUoFBOAZM/o2k6UXBTGJJjDvkIPvQ23ZSJi4EjlbWpneW1Xh
-iIGfKHhG+VevpjTw4zi4IPepJT9NipXg4yhc8vlMfwrS/5a7xc98Y7xpriYHsChx
-2YpDrnejSkq9yOt/Vb8vV/h/F6rmI8FUH9SSU0b6Yu0jSXOjghKqErWKQqusZCkS
-k97mUrvTlV6hhY3p52p3bdehnOljlgsE/IXXNdgkeqpOxkEXhSC5CGFiaWXpgZ/f
-DHjZOG8mafbDNWxgSKKJiCHYNyMrtTKRUkxBXvKBHXZGHNP5Wem44XllT6U1XDcJ
-/ITwE2ijwAKv9OeVztpIp9KPoixmx+m90HX7iRaD6jPNxUODfNnAs7CAn6UjVKXk
-+lW5souhB0muP0PEWLBcLWEXUNmr4NJK/28J7mrbYdwG8wAuPkzsqGdoboqC55de
-lOh+KkaQYAAFFiVY/ZTzEHz/vuZKAUduSVkx7cUg5uXXN6MvlDPHvaZ0vzDjA+Is
-CaDHiv6HzL0u9Biu1KhbSBvv9ibU/kOD+48NmorVQfyZwERUgbUljYV+s4d15fe9
-S/cp2Ioy6dVp7Vi290KI0Z08TDTstMJspPHoYwMEdtuXpHrz/O3hTFaSLuBEyxfZ
-z1Z8i6XpLYOyfggH1mgWa1z/b0u4DFa6HvYu94bXIfIJvLMxYLEEOwvmQExv+di0
-9uQUu9jbghTQDrLbnbzeCYujoowxhzvdNpNlvtdINPmz3CarRjmweGWU3+4Vkxbu
-sFoCVUqNGUCme6TgYEh/c++1+cDbAk61ysWnKeOFabJvhJ6zLICGcoW8AP2sgXL7
-NfwpfXNiklGzlwuTvrt1HzA/UIfgXdT6eLw9oDjhgQX9xT6ArcZnafb6XTkS9m5i
-RppEVCIRCrKMpnEf5oB1z7m43lKAw+bd5GXgRZsQ0TmcFRNupNJG4hB8VxDd0lFq
-uz0S5RwYmonbGB9XLQ/maYTKmWF4XDCsVhLpLXv6J2ptiuW1/7QVdHKP/qruSrSj
-ccEumz/UtsmmDcaS9vH4f84Fuy6rkmdURLbQ70+66QrZGekBi336/UrfR7HWrEof
-2E/Sd5iCgP03QF4dQE+CaRVAHw27w5YJmQpZamgqDM7Rbt44xb3TmxfeYVTep1iH
-mzbS/dRfZzqIWUzmMtyJGEPD6TtKbG1WvXJdMMiDT/9HwyeGGboftCUlFIbpw1hs
-OOMCfsP5dJuuI5P2se7h9jJeIZ+KUgdqhx7oAT02uulwmoqPQRO8+FTeO1rxMFYJ
-sjWz4ZrLw7UtifYZ/230uDxJsIMchIYeacqdlXDrIkkptdrn9BX/FzVVCXsQLD5C
-yEHWP4jZYQXp++7QKoQ8/98+UB3fHl9Q7ZPui7dYERzSrTf+vGiEFOTNBAr8aczx
-71sDg+zaqZYLg0LGNfT75Mr3yspTZ0rfZmYv9JRNAitmzgUZV8Jd12ARH9Ro6pvk
-U0LJtPvxeqzYucoidMAlNAxZUrDVUklCKoTM9DMDYuFMfVhHkUbKOeiJNDXtRvVX
-PmbTmW33TZWAGZielFbJMcZubrWjRwLOCtcsXK7f+x1IV6cvXY8e5cWFbLOMh8su
-r52ARI6jwdWNfqlQ9oFL3iHgc1GT2DT0HWjFq200r3dfzmPyhG7yr1pQg0AESm65
-qtVJFFnNzLNsw79klaszStN2bkWMfLhrdkYBXTAEUPGwHTzJBhnbPV9WoRG3XFA8
-HvmKWFRN/3Qn2jE6DDi9P3kdOyqmKV+7E/XpM7vIGQ9gD2GMWFA8o8e0tWkN5YMu
-eN7kQxwqtuggs/ZImcyJgkZbGBciVxGN2hhLvdzoupmW2gO1TDnBziipzWKxL8WT
-7Lx+EjSiUlVk1ExjX9bzXOYnu6Z7YyRMzxzZjZS5Xavb22xOYh3oxWHemX4rQ3zz
+" FileVersion=56
+
+" To install Vundle:
+" git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+
+""""""""""""""""""""""
+""""""""vundle""""""""
+""""""""""""""""""""""
+set nocompatible
+filetype off
+" Global vundle
+" if $USER == 'root'
+" 	set rtp+=/etc/vim/bundle/vundle
+" 	call vundle#rc('/etc/vim/bundle')   " Use a shared folder instead of ~/.vimrc/bundle
+" else
+	set rtp+=~/.vim/bundle/vundle/
+	call vundle#rc()
+" endif
+
+" let Vundle manage Vundle
+" required!
+Bundle 'gmarik/vundle'
+
+" original repos on github
+""""""""""""""""""""""""""
+" Plugin 'floobits/floobits-neovim'
+Bundle 'SirVer/ultisnips'
+Bundle 'vimoutliner/vimoutliner'
+Bundle 'altercation/vim-colors-solarized'
+Bundle 'Raimondi/delimitMate'
+Bundle 'Lokaltog/vim-easymotion'
+Bundle 'godlygeek/tabular'
+Bundle 'bling/vim-airline'
+let g:airline#extensions#tabline#enabled = 2
+" Bundle 'ervandew/supertab'
+Bundle 'jnurmine/Zenburn'
+Bundle 'scrooloose/nerdcommenter'
+" Bundle 'vim-scripts/taglist.vim'
+Bundle 'majutsushi/tagbar'
+Bundle 'scrooloose/nerdtree'
+Bundle 'vimwiki/vimwiki'
+Bundle 'gcmt/taboo.vim'
+"""""" Python """"""
+" Python autocompletion. If used disable python-mode autocompletion with let g:pymode_rope=0
+" Vim ide
+Bundle 'davidhalter/jedi-vim'
+Bundle 'klen/python-mode'
+" Python indentation
+Bundle 'vim-scripts/indentpython.vim'
+
+" vim-scripts repos
+"""""""""""""""""""
+" Bundle 'vimwiki'
+Bundle 'table-mode'
+Bundle 'restore_view.vim'
+Bundle 'Align'
+Bundle 'AnsiEsc.vim'
+Bundle 'DrawIt'
+Bundle 'undotree.vim'
+Bundle 'vim-signature'
+Bundle 'Mark'
+Bundle 'TextFormat'
+Bundle 'bufexplorer.zip'
+Bundle 'VisIncr'
+" Bundle 'AutoComplPop' -> al introduir nova línia, autocompleta, ex: /bin/sh -> /bin/bash
+" Bundle 'dwm.vim'
+Bundle 'buftabs'
+Bundle 'SearchComplete'
+Bundle 'vim-easy-align'
+Bundle 'recover.vim'
+
+" non github repos
+""""""""""""""""""
+" Bundle 'git://git.wincent.com/command-t.git'
+
+"""""""""""""""""""""""
+""""""""opcions""""""""
+"""""""""""""""""""""""
+
+set t_Co=256                    " Enable 256 color mode
+syntax enable
+highlight Comment cterm=italic
+if &diff
+	set background=dark
+endif
+set background=dark
+colorscheme solarized
+" let g:solarized_termcolors=256
+" let g:solarized_visibility="high"
+" let g:solarized_contrast="high"
+
+" colorscheme zenburn
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" General
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set history=50                  " How many lines of history to remember
+set ignorecase smartcase        " case insensitive search, except when mixing cases
+set hidden                      " allows to change buffer without saving
+" set mouse=a                   " enable mouse in all modes
+set noerrorbells                " don't make noise
+set novisualbell                " don't blink
+set exrc                        " Scan working dir for .vimrc
+set secure                      " Make the above work safely
+set colorcolumn=80
+set cursorline
+set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [ASCII=\%03.3b]\ [HEX=\%02.2B]\ [POS=%04l,%04v][%p%%]\ [LEN=%L]\ %<%f\ %h%m%r%=%{\"[\".(&fenc==\"\"?&enc:&fenc).((exists(\"+bomb\")\ &&\ &bomb)?\",B\":\"\").\"]\ \"}%k\ %-14.(%l,%c%V%)\ %P
+set laststatus=2
+" set textwidth=79
+
+filetype plugin indent on
+
+
+set colorcolumn=80
+
+" http://vimcasts.org/episodes/tabs-and-spaces/
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set autoindent
+set smartindent
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" UI/Colors
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set wildmenu                    " Show suggestions on TAB for some commands
+set ruler                       " Always show current positions along the bottom
+set cmdheight=1                 " the command bar is 1 high
+"set number                     " turn on line numbers
+"set nonumber                   " turn off line numbers (problematic with cut&paste)
+set lazyredraw                  " do not redraw while running macros (much faster)
+set backspace=indent,eol,start  " make backspace work normal
+set whichwrap+=<,>,h,l          " make cursor keys and h,l wrap over line endings
+set report=0                    " always report how many lines where changed
+set fillchars=vert:\ ,stl:\ ,stlnc:\    " make the splitters between windows be blank
+" set scrolloff=10                " Start scrolling this number of lines from top/bottomset noexpandtab
+
+"================
+" Show invisibles
+"================
+" Shortcut to rapidly toggle `set list`
+nmap <leader>l :set list!<CR>
+" Use the same symbols as TextMate for tabstops and EOLs
+set listchars=tab:▸\ ,eol:¬,extends:>
+
+" Restore cursor to file position in previous editing session
+"       http://vim.wikia.com/wiki/Restore_cursor_to_file_position_in_previous_editing_session
+"
+" Tell vim to remember certain things when we exit
+"  '10  :  marks will be remembered for up to 10 previously edited files
+"  "100 :  will save up to 100 lines for each register
+"  :20  :  up to 20 lines of command-line history will be remembered
+"  %    :  saves and restores the buffer list
+"  n... :  where to save the viminfo files
+"  en windows, emprar per a la opcio n: set viminfo='10,\"100,:20,%,nc:\\some\\place\\under\\Windows\\_viminfo
+" set viminfo='10,\"100,:20,%,n~/.viminfo
+
+if has("nvim")
+	set viminfo='10,\"100,:20,n~/.viminfo.nvim
+else
+	set viminfo='10,\"100,:20,n~/.viminfo
+endif
+
+" -> change status line depending on the vi mode
+" function! InsertStatuslineColor(mode)
+"   if a:mode == 'i'
+"     hi statusline guibg=magenta
+"   elseif a:mode == 'r'
+"     hi statusline guibg=blue
+"   else
+"     hi statusline guibg=red
+"   endif
+" endfunction
+"
+" au InsertEnter * call InsertStatuslineColor(v:insertmode)
+" au InsertLeave * hi statusline guibg=green
+"
+" " default the statusline to green when entering Vim
+" hi statusline guibg=green
+
+" permet seleccionar mes enlla del text amb el mode de seleccio block
+set virtualedit+=block
+
+" To enable persistent undo uncomment following section.
+" The undo files will be stored in $HOME/.cache/vim
+	if version >= 703
+	" enable persistent-undo
+	 set undofile
+
+	 " store the persistent undo file in ~/.cache/vim
+	 set undodir=~/.cache/vim/undo
+
+	 " create undodir directory if possible and does not exist yet
+	 let targetdir=$HOME . "/.cache/vim/undo"
+	 if isdirectory(targetdir) != 1 && getftype(targetdir) == "" && exists("*mkdir")
+	  call mkdir(targetdir, "p", 0700)
+	 endif
+	endif
+
+" permet folds per identacio, i marques
+" augroup vimrc
+"	au BufReadPre * setlocal foldmethod=indent
+"	au BufWinEnter * if &fdm == 'indent' | setlocal foldmethod=manual | endif
+" augroup END
+
+" " recordar foldings
+" autocmd BufWinLeave *.* mkview
+" autocmd BufWinEnter *.* silent loadview
+" " per defecte es guarden en ~/.vim/view
+" set viewdir=~/.cache/vim/view
+
+" http://stackoverflow.com/questions/1549263/how-can-i-create-a-folder-if-it-doesnt-exist-from-vimrc
+function! EnsureDirExists (dir)
+  if !isdirectory(a:dir)
+    if exists("*mkdir")
+      call mkdir(a:dir,'p')
+      echo "Created directory: " . a:dir
+    else
+      echo "Please create directory: " . a:dir
+    endif
+  endif
+endfunction
+
+call EnsureDirExists($HOME . '/.cache/vim/view')
+
+" arregla colors en vimdiff
+highlight DiffAdd term=reverse cterm=bold ctermbg=green ctermfg=white
+highlight DiffChange term=reverse cterm=bold ctermbg=cyan ctermfg=black
+highlight DiffText term=reverse cterm=bold ctermbg=gray ctermfg=black
+highlight DiffDelete term=reverse cterm=bold ctermbg=red ctermfg=black
+
+" """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" " http://vim.wikia.com/wiki/Change_statusline_color_to_show_insert_or_normal_mode "
+" """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" " first, enable status line always
+" set laststatus=2
+" " now set it up to change the status line based on mode
+" if version >= 700
+"   au InsertEnter * hi StatusLine term=reverse ctermbg=5 gui=undercurl guisp=Magenta
+"   au InsertLeave * hi StatusLine term=reverse ctermfg=0 ctermbg=2 gui=bold,reverse
+" endif
+
+" Execute file being edited with <Shift> + b:
+" map <buffer> <S-b> :w<CR>:!/bin/bash % <CR>
+
+" UltiSnips
+let g:UltiSnipsSnippetsDir="~/.vim/bundle/ultisnips/UltiSnips"
+let g:UltiSnipsEditSplit="horizontal"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+let g:UltiSnipsListSnippets="<c-l>"
+
+" <Autocompletado>
+" ia ifb if [ ]; then
+" ia ifc if(){}
+" ia whileb while [ ]; do
+" ia whilec while(){}
+" ia forb for x in ; do
+" ia forc for( i=0; i<; i++ ){}
+" ia #b #!/bin/env bash
+" ia #s #!/bin/sh
+" ia #b #!/bin/bash
+" ia #p #!/bin/env python
+" ia #P #!/bin/env perl}
+
+" restore_view.vim
+set viewoptions=cursor,folds,slash,unix
+let g:skipview_files = ['*\.vim']
+
+" <Plegado de código!>
+set foldmethod=indent
+set foldnestmax=10
+set nofoldenable
+set foldlevel=1
+
+" <Varios>
+set showcmd "display incomplete commands
+set encoding=utf-8
+" set wrap
+
+" <Busquedas>
+set hlsearch     " colorea los matches
+set incsearch    " busqueda incremental
+" set ignorecase " searches are case insen	sitive...
+" set smartcase  " ...unless they contain at least one capital letter
+set wrap
+set linebreak
+set nolist  " list disables linebreak
+set textwidth=0
+set wrapmargin=0
+set formatoptions+=l
+
+" vimwiki
+" let g:vimwiki_list = [{'path':'~/documents/gestionat/vimwiki', 'path_html':'~/documents/gestionat/vimwiki.html/',   'ext': '.wiki', 'auto_toc': 1, 'auto_export': 1}]
+
+let g:vimwiki_list  = [{'path':'~/documents/gestionat/vimwiki/source/', 'path_html':'~/documents/gestionat/vimwiki/html/', 'ext': '.wiki', 'auto_toc': 1, 'auto_export': 1, 'template_path': '~/documents/gestionat/vimwiki/html/assets/', 'template_default': 'default', 'template_ext': '.tpl' }]
+
+" let g:vimwiki_list = [{'path':'~/documents/gestionat/vimwiki', 'path_html':'~/documents/gestionat/vimwiki.html/',   'ext': '.wiki', 'auto_toc': 1, 'auto_export': 1},
+"                   \ {'path':'~/documents/gestionat/inventari', 'path_html':'~/documents/gestionat/inventari.html/', 'ext': '.wiki', 'auto_toc': 1, 'auto_export': 1}]
+
+" Enable loading .vimrc per folder
+set exrc
+set secure
+
+" Append modeline after last line in buffer.
+" Use substitute() instead of printf() to handle '%%s' modeline in LaTeX
+" files.
+function! AppendModeline()
+  let l:modeline = printf(" vim: set ts=%d sw=%d tw=%d %set :",
+        \ &tabstop, &shiftwidth, &textwidth, &expandtab ? '' : 'no')
+  let l:modeline = substitute(&commentstring, "%s", l:modeline, "")
+  call append(line("$"), l:modeline)
+endfunction
+nnoremap <silent> <Leader>ml :call AppendModeline()<CR>
+
+" PEP8 identation
+au BufNewFile,BufRead *.py set tabstop=4
+au BufNewFile,BufRead *.py set textwidth=79
+au BufNewFile,BufRead *.py set expandtab
+au BufNewFile,BufRead *.py set autoindent
+au BufNewFile,BufRead *.py set fileformat=unix
+au BufNewFile,BufRead *.py set softtabstop=4
+au BufNewFile,BufRead *.py set shiftwidth=4
+
+" {{{ vimrc.local
+if filereadable(glob("~/.vimrc.local"))
+	source ~/.vimrc.local
+endif
+" }}}
+
+" Plugin vim-airline
+if !exists('g:airline_symbols')
+	let g:airline_symbols = {}
+endif
+" let g:airline_left_sep = '▶'
+" let g:airline_right_sep = '◀'
+let g:airline_symbols.linenr = '¶'
+let g:airline_symbols.branch = '⎇'
+let g:airline_symbols.paste = 'ρ'
+let g:airline_symbols.whitespace = 'Ξ'
+" let g:airline_powerline_fonts = 1
+
+" highlight trailing white space
+" :highlight ExtraWhitespace ctermbg=red guibg=red
+" :match ExtraWhitespace /\s\+$/
+autocmd InsertEnter * syn clear EOLWS | syn match EOLWS excludenl /\s\+\%#\@!$/
+autocmd InsertLeave * syn clear EOLWS | syn match EOLWS excludenl /\s\+$/
+highlight EOLWS ctermbg=red guibg=red
+
+" Python
+let g:pymode_rope=0
+
+" Run a command on first open:
+" configuration:
+"	autocmd VimEnter * vnew
+" command line:
+"	vim -c "vnew"
+
+let g:table_mode_border=0
