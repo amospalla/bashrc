@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=549
-FileVersion=549
+# FileVersion=550
+FileVersion=550
 
 # Environment functions:
 #   count-lines
@@ -19,6 +19,7 @@ FileVersion=549
 #   color
 #   colors
 # functions:
+#   message
 #   program-exists
 #   argparse
 #   argparse-create-template
@@ -62,8 +63,8 @@ declare -a arguments_list=() arguments_description=() arguments_examples=() argu
 declare -i arguments_shift _files_update_counter=0 _files_updated _bash_version="${BASH_VERSION:0:1}${BASH_VERSION:2:1}"
 declare _files_update_text=""
 
-declare -a _program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email bashrc-update section muttrc )
-declare -A _program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all [bashrc-update]=all [section]=all [muttrc]=all )
+declare -a _program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email bashrc-update section muttrc message )
+declare -A _program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all [bashrc-update]=all [section]=all [muttrc]=all [message]=all )
 
 _status_changed_intervals="1m 5m 15m 1h 1d"
 
@@ -456,6 +457,7 @@ _bashrc_show_help(){
 	color blue; printf "grepip"; color; echo ": show lines containing IPs from files/stdin."
 	color blue; printf "sshconnect"; color; echo ": use ssh with ConnectTimeout=1 and ServerAliveInterval=3."
 	color blue; printf "myip"; color; echo ": shows public IP and optionally notices when changes and/or executes a command."
+	color blue; printf "message"; color; echo ": send messages to a central location."
 	color blue; printf "status-changed"; color; echo ": given an identifier and the current status exits with return code 1 if status has changed."
 	color blue; printf "rescan-scsi-bus"; color; echo ": rescan scsi bus."
 	color blue; printf "timer-countdown"; color; echo ": counts down the given time."
@@ -1984,6 +1986,69 @@ _source_utilities(){
 		tmux new-session -s "${arguments[name]}"
 	}
 
+	message(){
+		arguments_list=(args1 args2 args3 args4)
+		args1='listen {port} {file}'
+		args2='send {hostport} [{message}]'
+		args3='send-pending'
+		args4='internal {file}'
+		arguments_description=( 'message' 'Messages collector.')
+		arguments_parameters=( 'listen {port} {file}: listen on specified port for incoming messages and save on {file}.'
+		                       'send {hostport}: send message to {host:port}, either by stdin on argument.'
+		                       'send-pending: send any pending message'
+		                       'internal: internal usage only.' )
+		local -A arguments=()
+		argparse "$@" && shift ${arguments_shift}
+		local line message mode file folder host port program
+		
+		_send_pending(){
+			if program-exists socat; then mode="socat"
+			elif program-exists nc; then mode="nc"
+			else echo "Error: neither socat or netcat are installed."; exit 1
+			fi
+			for folder in ${HOME}/.local/message/*; do
+				[[ -d "${folder}" ]] || continue
+				host="${folder/*\/}"
+				port="${folder/*\/}"
+				host="${host/:*}"
+				port="${port/*:}"
+				if "${HOME}/bin/testport" "${host}" "${port}"; then
+					for file in ${folder}/*; do
+						[[ -f "${file}" ]] || continue
+						message="$(<"${file}")"
+						[[ ${mode} == socat ]] && program="socat - TCP:${host}:${port}"
+						[[ ${mode} == nc    ]] && program="nc ${host} ${port}"
+						echo "${message}" | ${program} && rm "${file}" || true
+					done
+				fi
+			done
+		}
+		
+		if [[ ${arguments[listen]:-0} -eq 1 ]]; then
+			program-exists --message socat || return 1
+			socat -v tcp-l:${arguments[port]},crlf,fork exec:"${HOME}/bin/message internal ${arguments[file]}"
+			exit $?
+		elif [[ ${arguments[internal]:-0} -eq 1 ]]; then
+			while read line; do
+				echo "${line}" >> "${arguments[file]}"
+			done
+		elif [[ ${arguments[send]:-0} -eq 1 ]]; then
+			[[ -t 0 ]] && message="${arguments[message]}" || message="$(cat)"
+			mkdir -p "${HOME}/.local/message/${arguments[hostport]}"
+			"${HOME}/bin/lock" lock -q message
+			for file in {1..9999}; do
+				[[ -f "${HOME}/.local/message/${arguments[hostport]}/${file}" ]] || break
+			done
+			echo "${message}" >> "${HOME}/.local/message/${arguments[hostport]}/${file}"
+			_send_pending
+			"${HOME}/bin/lock" unlock message
+		elif [[ ${arguments[send-pending]:-0} -eq 1 ]]; then
+			"${HOME}/bin/lock" lock -q message
+			_send_pending
+			"${HOME}/bin/lock" unlock message
+		fi
+	}
+
 	notify(){
 		arguments_list=(args1); args1='{message}'
 		arguments_description=( 'notify' 'Sends a message through pushover service.')
@@ -1993,7 +2058,6 @@ _source_utilities(){
 		program-exists --message curl || return 1
 		curl -s --form-string "token=${_pushover_token}" --form-string "user=${_pushover_user}" --form-string "message=${arguments[message]}" https://api.pushover.net/1/messages.json >/dev/null
 	}
-
 
 	tmux-send(){
 		arguments_list=(args1); args1='[-l|--loop [interval]] {target} {text...}'
@@ -2835,8 +2899,8 @@ make-links(){
 		printf "\nCreates links to bashrc programs into specified folder (HOME/bin if none specified).\n"
 		printf "When using the system-wide option, copy source file and generate links on /usr/local/bin.\n"
 	}
-	declare -a _program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email bashrc-update section muttrc )
-	declare -A _program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all [bashrc-update]=all [section]=all [muttrc]=all )
+	declare -a _program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email bashrc-update section muttrc message )
+	declare -A _program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all [bashrc-update]=all [section]=all [muttrc]=all [message]=all )
 	color magentabold
 	
 	[[ "${1:-}" == "-h" ]] && _show_help && return 0
