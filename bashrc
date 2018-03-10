@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=562
-FileVersion=562
+# FileVersion=563
+FileVersion=563
 
 # Environment functions:
 #   count-lines
@@ -1788,7 +1788,7 @@ _source_utilities(){
 			fi
 			# Skip if data or metadata usage are above threshold
 			if [[ ${threshold_data[${vgs[$i]}/${lvs[$i]}]} == above || ${threshold_metadata[${vgs[$i]}/${lvs[$i]}]} == above ]]; then
-				echo "Skip ${vgs[$j]}/${lvs[$i]}: data or metadata usage above threshold."
+				echo "Skip ${vgs[$i]}/${lvs[$i]}: data or metadata usage above threshold."
 				continue
 			fi
 				
