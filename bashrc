@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=556
-FileVersion=556
+# FileVersion=557
+FileVersion=557
 
 # Environment functions:
 #   count-lines
@@ -1999,7 +1999,7 @@ _source_utilities(){
 		                       'internal: internal usage only.' )
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
-		local line message mode file folder host port program date hostname i
+		local line message mode file folder host port program date hostname i user
 		
 		_send_pending(){
 			if "${HOME}/bin/program-exists" socat; then mode="socat"
@@ -2040,9 +2040,9 @@ _source_utilities(){
 			for file in {1..9999}; do
 				[[ -f "${HOME}/.local/message/${arguments[hostport]}/${file}" ]] || break
 			done
-			date="$(date_history)" hostname="$(hostname -f)" i=1
+			date="$(date_history)" hostname="$(hostname -f)" i=1 user=$(whoami)
 			echo "${message}" | while read line; do
-				printf "[${date}][${USER}@${hostname}][%04g] ${line}\n" ${i} >> "${HOME}/.local/message/${arguments[hostport]}/${file}"
+				printf "[${date}][${user}@${hostname}][%04g] ${line}\n" ${i} >> "${HOME}/.local/message/${arguments[hostport]}/${file}"
 				i=$(( i + 1 ))
 			done
 			_send_pending
