@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=555
-FileVersion=555
+# FileVersion=556
+FileVersion=556
 
 # Environment functions:
 #   count-lines
@@ -1999,7 +1999,7 @@ _source_utilities(){
 		                       'internal: internal usage only.' )
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
-		local line message mode file folder host port program date hostname
+		local line message mode file folder host port program date hostname i
 		
 		_send_pending(){
 			if "${HOME}/bin/program-exists" socat; then mode="socat"
@@ -2040,8 +2040,11 @@ _source_utilities(){
 			for file in {1..9999}; do
 				[[ -f "${HOME}/.local/message/${arguments[hostport]}/${file}" ]] || break
 			done
-			date="$(date_history)" hostname="$(hostname -f)"
-			echo "${message}" | while read line; do printf "[${USER}@${hostname}][${date}] ${line}\n" >> "${HOME}/.local/message/${arguments[hostport]}/${file}"; done
+			date="$(date_history)" hostname="$(hostname -f)" i=1
+			echo "${message}" | while read line; do
+				printf "[${date}][${USER}@${hostname}][%04g] ${line}\n" ${i} >> "${HOME}/.local/message/${arguments[hostport]}/${file}"
+				i=$(( i + 1 ))
+			done
 			_send_pending
 			"${HOME}/bin/lock" unlock message
 		elif [[ ${arguments[send-pending]:-0} -eq 1 ]]; then
