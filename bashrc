@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=557
-FileVersion=557
+# FileVersion=558
+FileVersion=558
 
 # Environment functions:
 #   count-lines
@@ -2024,6 +2024,20 @@ _source_utilities(){
 			done
 		}
 		
+		_send(){
+			[[ -t 0 ]] && message="${arguments[message]}" || message="$(cat)"
+			mkdir -p "${HOME}/.local/message/${arguments[hostport]}"
+			for file in {1..9999}; do
+				[[ -f "${HOME}/.local/message/${arguments[hostport]}/${file}" ]] || break
+			done
+			date="$(date_history)" hostname="$(hostname -f)" i=1 user=$(whoami)
+			echo "${message}" | while read line; do
+				printf "[${date}][${user}@${hostname}][%04g] ${line}\n" ${i} >> "${HOME}/.local/message/${arguments[hostport]}/${file}"
+				i=$(( i + 1 ))
+			done
+			_send_pending
+		}
+		
 		if [[ ${arguments[listen]:-0} -eq 1 ]]; then
 			"${HOME}/bin/program-exists" --message socat || return 1
 			touch "${arguments[file]}"
@@ -2034,23 +2048,9 @@ _source_utilities(){
 				echo "${line}" >> "${arguments[file]}"
 			done
 		elif [[ ${arguments[send]:-0} -eq 1 ]]; then
-			[[ -t 0 ]] && message="${arguments[message]}" || message="$(cat)"
-			mkdir -p "${HOME}/.local/message/${arguments[hostport]}"
-			"${HOME}/bin/lock" lock -q message
-			for file in {1..9999}; do
-				[[ -f "${HOME}/.local/message/${arguments[hostport]}/${file}" ]] || break
-			done
-			date="$(date_history)" hostname="$(hostname -f)" i=1 user=$(whoami)
-			echo "${message}" | while read line; do
-				printf "[${date}][${user}@${hostname}][%04g] ${line}\n" ${i} >> "${HOME}/.local/message/${arguments[hostport]}/${file}"
-				i=$(( i + 1 ))
-			done
-			_send_pending
-			"${HOME}/bin/lock" unlock message
+			"${HOME}/bin/lock" lock -q message _send
 		elif [[ ${arguments[send-pending]:-0} -eq 1 ]]; then
-			"${HOME}/bin/lock" lock -q message
-			_send_pending
-			"${HOME}/bin/lock" unlock message
+			"${HOME}/bin/lock" lock -q message _send_pending
 		fi
 	}
 
