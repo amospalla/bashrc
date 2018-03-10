@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=554
-FileVersion=554
+# FileVersion=555
+FileVersion=555
 
 # Environment functions:
 #   count-lines
@@ -2026,6 +2026,7 @@ _source_utilities(){
 		
 		if [[ ${arguments[listen]:-0} -eq 1 ]]; then
 			"${HOME}/bin/program-exists" --message socat || return 1
+			touch "${arguments[file]}"
 			socat -v tcp-l:${arguments[port]},crlf,fork exec:"${HOME}/bin/message internal ${arguments[file]}"
 			exit $?
 		elif [[ ${arguments[internal]:-0} -eq 1 ]]; then
