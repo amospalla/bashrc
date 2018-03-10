@@ -1,4 +1,4 @@
-" FileVersion=56
+" FileVersion=57
 
 " To install Vundle:
 " git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
@@ -24,7 +24,7 @@ Bundle 'gmarik/vundle'
 " original repos on github
 """"""""""""""""""""""""""
 " Plugin 'floobits/floobits-neovim'
-Bundle 'SirVer/ultisnips'
+" Bundle 'SirVer/ultisnips'
 Bundle 'vimoutliner/vimoutliner'
 Bundle 'altercation/vim-colors-solarized'
 Bundle 'Raimondi/delimitMate'

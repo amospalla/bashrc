@@ -1,4 +1,4 @@
-# FileVersion=20
+# FileVersion=22
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -129,6 +129,7 @@
 ### account: jordi.marques@minorisa.net-exchange-imap
 
 
+# Search inbox
 macro index <F3> \
 "<enter-command>set my_old_pipe_decode=\$pipe_decode my_old_wait_key=\$wait_key nopipe_decode nowait_key<enter>\
 <shell-escape>notmuch-mutt -r --prompt search<enter>\
@@ -136,6 +137,7 @@ macro index <F3> \
 <enter-command>set pipe_decode=\$my_old_pipe_decode wait_key=\$my_old_wait_key<enter>" \
 "notmuch: search mail"
 
+# Create threads from search results
 macro index <F4> \
 "<enter-command>set my_old_pipe_decode=\$pipe_decode my_old_wait_key=\$wait_key nopipe_decode nowait_key<enter>\
 <pipe-message>notmuch-mutt -r thread<enter>\
@@ -143,6 +145,7 @@ macro index <F4> \
 <enter-command>set pipe_decode=\$my_old_pipe_decode wait_key=\$my_old_wait_key<enter>" \
 "notmuch: reconstruct thread"
 
+# Tag search results
 macro index <F5> \
 "<enter-command>set my_old_pipe_decode=\$pipe_decode my_old_wait_key=\$wait_key nopipe_decode nowait_key<enter>\
 <pipe-message>notmuch-mutt tag -- -inbox<enter>\
@@ -180,7 +183,7 @@ unset imap_passive
 set imap_keepalive = 300
 
 # How often to check for new mail (time in seconds).
-set mail_check = 120
+set mail_check = 30
 
 set sort=threads
 set strict_threads=yes
@@ -276,7 +279,10 @@ bind generic,pager,browser,attach,compose,pgp,smime,postpone,query <esc> exit
 
 set sort_browser   = alpha
 
+set beep_new = yes
 set beep_new
+set beep
+set beep = yes
 
 color sidebar_new  red default
 set sidebar_width         = 40
