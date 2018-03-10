@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=564
-FileVersion=564
+# FileVersion=565
+FileVersion=565
 
 # Environment functions:
 #   count-lines
@@ -1806,8 +1806,10 @@ _source_utilities(){
 		done
 		
 		for (( i=0; i<${#lvs[@]}; i++ )); do
-			echo "Error: ${vgs[$i]/${thinpools[$i]}} usage above threshold ${threshold}."
-			exit_code=1
+			if [[ ${threshold_data[${vgs[$i]}/${lvs[$i]}]} == above || ${threshold_metadata[${vgs[$i]}/${lvs[$i]}]} == above ]]; then
+				echo "Error: ${vgs[$i]/${thinpools[$i]}} usage above threshold ${threshold}."
+				exit_code=1
+			fi
 		done
 		
 		exit ${exit_code}
