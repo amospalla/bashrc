@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=560
-FileVersion=560
+# FileVersion=562
+FileVersion=562
 
 # Environment functions:
 #   count-lines
@@ -1729,12 +1729,12 @@ _source_utilities(){
 				snapshots[${#snapshots[@]}]="${j}"
 			done
 		}
-
-		local -A arguments=() vgs=() lvs=() thinpools=()
+		
+		local -A arguments=() vgs=() lvs=() thinpools=() threshold_data=() threshold_metadata=()
 		argparse "$@" && shift ${arguments_shift}
 		local prefix=${arguments[prefix]:-snapshot}
 		local -a snapshots
-		local use_retention name i delete vg lv threshold current_date below_threshold
+		local use_retention name i delete vg lv threshold current_date below_threshold thinpool exit_code=0
 		[[ ${arguments[seconds]:-0} -gt 0 || ${arguments[minutes]:-0} -gt 0 || ${arguments[hours]:-0} -gt 0 || ${arguments[days]:-0} -gt 0 || ${arguments[weeks]:-0} -gt 0 || ${arguments[months]:-0} -gt 0 || ${arguments[years]:-0} -gt 0 ]] && use_retention=1 || use_retention=0
 		
 		# Get information
@@ -1743,7 +1743,10 @@ _source_utilities(){
 			lv="${name/*\/}"
 			vgs[${#vgs[@]}]="${vg}"
 			lvs[${#lvs[@]}]="${lv}"
-			thinpools[${#thinpools[@]}]=$(trim $(/sbin/lvs --noheadings -opool_lv ${vg}/${lv}))
+			thinpool=$(trim $(/sbin/lvs --noheadings -opool_lv ${vg}/${lv}))
+			thinpools[${#thinpools[@]}]="${thinpool}"
+			threshold_data[${name}]="below"
+			threshold_metadata[${name}]="below"
 			if ! /sbin/lvs "${name}" >/dev/null 2>&1; then
 				echo "Error: logical volume '${name}' does not exist."
 				exit 1
@@ -1757,8 +1760,8 @@ _source_utilities(){
 				threshold=${arguments[${name}]}
 				for (( j=0; j<${#vgs[@]}; j++ )); do
 					if ! $(dirname "${0}")/check-lvm-thinpool-usage ${i} ${threshold} ${vgs[$j]} ${thinpools[$j]}; then
-						echo "Error: ${vgs[$j]/${thinpools[$j]}} usage above threshold ${threshold}."
-						exit 1
+						[[ ${i} ==     data ]] && threshold_data[${vgs[$j]}/${lvs[$j]}]="above"
+						[[ ${i} == metadata ]] && threshold_metadata[${vgs[$j]}/${lvs[$j]}]="above"
 					fi
 				done
 			fi
@@ -1783,6 +1786,12 @@ _source_utilities(){
 					continue
 				fi
 			fi
+			# Skip if data or metadata usage are above threshold
+			if [[ ${threshold_data[${vgs[$i]}/${lvs[$i]}]} == above || ${threshold_metadata[${vgs[$i]}/${lvs[$i]}]} == above ]]; then
+				echo "Skip ${vgs[$j]}/${lvs[$i]}: data or metadata usage above threshold."
+				continue
+			fi
+				
 			# Create snapshot
 			echo "${vgs[$i]}/${lvs[$i]} ${thinpools[$i]}"
 			if ! /sbin/lvcreate -s -n ${lvs[$i]}-${prefix}-$(date_full) ${vgs[$i]}/${lvs[$i]}; then
@@ -1791,6 +1800,13 @@ _source_utilities(){
 				exit 1
 			fi
 		done
+		
+		for (( i=0; i<${#lvs[@]}; i++ )); do
+			echo "Error: ${vgs[$i]/${thinpools[$i]}} usage above threshold ${threshold}."
+			exit_code=1
+		done
+		
+		exit ${exit_code}
 	}
 
 	status-changed-email(){
