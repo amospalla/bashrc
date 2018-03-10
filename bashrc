@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=552
-FileVersion=552
+# FileVersion=553
+FileVersion=553
 
 # Environment functions:
 #   count-lines
@@ -2004,7 +2004,7 @@ _source_utilities(){
 		_send_pending(){
 			if "${HOME}/bin/program-exists" socat; then mode="socat"
 			elif "${HOME}/bin/program-exists" nc; then mode="nc"
-			else echo "Error: neither socat or netcat are installed."; exit 1
+			else echo "Error: neither socat or netcat are installed."; return
 			fi
 			for folder in ${HOME}/.local/message/*; do
 				[[ -d "${folder}" ]] || continue
