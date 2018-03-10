@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=553
-FileVersion=553
+# FileVersion=554
+FileVersion=554
 
 # Environment functions:
 #   count-lines
@@ -2040,7 +2040,7 @@ _source_utilities(){
 				[[ -f "${HOME}/.local/message/${arguments[hostport]}/${file}" ]] || break
 			done
 			date="$(date_history)" hostname="$(hostname -f)"
-			echo "${message}" | while read line; do printf "[${hostname}][${date}] ${line}\n" >> "${HOME}/.local/message/${arguments[hostport]}/${file}"; done
+			echo "${message}" | while read line; do printf "[${USER}@${hostname}][${date}] ${line}\n" >> "${HOME}/.local/message/${arguments[hostport]}/${file}"; done
 			_send_pending
 			"${HOME}/bin/lock" unlock message
 		elif [[ ${arguments[send-pending]:-0} -eq 1 ]]; then
