@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=558
-FileVersion=558
+# FileVersion=559
+FileVersion=559
 
 # Environment functions:
 #   count-lines
@@ -2048,9 +2048,13 @@ _source_utilities(){
 				echo "${line}" >> "${arguments[file]}"
 			done
 		elif [[ ${arguments[send]:-0} -eq 1 ]]; then
-			"${HOME}/bin/lock" lock -q message _send
+			"${HOME}/bin/lock" lock -q message
+			_send
+			"${HOME}/bin/lock" unlock message
 		elif [[ ${arguments[send-pending]:-0} -eq 1 ]]; then
-			"${HOME}/bin/lock" lock -q message _send_pending
+			"${HOME}/bin/lock" lock -q message
+			_send_pending
+			"${HOME}/bin/lock" unlock message
 		fi
 	}
 
