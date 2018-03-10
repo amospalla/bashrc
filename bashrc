@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=551
-FileVersion=551
+# FileVersion=552
+FileVersion=552
 
 # Environment functions:
 #   count-lines
@@ -1110,7 +1110,7 @@ _source_utilities(){
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		local ec output
-		if ! program-exists "${arguments[binary]}"; then
+		if ! "${HOME}/bin/program-exists" "${arguments[binary]}"; then
 			printf -- "Cron executed on:\n    $(whoami)@$(hostname -f)\n\nError when executing from cron:\n    ${arguments[binary]} ${*}\n\nProgram '${arguments[binary]}' does not exist." | mailx -s "[Error] program not available ${arguments[binary]}" "${arguments[recipient]}"
 			exit 1
 		fi
@@ -1164,7 +1164,7 @@ _source_utilities(){
 		if [[ ${arguments[--email]:-0} -eq 0 ]]; then
 			[[ ${ec} == ok ]] && exit 0 || exit 1
 		else
-			program-exists -m mailx || exit 1
+			"${HOME}/bin/program-exists" -m mailx || exit 1
 			[[ $# -gt 0 ]] && intervals="$@" || intervals=${_status_changed_intervals}
 			if next_date="$(status-changed set lvm-thinpool-${type}-${arguments[vg]}-${arguments[pool]}-${arguments[threshold]} ${ec} -l ok -i "${intervals}")"; then
 				[[ $ec == "ok"    ]] && echo "$(hostname -f): LVM ${arguments[vg]}/${arguments[pool]} ${type} usage ${usage} below threshold ${arguments[threshold]}" | mailx -s "$(hostname): LVM ${arguments[vg]}/${arguments[pool]} ${type} recover" ${arguments[recipient]} || true
@@ -1361,7 +1361,7 @@ _source_utilities(){
 		local i extension file folder status=() ec
 		local extensions=(zip unzip rar unrar)
 		for (( i=0; i<${#extensions[@]}; i=i+2 )); do
-			program-exists ${extensions[$(($i+1))]} || continue
+			"${HOME}/bin/program-exists" ${extensions[$(($i+1))]} || continue
 			for file in "${arguments[path]:-.}/"*.${extensions[$i]}; do
 				[[ "${file}" == "${arguments[path]:-.}/*.${extensions[$i]}" ]] && continue
 				folder="${file:0:-4}"
@@ -2002,8 +2002,8 @@ _source_utilities(){
 		local line message mode file folder host port program date hostname
 		
 		_send_pending(){
-			if program-exists socat; then mode="socat"
-			elif program-exists nc; then mode="nc"
+			if "${HOME}/bin/program-exists" socat; then mode="socat"
+			elif "${HOME}/bin/program-exists" nc; then mode="nc"
 			else echo "Error: neither socat or netcat are installed."; exit 1
 			fi
 			for folder in ${HOME}/.local/message/*; do
@@ -2025,7 +2025,7 @@ _source_utilities(){
 		}
 		
 		if [[ ${arguments[listen]:-0} -eq 1 ]]; then
-			program-exists --message socat || return 1
+			"${HOME}/bin/program-exists" --message socat || return 1
 			socat -v tcp-l:${arguments[port]},crlf,fork exec:"${HOME}/bin/message internal ${arguments[file]}"
 			exit $?
 		elif [[ ${arguments[internal]:-0} -eq 1 ]]; then
@@ -2056,7 +2056,7 @@ _source_utilities(){
 		arguments_parameters=( '{message}: message to send.' )
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
-		program-exists --message curl || return 1
+		"${HOME}/bin/program-exists" --message curl || return 1
 		curl -s --form-string "token=${_pushover_token}" --form-string "user=${_pushover_user}" --form-string "message=${arguments[message]}" https://api.pushover.net/1/messages.json >/dev/null
 	}
 
@@ -2094,7 +2094,7 @@ _source_utilities(){
 		local -A arguments=()
 		local -i tries=0
 		argparse "$@" && shift ${arguments_shift}
-		program-exists -m "${1}" || exit 1
+		"${HOME}/bin/program-exists" -m "${1}" || exit 1
 		while [[ ${arguments[-m]:-0} -eq 0 || ${tries} < ${arguments[tries]} ]]; do
 			$@ && break
 			read -t ${arguments[seconds]:-1} || true
@@ -2109,7 +2109,7 @@ _source_utilities(){
 		arguments_examples=( '$ wait-ping 1.2.3.4' 'keeps executing until it succeeds.')
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
-		program-exists ping || ( echo "ping program not found."; exit 1 )
+		"${HOME}/bin/program-exists" ping || ( echo "ping program not found."; exit 1 )
 		while true; do
 			ping -c 1 -w 1 -q ${arguments[host]} >/dev/null 2>&1 && break
 			read -t${arguments[interval]:-1} || true
@@ -2217,7 +2217,7 @@ _source_utilities(){
 	# 	}
 	#	local -A arguments=()
 	# 	argparse "$@" && shift ${arguments_shift}
-	# 	program-exists --message curl || exit 1
+	# 	"${HOME}/bin/program-exists" --message curl || exit 1
 	# 	if [[ -t 0 ]]; then
 	# 		[[ $# -eq 0 ]] && argparse_show_help 1
 	# 		while [[ $# -gt 0 ]]; do
@@ -2270,7 +2270,7 @@ _source_utilities(){
 		
 		local interval
 		interval=$(unit-conversion time -d 0 s "${arguments[interval]:-1s}")
-		program-exists --message "${1}" || exit 1
+		"${HOME}/bin/program-exists" --message "${1}" || exit 1
 		while true
 		do
 			[[ ${arguments[-c]:-0} -eq 1 ]] && clear
@@ -2311,7 +2311,7 @@ _source_utilities(){
 		argparse "$@" && shift ${arguments_shift}
 		local interval pid mode ec
 		interval=$(unit-conversion time -d 0 s "${arguments[interval]:-1s}")
-		program-exists nc && mode=nc || mode=bash
+		"${HOME}/bin/program-exists" nc && mode=nc || mode=bash
 		while true; do
 			if [[ ${mode} == "nc" ]]; then
 				nc -z -w 1 ${arguments[host]} ${arguments[port]} && ec=0 || ec=1
@@ -2366,7 +2366,7 @@ _source_utilities(){
 		                       '[-c|--command {commands...}]: execute a command every time the public IP changes (only applicable to monitor mode).' )
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
-		program-exists --message wget || exit 1
+		"${HOME}/bin/program-exists" --message wget || exit 1
 		local -a urls=(https://api.ipify.org http://www.amospalla.es/ip/ http://ipecho.net/ http://ip.pla1.net http://checkip.dyndns.org http://myip.dnsdynamic.org http://ifconfig.co)
 		local interval=$(unit-conversion time -d 0 s ${arguments[interval]:-1m})
 		
