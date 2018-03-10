@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=563
-FileVersion=563
+# FileVersion=564
+FileVersion=564
 
 # Environment functions:
 #   count-lines
@@ -1772,18 +1772,22 @@ _source_utilities(){
 			if [[ ${use_retention} -eq 1 ]]; then
 				snapshots=()
 				_get_snapshots_current ${vgs[$i]} ${lvs[$i]}
-				for delete in $(\retention -s ${arguments[seconds]:-0} -m ${arguments[minutes]:-0} --hours ${arguments[hours]:-0} -d ${arguments[days]:-0} -w ${arguments[weeks]:-0} --months ${arguments[months]:-0} -y ${arguments[years]:-0} ${snapshots[@]}); do
-					/sbin/lvremove -y ${vgs[$i]}/${lvs[$i]}-${prefix}-${delete}
-				done
+				if [[ ${#snapshots[@]} -gt 0 ]]; then
+					for delete in $(\retention -s ${arguments[seconds]:-0} -m ${arguments[minutes]:-0} --hours ${arguments[hours]:-0} -d ${arguments[days]:-0} -w ${arguments[weeks]:-0} --months ${arguments[months]:-0} -y ${arguments[years]:-0} ${snapshots[@]}); do
+						/sbin/lvremove -y ${vgs[$i]}/${lvs[$i]}-${prefix}-${delete}
+					done
+				fi
 			fi
 			# Skip if current date not needed according to retention
 			if [[ ${use_retention} -eq 1 ]]; then
 				snapshots=()
 				_get_snapshots_current ${vgs[$i]} ${lvs[$i]}
 				current_date="$(date_full)"
-				if \retention -s ${arguments[seconds]:-0} -m ${arguments[minutes]:-0} --hours ${arguments[hours]:-0} -d ${arguments[days]:-0} -w ${arguments[weeks]:-0} --months ${arguments[months]:-0} -y ${arguments[years]:-0} $(date_full) ${snapshots[@]} | grep -q ${current_date}; then
-					echo "Current date not needed by retention, skip ${vg}/${lv}."
-					continue
+				if [[ ${#snapshots[@]} -gt 0 ]]; then
+					if \retention -s ${arguments[seconds]:-0} -m ${arguments[minutes]:-0} --hours ${arguments[hours]:-0} -d ${arguments[days]:-0} -w ${arguments[weeks]:-0} --months ${arguments[months]:-0} -y ${arguments[years]:-0} $(date_full) ${snapshots[@]} | grep -q ${current_date}; then
+						echo "Current date not needed by retention, skip ${vg}/${lv}."
+						continue
+					fi
 				fi
 			fi
 			# Skip if data or metadata usage are above threshold
