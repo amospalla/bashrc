@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=568
-FileVersion=568
+# FileVersion=569
+FileVersion=569
 
 # Environment functions:
 #   count-lines
@@ -1396,20 +1396,22 @@ _source_utilities(){
 	}
 
 	lock(){
-		arguments_list=(args1 args2 args3 args4 args5 args6 args7 args8)
-		args1='[-p|--path {path}] lock [-q|--quiet] [-f|--fast] {id} [command...]'
-		args2='[-p|--path {path}] unlock {id}'
-		args3='[-p|--path {path}] get {id}'
-		args4='[-p|--path {path}] set {id} {max}'
-		args5='[-p|--path {path}] get-running {id}'
-		args6='[-p|--path {path}] get-waiting {id}'
-		args7='[-p|--path {path}] get-total {id}'
-		args8='[-p|--path {path}] list'
+		arguments_list=(args1 args2 args3 args4 args5 args6 args7 args8 args9)
+		args1='[-p|--path {path}] lock [-q|--quiet] [-f|--fast] {id} pid {num:integer}'
+		args2='[-p|--path {path}] lock [-q|--quiet] [-f|--fast] {id} [command...]'
+		args3='[-p|--path {path}] unlock {id}'
+		args4='[-p|--path {path}] get {id}'
+		args5='[-p|--path {path}] set {id} {max}'
+		args6='[-p|--path {path}] get-running {id}'
+		args7='[-p|--path {path}] get-waiting {id}'
+		args8='[-p|--path {path}] get-total {id}'
+		args9='[-p|--path {path}] list'
 		arguments_description=( 'lock' 'Locks the named identifier so other one trying to acquire a lock waits for it to be unlocked.')
 		arguments_parameters=( '[-p|--path {path}]: path where to store locks (by default /tmp/bashrclock.{uid}.).'
 		                       '[-q|--quiet]: quiet mode.'
 		                       '[-f|--fast]: try to lock but exit already locked.'
 		                       'lock {id} [command]: lock the specified id and optionally execute a command and unlock at once.'
+		                       'lock {id} pid {pid}: lock the specified id and optionally execute a command and unlock at once.'
 		                       'unlock {id}: unlock the specified id.'
 		                       'set {id} {max}: set the maximum number of concurrent accesses.'
 		                       'get {id}: get the maximum number of concurrent accesses.'
@@ -1436,7 +1438,7 @@ _source_utilities(){
 				sleep 1 || exit 1
 			done
 			sub_lock=1
-			_lock_remove_stalled
+			_lock_remove_dead
 		}
 				
 		_lock_sub_unlock(){
@@ -1513,16 +1515,26 @@ _source_utilities(){
 			done
 			
 			[[ ${arguments[-q]:-0} -eq 0 ]] && printf "\r \r" || true
-			if [[ $# -gt 0 ]]; then
+			if [[ ${lockmode} == run ]]; then
 				"$@" && ec=0 || ec=1
 				_lock_sub_lock; _lock_remove_running; _lock_sub_unlock
+			elif [[ ${lockmode} == pid ]]; then
+				_lock_sub_lock
+				sed -i "s/^${EUID} $$/${EUID} ${arguments[num]}/" "${basefolder}/${id}.running"
+				_lock_sub_unlock
 			else
+				_lock_sub_lock
 				sed -i "s/^${EUID} $$/unnamed/" "${basefolder}/${id}.running"
+				_lock_sub_unlock
 			fi
 		}
 		
 		_lock_remove_running(){
-			sed -i "/^${EUID} $$/d" "${basefolder}/${id}.running"
+			if [[ ${lockmode} == run ]]; then
+				sed -i "/^${EUID} $$/d" "${basefolder}/${id}.running"
+			elif [[ ${lockmode} == pid ]]; then
+				sed -i "/^${EUID} ${arguments[pid]}/d" "${basefolder}/${id}.running"
+			fi
 		}
 		
 		_lock_remove_running_unnamed(){
@@ -1546,10 +1558,10 @@ _source_utilities(){
 		}
 		
 		_lock_add_running(){
-			if [[ $# -eq 0 ]]; then
-				echo "${EUID} $$" >> "${basefolder}/${id}.running"
-			else
+			if [[ ${lockmode} == run ]]; then
 				echo "${EUID} $$ $@" >> "${basefolder}/${id}.running"
+			else
+				echo "${EUID} $$" >> "${basefolder}/${id}.running"
 			fi
 		}
 		
@@ -1562,25 +1574,27 @@ _source_utilities(){
 		}
 		
 		_lock_add_waiting(){
-			if [[ $# -eq 0 ]]; then
-				echo "${EUID} $$" >> "${basefolder}/${id}.waiting"
-			else
+			if [[ ${lockmode} == run ]]; then
 				echo "${EUID} $$ $@" >> "${basefolder}/${id}.waiting"
+			else
+				echo "${EUID} $$" >> "${basefolder}/${id}.waiting"
 			fi
 		}
 		
-		_lock_remove_stalled(){
-			local i j pid uid tmp array=()
+		_lock_remove_dead(){
+			local i j pid uid procuid tmp array=()
 			[[ -d "${basefolder}" ]] || return
 			for i in "${basefolder}"/*.waiting "${basefolder}"/*.running; do
 				[[ -f "${i}" ]] || continue
 				readarray -t array < "${i}"
 				for (( j=0; j<${#array[@]}; j++ )); do
-					[[ "${array[$j]}" == "unnamed" ]] && continue
+					[[ "${array[$j]}" == "unnamed" ]] && continue # Ignore unnamed locks, no way to know if are alive or not
 					[[ "${array[$j]}" =~ ^[0-9]+ ]] && uid=${BASH_REMATCH}; array[$j]="${array[j]/${uid} /}"
 					[[ "${array[$j]}" =~ ^[0-9]+ ]] && pid=${BASH_REMATCH}
-					if ! tmp=$(cat /proc/${pid}/loginuid >/dev/null 2>&1); then
-						echo "Removing stalled ${uid} ${pid}."
+					procuid=$( cat /proc/${pid}/loginuid 2>/dev/null ) || true
+					proccomm=$( cat /proc/${pid}/comm 2>/dev/null ) || true
+					if [[ ${procuid} != ${uid} && ${proccomm} != lock ]]; then
+						echo "Removing dead ${uid} ${pid}."
 						sed -i "/^${uid} ${pid}/d" "${i}"
 					fi
 				done
@@ -1588,11 +1602,9 @@ _source_utilities(){
 		}
 		
 		_lock_lock(){
-			if [[ $# -gt 0 ]]; then
-				if ! type -a "${1}" >/dev/null; then
-					echo "Error: command ${1} does not exist."
-					exit 1
-				fi
+			# Check if supplied program exists or exit
+			if [[ ${lockmode} == run ]]; then
+				program-exists -m "${1}" || exit
 			fi
 			_lock_sub_lock
 			if [[ ${arguments[-f]:-0} -eq 1 && $(_lock_get_max ${id}) -le $(_lock_get_used_slots running) ]]; then
@@ -1611,7 +1623,7 @@ _source_utilities(){
 			return ${ec}
 		}
 		
-		local sub_lock=0 ec found_free_slot=0 i id="${arguments[id]:-SomeRandomStringFoo123}" num_slots
+		local sub_lock=0 ec found_free_slot=0 i id="${arguments[id]:-SomeRandomStringFoo123}" num_slots lockmode
 		
 		local basefolder="${arguments[path]:-/tmp/bashrclock.${EUID}}"
 		mkdir -p ${basefolder} && chmod 0777 ${basefolder} 2>&1 >/dev/null || true
@@ -1620,9 +1632,17 @@ _source_utilities(){
 		for i in lock unlock get set list get-running get-waiting get-total; do
 			[[ ${arguments[${i}]:-0} -eq 1 ]] && mode=${i} && break
 		done
+
+		if [[ ${mode} == lock && ${arguments[pid]:-0} -eq 1 ]]; then
+			lockmode=pid
+		elif [[ ${mode} == lock && $# -gt 0 ]]; then
+			lockmode=run
+		else
+			lockmode=unnamed
+		fi
 		
 		case ${mode} in
-			lock)   _lock_lock "$@"; [[ $# -gt 0 ]] && exit $ec || true ;;
+			lock)   _lock_lock "$@"; [[ ${lockmode} == run ]] && exit $ec || true ;;
 			unlock) _lock_unlock || exit 1;;
 			get)    _lock_sub_lock; _lock_get_max "$@"; _lock_sub_unlock ;;
 			set)    _lock_sub_lock; _lock_set_max "$@"; _lock_sub_unlock ;;
