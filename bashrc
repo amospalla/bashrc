@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=573
-FileVersion=573
+# FileVersion=574
+FileVersion=574
 
 # Environment functions:
 #   count-lines
@@ -637,26 +637,27 @@ _source_bash_options(){
 	
 	[[ -r "${file}" ]] && file_text="$(<"${file}")"
 	
-	_bash_options_add _first_run 0
-	_bash_options_add _ps1_enable 1
-	_bash_options_add _ps1_get_performance 0
-	_bash_options_add _ps1_performance_file '${HOME}/.bashrc.performance'
-	_bash_options_add _ps1_exit_code 1
-	_bash_options_add _ps1_tmux 1
-	_bash_options_add _ps1_x11_display 1
-	_bash_options_add _ps1_time 1
-	_bash_options_add _ps1_load 1
-	_bash_options_add _ps1_tag 1
-	_bash_options_add _ps1_chroot_name 1
-	_bash_options_add _ps1_jobs 1
-	_bash_options_add _ps1_user_at_host 1
-	_bash_options_add _ps1_virtualenv 1
-	_bash_options_add _ps1_git 0
-	_bash_options_add _ps1_prompt 1
-	_bash_options_add _ps1_bash_update 1
-	_bash_options_add _binary_tmuxconf 1
-	_bash_options_add _histgrep_compact 1
+	_bash_options_add           _first_run 0
+	_bash_options_add           _ps1_enable 1
+	_bash_options_add           _ps1_get_performance 0
+	_bash_options_add           _ps1_performance_file '${HOME}/.bashrc.performance'
+	_bash_options_add           _ps1_exit_code 1
+	_bash_options_add           _ps1_tmux 1
+	_bash_options_add           _ps1_x11_display 1
+	_bash_options_add           _ps1_time 1
+	_bash_options_add           _ps1_load 1
+	_bash_options_add           _ps1_tag 1
+	_bash_options_add           _ps1_chroot_name 1
+	_bash_options_add           _ps1_jobs 1
+	_bash_options_add           _ps1_user_at_host 1
+	_bash_options_add           _ps1_virtualenv 1
+	_bash_options_add           _ps1_git 0
+	_bash_options_add           _ps1_prompt 1
+	_bash_options_add           _ps1_bash_update 1
+	_bash_options_add           _binary_tmuxconf 1
+	_bash_options_add           _histgrep_compact 1
 	_bash_options_add commented _update_00_url  'https://raw.githubusercontent.com/amospalla/bashrc/master/bashrc'
+	_bash_options_add           _update_00_url_version 'https://raw.githubusercontent.com/amospalla/bashrc/master/bashrc.version'
 	_bash_options_add commented _update_00_path '${HOME}/.bashrc'
 	_bash_options_add commented _update_99_url  'http://www.foo.com/vimrc  #example (mandatory)'
 	_bash_options_add commented _update_99_path '${HOME}/.vimrc           #example (mandatory)'
