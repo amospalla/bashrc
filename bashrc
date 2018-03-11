@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=571
-FileVersion=571
+# FileVersion=572
+FileVersion=572
 
 # Environment functions:
 #   count-lines
@@ -1441,7 +1441,7 @@ _source_utilities(){
 		arguments_list=(args1 args2 args3 args4 args5 args6 args7 args8 args9)
 		args1='[-p|--path {path}] lock [-q|--quiet] [-f|--fast] {id} pid {num:integer}'
 		args2='[-p|--path {path}] lock [-q|--quiet] [-f|--fast] {id} [command...]'
-		args3='[-p|--path {path}] unlock {id}'
+		args3='[-p|--path {path}] unlock {id} [{pid}]'
 		args4='[-p|--path {path}] get {id}'
 		args5='[-p|--path {path}] set {id} {max}'
 		args6='[-p|--path {path}] get-running {id}'
@@ -1454,7 +1454,7 @@ _source_utilities(){
 		                       '[-f|--fast]: try to lock but exit already locked.'
 		                       'lock {id} [command]: lock the specified id and optionally execute a command and unlock at once.'
 		                       'lock {id} pid {pid}: lock the specified id and optionally execute a command and unlock at once.'
-		                       'unlock {id}: unlock the specified id.'
+		                       'unlock {id} {pid}: unlock the specified id, optionally specifying a pid.'
 		                       'set {id} {max}: set the maximum number of concurrent accesses.'
 		                       'get {id}: get the maximum number of concurrent accesses.'
 		                       'get-running {id}: get number of running processes.'
@@ -1579,26 +1579,6 @@ _source_utilities(){
 			fi
 		}
 		
-		_lock_remove_running_unnamed(){
-			if [[ ! -f "${basefolder}/${id}.running" ]]; then
-				echo "No lock acquired."
-				return 1
-			fi
-			
-			local -i i found=0
-			local -a text
-			readarray -t text < "${basefolder}/${id}.running"
-			rm "${basefolder}/${id}.running"
-			for (( i=0; i<${#text[@]}; i++ )); do
-				[[ "${text[$i]}" == 'unnamed' ]] && [[ ${found} -eq 0 ]] && found=1 && continue
-				echo "${text[$i]}" >> "${basefolder}/${id}.running"
-			done
-			if [[ ${found} -eq 0 ]]; then
-				echo "No lock acquired."
-				return 1
-			fi
-		}
-		
 		_lock_add_running(){
 			if [[ ${lockmode} == run ]]; then
 				echo "${EUID} $$ $@" >> "${basefolder}/${id}.running"
@@ -1661,7 +1641,38 @@ _source_utilities(){
 		}
 		
 		_lock_unlock(){
-			_lock_sub_lock; _lock_remove_running_unnamed && ec=0 || ec=1; _lock_sub_unlock;
+			_lock_sub_lock
+			
+			if [[ ! -f "${basefolder}/${id}.running" ]]; then
+				echo "No locks present."
+				_lock_sub_unlock
+				return 1
+			fi
+
+			local -i i found=0 ec=0
+			local -a text=()
+			local string
+			readarray -t text < "${basefolder}/${id}.running"
+			rm "${basefolder}/${id}.running"
+
+			if [[ ${arguments[pid]:-0} -gt 0 ]]; then
+				string="${EUID} ${arguments[pid]}"
+			elif [[ ${arguments[pid]:-0} -eq 0 ]]; then
+				string="unnamed"
+			fi
+			
+			for (( i=0; i<${#text[@]}; i++ )); do
+				[[ ${found} -eq 0 && "${text[$i]}" == "${string}" ]] && found=1 && continue
+				echo "${text[$i]}" >> "${basefolder}/${id}.running"
+			done
+			if [[ ${found} -eq 0 ]]; then
+				echo "No locks present."
+				_lock_sub_unlock
+				return 1
+			fi
+		
+			
+			_lock_sub_unlock
 			return ${ec}
 		}
 		
@@ -1674,7 +1685,7 @@ _source_utilities(){
 		for i in lock unlock get set list get-running get-waiting get-total; do
 			[[ ${arguments[${i}]:-0} -eq 1 ]] && mode=${i} && break
 		done
-
+		
 		if [[ ${mode} == lock && ${arguments[pid]:-0} -eq 1 ]]; then
 			lockmode=pid
 		elif [[ ${mode} == lock && $# -gt 0 ]]; then
