@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=572
-FileVersion=572
+# FileVersion=573
+FileVersion=573
 
 # Environment functions:
 #   count-lines
@@ -259,6 +259,12 @@ _source(){
 }
 
 _update_files(){
+	local debug; [[ "${1:-0}" =~ -d|--debug ]] && debug=1 || debug=0
+	
+	_debug(){
+		[[ ${debug} -eq 1 ]] && echo "[debug _update_files] $@" || true
+	}
+	
 	_update_files_get_embedded_version(){
 		local text="${1}" i version=0
 		local -a array
@@ -270,6 +276,7 @@ _update_files(){
 	}
 	
 	_update_files_get_online_text(){
+		[[ ${online_text_retrieved} -eq 0 ]] || return 0
 		online_text="$(wget --timeout=10 ${url} -O - 2> /dev/null)" || return 1
 		if [[ -n "${pass}" ]]; then
 			if type -a openssl >/dev/null 2>&1; then
@@ -294,6 +301,7 @@ _update_files(){
 				return 1
 			fi
 		fi
+		online_text_retrieved=1
 	}
 	
 	_update_files_set_stored_version(){
@@ -321,9 +329,21 @@ _update_files(){
 	}
 	
 	_update_files_get_online_version(){
-		if [[ ${version} -eq 0 ]]; then
+		if [[ ${url_version} != 0 ]]; then
+			# Version retrieved by download a url
+			_debug "  get_online_version: online_url"
+			online_version="$(wget --timeout=10 ${url_version} -O - 2> /dev/null)" || return 1
+		elif [[ ${version} -eq 0 ]]; then
+			# Version embedded in online file
+			_debug "  get_online_version: embedded"
+			if ! _update_files_get_online_text; then
+				_debug "  error retrieving online text"
+				return 1
+			fi
 			online_version="$(_update_files_get_embedded_version "${online_text}")"
 		else
+			# Version specified manually
+			_debug "  get_online_version: manually specified"
 			online_version=${version}
 		fi
 	}
@@ -336,33 +356,54 @@ _update_files(){
 		fi
 	}
 	
+	if \lock lock -q -f bashrc_update_files pid $$; then
+		_debug "Lock acquired!"
+	else
+		_debug "Error obtaining lock bashrc_update_files"
+		return 0
+	fi
+	
 	local updates=1 versions_store="${HOME}/.bashrc.versions_store"
+	local i url filepath user mode online_text online_version local_version ps1_text pass gzip version url_version online_text_retrieved
 	
 	updates=0
 	[[ -r "${HOME}/.bashrc.options" ]] && . ${HOME}/.bashrc.options
 	[[ -r "${HOME}/.bashrc.options.local" ]] && . ${HOME}/.bashrc.options.local
-	local i url filepath user mode online_text online_version local_version ps1_text pass gzip version
 	for i in {0..99}; do
 		[[ ${#i} -eq 1 ]] && i="0${i}"
-		url=_update_${i}_url filepath=_update_${i}_path user=_update_${i}_user mode=_update_${i}_mode pass=_update_${i}_pass gzip=_update_${i}_gzip version=_update_${i}_version
+		url=_update_${i}_url filepath=_update_${i}_path user=_update_${i}_user mode=_update_${i}_mode pass=_update_${i}_pass gzip=_update_${i}_gzip version=_update_${i}_version url_version=_update_${i}_url_version
 		[[ -n ${!url} && -n "${!filepath}" ]] || continue
-		url=${!url} filepath=${!filepath} user=${!user:-all} mode=${!mode:-0644} pass=${!pass} gzip=${!gzip:-no} version=${!version:-0} 
-		[[ ( ${user} == root && ${UID} -ne 0 ) || ( ${user} == user && ${UID} -eq 0 ) ]] && continue
-		_update_files_get_online_text || continue
-		_update_files_get_online_version
+		online_text_retrieved=0
+		url=${!url} filepath=${!filepath} user=${!user:-all} mode=${!mode:-0644} pass=${!pass} gzip=${!gzip:-no} version=${!version:-0} url_version=${!url_version:-0} 
+		_debug "${filepath}"
+		[[ ( ${user} == root && ${UID} -ne 0 ) ]] && _debug "  skip: only root" && continue
+		[[ ( ${user} == user && ${UID} -eq 0 ) ]] && _debug "  skip: only user" && continue
+		if _update_files_get_online_version; then
+			_debug "  online_version: ${online_version}"
+		else
+			_debug "  skip: error obtaining online_version"
+		fi
 		_update_files_get_current_version
+		_debug "  local_version: ${local_version}"
 		if [[ ${local_version} -lt ${online_version} ]]; then
+			if ! _update_files_get_online_text; then
+				_debug "  skip: error retrieving online file"
+			fi
+			_debug "  ${local_version} less than ${online_version}, update"
 			[[ -d "$(dirname "${filepath}")" ]] || mkdir -p "$(dirname "${filepath}")"
 			echo "${online_text}" > "${filepath}" && chmod ${mode} "${filepath}"
 			updates=1
 			ps1_text="${ps1_text} ${filepath}:${local_version}>${online_version}"
 			[[ ${version} -gt 0 ]] && _update_files_set_stored_version
+		else
+			_debug "  local and online version equals"
 		fi
 	done
 	if [[ "${#ps1_text}" -gt 0 ]]; then
 		ps1_text="$(trim "${ps1_text}")"
 		echo "${ps1_text}" > "/tmp/${UID}.$$.bashrcupdate"
 	fi
+	\lock unlock bashrc_update_files $$
 	return 0
 }
 
