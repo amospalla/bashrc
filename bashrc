@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=570
-FileVersion=570
+# FileVersion=571
+FileVersion=571
 
 # Environment functions:
 #   count-lines
@@ -330,40 +330,34 @@ _update_files(){
 	
 	_update_files_get_current_version(){
 		if [[ ${version} -eq 0 ]]; then
-			echo "[debug get_current_version] get embedded"
 			[[ -r "${filepath}" ]] && local_version="$(_update_files_get_embedded_version "$(<"${filepath}")")" || local_version=0
 		else
-			echo "[debug get_current_version] get from store"
 			_update_files_get_stored_version "${filepath}"
 		fi
 	}
 	
-	local run=1 updates=1 versions_store="${HOME}/.bashrc.versions_store"
+	local updates=1 versions_store="${HOME}/.bashrc.versions_store"
 	
-	while [[ ${run} -le 2 && ${updates} -eq 1 ]]; do
-		updates=0
-		[[ -r "${HOME}/.bashrc.options" ]] && . ${HOME}/.bashrc.options
-		[[ -r "${HOME}/.bashrc.options.local" ]] && . ${HOME}/.bashrc.options.local
-		local i url filepath user mode online_text online_version local_version ps1_text pass gzip version
-		for i in {0..99}; do
-			[[ ${#i} -eq 1 ]] && i="0${i}"
-			url=_update_${i}_url filepath=_update_${i}_path user=_update_${i}_user mode=_update_${i}_mode pass=_update_${i}_pass gzip=_update_${i}_gzip version=_update_${i}_version
-			[[ -n ${!url} && -n "${!filepath}" ]] || continue
-			url=${!url} filepath=${!filepath} user=${!user:-all} mode=${!mode:-0644} pass=${!pass} gzip=${!gzip:-no} version=${!version:-0} 
-			[[ ( ${user} == root && ${UID} -ne 0 ) || ( ${user} == user && ${UID} -eq 0 ) ]] && continue
-			_update_files_get_online_text || continue
-			_update_files_get_online_version
-			_update_files_get_current_version
-			echo "[debug] '${filepath}' current:${local_version} online:${online_version}"
-			if [[ ${local_version} -lt ${online_version} ]]; then
-				[[ -d "$(dirname "${filepath}")" ]] || mkdir -p "$(dirname "${filepath}")"
-				echo "${online_text}" > "${filepath}" && chmod ${mode} "${filepath}"
-				updates=1
-				ps1_text="${ps1_text} ${filepath}:${local_version}>${online_version}"
-				[[ ${version} -gt 0 ]] && _update_files_set_stored_version
-			fi
-			run=$(( run + 1))
-		done
+	updates=0
+	[[ -r "${HOME}/.bashrc.options" ]] && . ${HOME}/.bashrc.options
+	[[ -r "${HOME}/.bashrc.options.local" ]] && . ${HOME}/.bashrc.options.local
+	local i url filepath user mode online_text online_version local_version ps1_text pass gzip version
+	for i in {0..99}; do
+		[[ ${#i} -eq 1 ]] && i="0${i}"
+		url=_update_${i}_url filepath=_update_${i}_path user=_update_${i}_user mode=_update_${i}_mode pass=_update_${i}_pass gzip=_update_${i}_gzip version=_update_${i}_version
+		[[ -n ${!url} && -n "${!filepath}" ]] || continue
+		url=${!url} filepath=${!filepath} user=${!user:-all} mode=${!mode:-0644} pass=${!pass} gzip=${!gzip:-no} version=${!version:-0} 
+		[[ ( ${user} == root && ${UID} -ne 0 ) || ( ${user} == user && ${UID} -eq 0 ) ]] && continue
+		_update_files_get_online_text || continue
+		_update_files_get_online_version
+		_update_files_get_current_version
+		if [[ ${local_version} -lt ${online_version} ]]; then
+			[[ -d "$(dirname "${filepath}")" ]] || mkdir -p "$(dirname "${filepath}")"
+			echo "${online_text}" > "${filepath}" && chmod ${mode} "${filepath}"
+			updates=1
+			ps1_text="${ps1_text} ${filepath}:${local_version}>${online_version}"
+			[[ ${version} -gt 0 ]] && _update_files_set_stored_version
+		fi
 	done
 	if [[ "${#ps1_text}" -gt 0 ]]; then
 		ps1_text="$(trim "${ps1_text}")"
