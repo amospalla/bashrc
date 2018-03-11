@@ -1,2 +1,4 @@
 - /.owncloudsync.log*
-- /sync_*.db
+- /.sync_*.db
+- /.sync_*.db-wal
+- /.sync_*.db-shm
