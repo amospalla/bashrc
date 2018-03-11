@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=565
-FileVersion=565
+# FileVersion=566
+FileVersion=566
 
 # Environment functions:
 #   count-lines
@@ -2014,17 +2014,17 @@ _source_utilities(){
 	message(){
 		arguments_list=(args1 args2 args3 args4)
 		args1='listen {port} {file}'
-		args2='send {hostport} [{message}]'
+		args2='send {hostport} {message}'
 		args3='send-pending'
 		args4='internal {file}'
 		arguments_description=( 'message' 'Messages collector.')
 		arguments_parameters=( 'listen {port} {file}: listen on specified port for incoming messages and save on {file}.'
-		                       'send {hostport}: send message to {host:port}, either by stdin on argument.'
+		                       'send {hostport} {message}: send message to {host:port}.'
 		                       'send-pending: send any pending message'
 		                       'internal: internal usage only.' )
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
-		local line message mode file folder host port program date hostname i user
+		local line mode file folder host port program date hostname i user
 		
 		_send_pending(){
 			if "${HOME}/bin/program-exists" socat; then mode="socat"
@@ -2050,13 +2050,12 @@ _source_utilities(){
 		}
 		
 		_send(){
-			[[ -t 0 ]] && message="${arguments[message]}" || message="$(cat)"
 			mkdir -p "${HOME}/.local/message/${arguments[hostport]}"
 			for file in {1..9999}; do
 				[[ -f "${HOME}/.local/message/${arguments[hostport]}/${file}" ]] || break
 			done
 			date="$(date_history)" hostname="$(hostname -f)" i=1 user=$(whoami)
-			echo "${message}" | while read line; do
+			echo "${arguments[message]}" | while read line; do
 				printf "[${date}][${user}@${hostname}][%04g] ${line}\n" ${i} >> "${HOME}/.local/message/${arguments[hostport]}/${file}"
 				i=$(( i + 1 ))
 			done
