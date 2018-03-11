@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=566
-FileVersion=566
+# FileVersion=567
+FileVersion=567
 
 # Environment functions:
 #   count-lines
@@ -2118,9 +2118,10 @@ _source_utilities(){
 	}
 
 	try(){
-		arguments_list=(args1); args1='[-i|--interval {seconds}] [-m|--max {tries}] {command...}'
+		arguments_list=(args1); args1='[-i|--interval {seconds}] [--inverse] [-m|--max {tries}] {command...}'
 		arguments_description=( 'try' 'Tries executing a command until it succeeds.')
 		arguments_parameters=( '[-i|--interval {seconds}]: executes in loop mode every {seconds} (by default 1 second).'
+		                       '[--inverse]: inverse the check logic.'
 		                       '[-m|--max {tries}]: maximum number of tries.')
 		arguments_examples=( '$ try ssh 1.2.3.4' 'keeps executing until it succeeds.')
 		local -A arguments=()
@@ -2128,7 +2129,11 @@ _source_utilities(){
 		argparse "$@" && shift ${arguments_shift}
 		"${HOME}/bin/program-exists" -m "${1}" || exit 1
 		while [[ ${arguments[-m]:-0} -eq 0 || ${tries} < ${arguments[tries]} ]]; do
-			$@ && break
+			if [[ ${arguments[--inverse]:-0} -eq 0 ]]; then
+				$@ && break
+			else
+				$@ || break
+			fi
 			read -t ${arguments[seconds]:-1} || true
 			tries=$(( ${tries} + 1 ))
 		done
