@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=574
-FileVersion=574
+# FileVersion=575
+FileVersion=575
 
 # Environment functions:
 #   count-lines
@@ -1481,8 +1481,8 @@ _source_utilities(){
 
 	lock(){
 		arguments_list=(args1 args2 args3 args4 args5 args6 args7 args8 args9)
-		args1='[-p|--path {path}] lock [-q|--quiet] [-f|--fast] {id} pid {num:integer}'
-		args2='[-p|--path {path}] lock [-q|--quiet] [-f|--fast] {id} [command...]'
+		args1='[-p|--path {path}] lock [-q|--quiet] [-f|--fast [noerror]] {id} pid {num:integer}'
+		args2='[-p|--path {path}] lock [-q|--quiet] [-f|--fast [noerror]] {id} [command...]'
 		args3='[-p|--path {path}] unlock {id} [{pid}]'
 		args4='[-p|--path {path}] get {id}'
 		args5='[-p|--path {path}] set {id} {max}'
@@ -1493,7 +1493,7 @@ _source_utilities(){
 		arguments_description=( 'lock' 'Locks the named identifier so other one trying to acquire a lock waits for it to be unlocked.')
 		arguments_parameters=( '[-p|--path {path}]: path where to store locks (by default /tmp/bashrclock.{uid}.).'
 		                       '[-q|--quiet]: quiet mode.'
-		                       '[-f|--fast]: try to lock but exit already locked.'
+		                       '[-f|--fast [noerror]]: try to lock but exit already locked.'
 		                       'lock {id} [command]: lock the specified id and optionally execute a command and unlock at once.'
 		                       'lock {id} pid {pid}: lock the specified id and optionally execute a command and unlock at once.'
 		                       'unlock {id} {pid}: unlock the specified id, optionally specifying a pid.'
@@ -1674,7 +1674,7 @@ _source_utilities(){
 			if [[ ${arguments[-f]:-0} -eq 1 && $(_lock_get_max ${id}) -le $(_lock_get_used_slots running) ]]; then
 				# -f and no free slots
 				_lock_sub_unlock
-				exit 1
+				[[ ${arguments[noerror]:-0} -eq 0 ]] && exit 1 || exit 0
 			else
 				_lock_add_waiting "$@"
 				_lock_sub_unlock
