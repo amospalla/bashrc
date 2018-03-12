@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=576
-FileVersion=576
+# FileVersion=577
+FileVersion=577
 
 # Environment functions:
 #   count-lines
@@ -2665,7 +2665,8 @@ _source_histgrep(){
 		for (( i=0; i<${#days[@]}; i++ )); do
 			for file in "${path}/${days[$i]}"*; do
 				[[ ${file} =~ \.[0-9]+\. ]] && [[ ${BASH_REMATCH} =~ [0-9]+ ]] && pid=${BASH_REMATCH}
-				[[ -f /proc/${pid}/loginuid && $(cat /proc/${pid}/loginuid) -eq $EUID && $(tr -d '\0' < /proc/${pid}/cmdline) =~ -?bash ]] && continue 2
+				# Skip if pid proc exists, uid does match and process is bash
+				[[ -f /proc/${pid}/comm && $(</proc/${pid}/status) =~ Uid:[[:blank:]]*${EUID}[[:blank:]] && $(tr -d '\0' < /proc/${pid}/cmdline) =~ -?bash ]] && continue 2
 			done
 			
 			echo "Compacting ${days[$i]}"
