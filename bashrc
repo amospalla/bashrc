@@ -1008,7 +1008,7 @@ _source_utilities(){
 
 	run-every(){
 		arguments_list=(args1)
-		args1='{interval:time} {subintervals:integer} {myinterval:integer}'
+		args1='{interval:time} {subintervals:integer} {myinterval:integer} [command...]'
 		arguments_description=('run-every' 'Given an interval time and a number of subintervals, return if myinterval is active.')
 		arguments_parameters=('{interval}: general time interval.'
 		                      '{subintervals}: number of subintervals on which to divide the main interval.'
@@ -1025,7 +1025,11 @@ _source_utilities(){
 		tmp=$(( current_date - seconds_midnight ))
 		tmp=$(( tmp % interval_seconds ))
 		tmp=$(( tmp / subinterval_seconds ))
-		[[ $(( tmp + 1 )) -eq ${arguments[myinterval]} ]]
+		if [[ $(( tmp + 1 )) -eq ${arguments[myinterval]} ]]; then
+			[[ $# -gt 0 ]] && exec "$@" || exit 0
+		else
+			[[ $# -gt 0 ]] && exit 0 || exit 1
+		fi
 	}
 
 	program-exists(){
