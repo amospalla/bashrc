@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=578
-FileVersion=578
+# FileVersion=579
+FileVersion=579
 
 # Environment functions:
 #   count-lines
@@ -1417,7 +1417,7 @@ _source_utilities(){
 		_diskinfo_read(){
 			local name i
 			for name in $(find /sys/block -type l); do
-				name=${name/*\/}; [[ ${name} =~ (vd|sd)[a-z]$ ]] && i=${#names[@]} || continue
+				name=${name/*\/}; [[ ${name} =~ (vd|sd)[a-z]|mmcblk[0-9]+$ ]] && i=${#names[@]} || continue
 				names[$i]="${name}"
 				[[ $(readlink -f /sys/block/${names[$i]}) =~ (ata|virtio|usb)[0-9]+ ]] && ports[$i]=${BASH_REMATCH} || ports[$i]="."
 				discards[$i]="$(lsblk -Ddn /dev/${names[$i]} | awk '{print $4}' || true)"
@@ -1425,7 +1425,11 @@ _source_utilities(){
 				sizes[$i]=$(( $(</sys/class/block/${names[$i]}/size) * 512 ))
 				sizes2[$i]="$((  ${sizes[$i]} / 1024 / 1024 / 1024 ))"
 				sizes10[$i]="$(( ${sizes[$i]} / 1000 / 1000 / 1000 ))"
-				vendors[$i]="$(</sys/class/block/${names[$i]}/device/vendor)"
+				if [[ -f /sys/class/block/${names[$i]}/device/vendor ]]; then
+					vendors[$i]="$(</sys/class/block/${names[$i]}/device/vendor)"
+				else
+					vendors[$i]="."
+				fi
 				[[ ${vendors[$i]} =~ ^ATA[[:space:]]+$ ]] && vendors[$i]="."
 				vendors[$i]=$( echo "${vendors[$i]}" | sed -e 's/[[:space:]]*$//' -e 's/[[:space:]]\+/_/g' )
 				if [[ -f /sys/class/block/${names[$i]}/device/model ]]; then
@@ -1434,7 +1438,7 @@ _source_utilities(){
 				else
 					models[$i]="."
 				fi
-				adapters[$i]="$(_diskinfo_getdevice "${names[$i]}")"
+				[[ ${pci} -eq 1 ]] && adapters[$i]="$(_diskinfo_getdevice "${names[$i]}")" || adapters[$i]="."
 				if [[ -e /sys/class/block/${names[$i]}/device/wwid ]]; then
 					serials[$i]="$(</sys/class/block/${names[$i]}/device/wwid)" || true
 					serials[$i]="${serials[$i]:52:999}"
@@ -1447,7 +1451,6 @@ _source_utilities(){
 		
 		_diskinfo_print(){
 			local -i i
-			echo "name port discard size size vendor model serial adapter"
 			for (( i=0; i<${#names[@]}; i++ )); do
 				printf "${names[$i]} ${ports[$i]} ${discards[$i]} ${sizes10[$i]} ${sizes2[$i]} ${vendors[$i]} ${models[$i]} ${serials[$i]} ${adapters[$i]}\n"
 			done
@@ -1460,9 +1463,12 @@ _source_utilities(){
 		[[ ${EUID} -ne 0 ]] && echo "Need root privileges." && exit 1
 		
 		local -a devices=() names=() ports=() discards=() sizes=() sizes2=() sizes64=() vendors=() models=() adapters=() serials=()
-		readarray -t devices < <(lspci)
+		local pci
+		${HOME}/bin/program-exists lspci && pci=1 || pci=0
+		[[ ${pci} -eq 1 ]] && readarray -t devices < <(lspci)
 		_diskinfo_read
-		_diskinfo_print | sort -k 1,1 | column -t
+		( echo "name port discard size size vendor model serial adapter";
+		 _diskinfo_print | sort -k 1,1 ) | column -t 
 	}
 
 	extract(){
