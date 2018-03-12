@@ -1,4 +1,5 @@
-- /.owncloudsync.log*
-- /._sync_*.db
-- /._sync_*.db-wal
-- /._sync_*.db-shm
+- .owncloudsync.log*
+- ._sync_*.db
+- ._sync_*.db-wal
+- ._sync_*.db-shm
+- .osync_workdir/
