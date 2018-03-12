@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=577
-FileVersion=577
+# FileVersion=578
+FileVersion=578
 
 # Environment functions:
 #   count-lines
@@ -1417,7 +1417,7 @@ _source_utilities(){
 		_diskinfo_read(){
 			local name i
 			for name in $(find /sys/block -type l); do
-				name=${name/*\/}; [[ ${name} =~ sd[a-z]$ ]] && i=${#names[@]} || continue
+				name=${name/*\/}; [[ ${name} =~ (vd|sd)[a-z]$ ]] && i=${#names[@]} || continue
 				names[$i]="${name}"
 				[[ $(readlink -f /sys/block/${names[$i]}) =~ (ata|virtio|usb)[0-9]+ ]] && ports[$i]=${BASH_REMATCH} || ports[$i]="."
 				discards[$i]="$(lsblk -Ddn /dev/${names[$i]} | awk '{print $4}' || true)"
@@ -1428,8 +1428,12 @@ _source_utilities(){
 				vendors[$i]="$(</sys/class/block/${names[$i]}/device/vendor)"
 				[[ ${vendors[$i]} =~ ^ATA[[:space:]]+$ ]] && vendors[$i]="."
 				vendors[$i]=$( echo "${vendors[$i]}" | sed -e 's/[[:space:]]*$//' -e 's/[[:space:]]\+/_/g' )
-				models[$i]="$(</sys/class/block/${names[$i]}/device/model)"
-				models[$i]=$( echo "${models[$i]}" | sed -e 's/[[:space:]]*$//' -e 's/[[:space:]]\+/_/g' )
+				if [[ -f /sys/class/block/${names[$i]}/device/model ]]; then
+					models[$i]="$(</sys/class/block/${names[$i]}/device/model)"
+					models[$i]=$( echo "${models[$i]}" | sed -e 's/[[:space:]]*$//' -e 's/[[:space:]]\+/_/g' )
+				else
+					models[$i]="."
+				fi
 				adapters[$i]="$(_diskinfo_getdevice "${names[$i]}")"
 				if [[ -e /sys/class/block/${names[$i]}/device/wwid ]]; then
 					serials[$i]="$(</sys/class/block/${names[$i]}/device/wwid)" || true
