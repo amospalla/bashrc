@@ -1627,17 +1627,17 @@ _source_utilities(){
 				fi
 			done
 			
-			[[ ${arguments[-q]:-0} -eq 0 ]] && printf "\r \r" || true
+			[[ ${arguments[-q]:-0} -eq 0 ]] && printf "\r        \r" || true
 			if [[ ${lockmode} == run ]]; then
 				"$@" && ec=0 || ec=1
 				_lock_sub_lock; _lock_remove_running; _lock_sub_unlock
-			elif [[ ${lockmode} == pid ]]; then
+			#elif [[ ${lockmode} == pid ]]; then
+			#	_lock_sub_lock
+			#	sed -i "s/^${EUID} $$/${EUID} ${arguments[num]}/" "${basefolder}/${id}.running"
+			#	_lock_sub_unlock
+			elif [[ ${lockmode} == unnamed ]]; then
 				_lock_sub_lock
-				sed -i "s/^${EUID} $$/${EUID} ${arguments[num]}/" "${basefolder}/${id}.running"
-				_lock_sub_unlock
-			else
-				_lock_sub_lock
-				sed -i "s/^${EUID} $$/unnamed/" "${basefolder}/${id}.running"
+				sed -i "s/^${EUID} $$ $(</proc/$$/comm)/unnamed/" "${basefolder}/${id}.running"
 				_lock_sub_unlock
 			fi
 		}
@@ -1646,49 +1646,64 @@ _source_utilities(){
 			if [[ ${lockmode} == run ]]; then
 				sed -i "/^${EUID} $$/d" "${basefolder}/${id}.running"
 			elif [[ ${lockmode} == pid ]]; then
-				sed -i "/^${EUID} ${arguments[pid]}/d" "${basefolder}/${id}.running"
+				sed -i "/^${EUID} ${arguments[num]}/d" "${basefolder}/${id}.running"
 			fi
 		}
 		
 		_lock_add_running(){
-			if [[ ${lockmode} == run ]]; then
-				echo "${EUID} $$ $@" >> "${basefolder}/${id}.running"
-			else
-				echo "${EUID} $$" >> "${basefolder}/${id}.running"
+			if   [[ ${lockmode} == run ]]; then
+				echo "${EUID} $$ $(</proc/$$/comm) $@" >> "${basefolder}/${id}.running"
+			elif [[ ${lockmode} == pid ]]; then
+				echo "${EUID} ${arguments[num]} $(</proc/${arguments[num]}/comm)" >> "${basefolder}/${id}.running"
+			elif [[ ${lockmode} == unnamed ]]; then
+				echo "${EUID} $$ $(</proc/$$/comm)" >> "${basefolder}/${id}.running"
 			fi
 		}
 		
 		_lock_remove_waiting(){
-			sed -i "/^${EUID} $$/d" "${basefolder}/${id}.waiting"
+			sed -i "/^${EUID} $$ $(</proc/$$/comm)/d" "${basefolder}/${id}.waiting"
 		}
 		
 		_lock_am_i_next(){
-			[[ "$(head -n1 "${basefolder}/${id}.waiting")" =~ ^${EUID}" "$$ ]]
+			local text
+			readarray -t text < "${basefolder}/${id}.waiting"
+			[[ ${text[0]} =~ ^${EUID}" "$$" "$(</proc/$$/comm) ]]
 		}
 		
 		_lock_add_waiting(){
-			if [[ ${lockmode} == run ]]; then
-				echo "${EUID} $$ $@" >> "${basefolder}/${id}.waiting"
-			else
-				echo "${EUID} $$" >> "${basefolder}/${id}.waiting"
+			if   [[ ${lockmode} == run ]]; then
+				echo "${EUID} $$ $(</proc/$$/comm) $@" >> "${basefolder}/${id}.waiting"
+			elif [[ ${lockmode} == pid ]]; then
+				echo "${EUID} $$ $(</proc/$$/comm)"    >> "${basefolder}/${id}.waiting"
+			elif [[ ${lockmode} == unnamed ]]; then
+				echo "${EUID} $$ $(</proc/$$/comm)"    >> "${basefolder}/${id}.waiting"
 			fi
 		}
 		
 		_lock_remove_dead(){
-			local i j pid uid procuid tmp array=()
+			local i j pid uid comm"" procuid="" tmp array=() remove
 			[[ -d "${basefolder}" ]] || return
 			for i in "${basefolder}"/*.waiting "${basefolder}"/*.running; do
 				[[ -f "${i}" ]] || continue
 				readarray -t array < "${i}"
 				for (( j=0; j<${#array[@]}; j++ )); do
+					remove=0
 					[[ "${array[$j]}" == "unnamed" ]] && continue # Ignore unnamed locks, no way to know if are alive or not
-					[[ "${array[$j]}" =~ ^[0-9]+ ]] && uid=${BASH_REMATCH}; array[$j]="${array[j]/${uid} /}"
-					[[ "${array[$j]}" =~ ^[0-9]+ ]] && pid=${BASH_REMATCH}
-					procuid=$( cat /proc/${pid}/loginuid 2>/dev/null ) || true
-					proccomm=$( cat /proc/${pid}/comm 2>/dev/null ) || true
-					if [[ ${procuid} != ${uid} && ${proccomm} != lock ]]; then
-						echo "Removing dead ${uid} ${pid}."
-						sed -i "/^${uid} ${pid}/d" "${i}"
+					[[ "${array[$j]}" =~ ^[0-9]+  ]] && uid=${BASH_REMATCH};  array[$j]="${array[j]/${uid} /}"
+					[[ "${array[$j]}" =~ ^[0-9]+  ]] && pid=${BASH_REMATCH};  array[$j]="${array[j]/${pid} /}"
+					[[ "${array[$j]}" =~ ^[^' ']+ ]] && comm=${BASH_REMATCH} || comm="___none___123ABC"
+					if [[ -d /proc/${pid} ]]; then
+						[[ -f /proc/${pid}/status ]] && procuid="$( </proc/${pid}/status )" || true
+						[[ -f /proc/${pid}/comm   ]] && proccomm=$( </proc/${pid}/comm ) || true
+						if [[ ! ${procuid} =~ Uid:[[:blank:]]*${uid}[[:blank:]] || ${proccomm} != ${comm} ]]; then
+							remove=1
+						fi
+					else
+						remove=1
+					fi
+					if [[ ${remove} -eq 1 ]]; then
+						echo "Removing dead uid(${uid}) pid(${pid}) comm(${comm})."
+						sed -i "/^${uid} ${pid} ${comm}/d" "${i}"
 					fi
 				done
 			done
@@ -1719,15 +1734,15 @@ _source_utilities(){
 				_lock_sub_unlock
 				return 1
 			fi
-
+			
 			local -i i found=0 ec=0
 			local -a text=()
 			local string
 			readarray -t text < "${basefolder}/${id}.running"
 			rm "${basefolder}/${id}.running"
-
+			
 			if [[ ${arguments[pid]:-0} -gt 0 ]]; then
-				string="${EUID} ${arguments[pid]}"
+				string="${EUID} ${arguments[pid]} $(</proc/${arguments[pid]}/comm)"
 			elif [[ ${arguments[pid]:-0} -eq 0 ]]; then
 				string="unnamed"
 			fi
@@ -1741,7 +1756,6 @@ _source_utilities(){
 				_lock_sub_unlock
 				return 1
 			fi
-		
 			
 			_lock_sub_unlock
 			return ${ec}
