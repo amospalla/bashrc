@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=582
-FileVersion=582
+# FileVersion=583
+FileVersion=583
 
 # Environment functions:
 #   count-lines
@@ -3182,6 +3182,239 @@ make-links(){
 	done
 	# [[ ${EUID} -eq 0 && "${destination_folder}" != "system-wide" ]] && echo "" && make-links --system-wide || true
 	color
+}
+
+#====================================================================
+# Undo
+#====================================================================
+
+declare -a _do_command=()   _do_start=()   _do_end=()   _do_doc=()   _do_output=()   _do_ec=()   _do_singleline=()   _do_executed=()
+declare -a _undo_command=() _undo_start=() _undo_end=() _undo_doc=() _undo_output=() _undo_ec=() _undo_singleline=() _undo_executed=()
+declare -a _do_tmp=() _do_tmp2=()
+declare -i _do_padding_size=12 _do_error_by_command=0
+
+# #!/bin/bash
+# 
+# . $HOME/.bashrc
+# 
+# set -euo pipefail errfail
+# trap _undo_trap ERR SIGINT SIGHUP SIGTERM
+# 
+# path=/tmp/folder1
+# 
+# _do_add echo hola
+# _do_add_doc "Output a string"
+# _do_add mkdir "${path}"
+# _do_add_doc "Create a folder"
+# _undo_add rmdir "${path}"
+# _undo_add_doc "Undo creating folder"
+# # echo "do commands:"
+# # _do_print_command_all do
+# # echo ""; echo "undo commands:"
+# # _do_print_command_all undo
+# _do_exec_next do
+# _do_exec_next do
+# # _do_print_output do 0
+
+_do_padding(){
+	if [[ ${_do_padding_size:-0} -eq 0 ]]; then
+		cat
+	else
+		local -a text
+		local i padding="$(printf "%${_do_padding_size}s" "")"
+		readarray -t text < <(cat)
+		for (( i=0; i<${#text[@]}; i++ )); do
+			printf "${padding} ${text[$i]}\n"
+		done
+	fi
+}
+
+_on_error_undo(){
+	local i
+	echo ""
+	if [[ ${_do_error_by_command} -eq 0 ]]; then
+		echo "Error"
+	else
+		echo "Error produced by executed command."
+	fi
+	for (( i=0; i<${#_undo_start[@]}; i++ )); do
+		if [[ ${_undo_executed} -eq 0 ]]; then
+			_do_exec_next undo
+		fi
+	done
+
+	echo "Execution log:"
+	_do_print_history
+}
+
+_do_add(){
+	local num=${#_do_start[@]}
+	_do_singleline[${num}]="$@"
+	_do_executed[${num}]=0
+	_do_start[${num}]=${#_do_command[@]}
+	while [[ $# -gt 0 ]]; do
+		_do_command[${#_do_command[@]}]="${1}"
+		shift
+	done
+	_do_end[${num}]=${#_do_command[@]}
+}
+
+_do_add_doc(){
+	_do_doc[${#_do_doc[@]}]="$@"
+}
+
+_undo_add_doc(){
+	_undo_doc[${#_undo_doc[@]}]="$@"
+}
+
+_undo_add(){
+	local num=${#_undo_start[@]}
+	_undo_singleline[${num}]="$@"
+	_undo_executed[${num}]=0
+	_undo_start[${num}]=${#_undo_command[@]}
+	while [[ $# -gt 0 ]]; do
+		_undo_command[${#_undo_command[@]}]="${1}"
+		shift
+	done
+	_undo_end[${num}]=${#_undo_command[@]}
+}
+
+_do_exec(){
+	# Executes a command: _do_exec do 4
+	local mode="${1}" index="${2}" output ec i
+	tmp=() tmp2=()
+	if [[ ${mode} == do ]]; then
+		for (( i=${_do_start[${index}]}; i<${_do_end[${index}]}; i++ )); do
+			tmp=( "${tmp2[@]}" "${_do_command[$i]}" )
+			tmp2=( "${tmp[@]}" )
+		done
+		echo "# ${_do_doc[${index}]}"
+		echo "$ ${_do_singleline[${index}]}"
+		_do_output[${index}]="$("${tmp[@]}" 2>&1)" && ec=0 || ec=$?
+		[[ ${ec} -eq 1 ]] && _do_error_by_command=1
+		_do_ec[${index}]=${ec}
+		_do_executed[${index}]=1
+	elif [[ ${mode} == undo ]]; then
+		for (( i=${_undo_start[${index}]}; i<${_undo_end[${index}]}; i++ )); do
+			tmp=( "${tmp2[@]}" "${_undo_command[$i]}" )
+			tmp2=( "${tmp[@]}" )
+		done
+		echo "# ${_undo_doc[${index}]}"
+		echo "$ ${_undo_singleline[${index}]}"
+		_undo_output[${index}]="$("${tmp[@]}" 2>&1)" && ec=0 || ec=$?
+		[[ ${ec} -eq 1 ]] && _do_error_by_command=1
+		_undo_ec[${index}]=${ec}
+		_undo_executed[${index}]=1
+	fi
+	return ${ec}
+}
+
+_do_exec_next(){
+	local mode="${1}" i
+	if [[ ${mode} == do ]]; then
+		for (( i=0; i<${#_do_executed[@]}; i++ )); do
+			if [[ ${_do_executed[$i]} -eq 0 ]]; then
+				_do_exec ${mode} ${i} && return $? || return $?
+			fi
+		done
+	elif [[ ${mode} == undo ]]; then
+		for (( i=0; i<${#_undo_executed[@]}; i++ )); do
+			if [[ ${_undo_executed[$i]} -eq 0 ]]; then
+				_do_exec ${mode} ${i} && return $? || return $?
+			fi
+		done
+	fi
+}
+
+_do_print_command(){
+	local mode="${1}" num="${2}" first=1 i
+	if [[ ${mode} == do ]]; then
+		for (( i=${_do_start[$num]}; i<${_do_end[$num]}; i++ )); do
+			if [[ ${first} -eq 0 ]]; then
+				printf " "
+			else
+				first=0
+			fi
+			printf "${_do_command[$i]}"
+		done
+		printf "\n"
+	elif [[ ${mode} == undo ]]; then
+		for (( i=${_undo_start[$num]}; i<${_undo_end[$num]}; i++ )); do
+			if [[ ${first} -eq 0 ]]; then
+				printf " "
+			else
+				first=0
+			fi
+			printf "${_undo_command[$i]}"
+		done
+		printf "\n"
+	fi
+}
+
+_do_print_command_all(){
+	local mode="${1}"
+	if [[ ${mode} == do ]]; then
+		for (( i=0; i<${#_do_singleline[@]}; i++ )); do
+			printf "${mode} ${i}: "; _do_print_command ${mode} ${i}
+		done
+	elif [[ ${mode} == undo ]]; then
+		for (( i=0; i<${#_undo_singleline[@]}; i++ )); do
+			printf "${mode} ${i}: "; _do_print_command ${mode} ${i}
+		done
+	fi
+}
+
+_do_print_output(){
+	local mode="${1}" num="${2}"
+	if [[ ${mode} == do ]]; then
+		echo "${_do_output[$num]}"
+	elif [[ ${mode} == undo ]]; then
+		echo "${_undo_output[$num]}"
+	fi
+}
+
+_do_print_output_all(){
+	local mode="${1}"
+	if [[ ${mode} == do ]]; then
+		for (( i=0; i<${#_do_singleline[@]}; i++ )); do
+			printf "${mode} ${i}: "; _do_print_command ${mode} ${i}
+		done
+	elif [[ ${mode} == undo ]]; then
+		for (( i=0; i<${#_undo_singleline[@]}; i++ )); do
+			printf "${mode} ${i}: "; _do_print_command ${mode} ${i}
+		done
+	fi
+}
+
+_do_print_history(){
+	local i
+	for (( i=0; i<${#_do_singleline[@]}; i++ )); do
+		echo ""
+		echo "Do command number ${i}: ${_do_doc[$i]}"
+		echo "    command: ${_do_singleline[$i]}"
+		echo "   executed: ${_do_executed[$i]}" 
+		[[ ${_do_executed[$i]} -eq 1 ]] || continue
+		echo "  exit code: ${_do_ec[$i]}"
+		echo "     output:"
+		echo "${_do_output[$i]}" | _do_padding
+	done
+	for (( i=0; i<${#_undo_singleline[@]}; i++ )); do
+		echo ""
+		echo "Undo command number ${i}: ${_undo_doc[$i]}"
+		echo "    command: ${_undo_singleline[$i]}"
+		echo "   executed: ${_undo_executed[$i]}"
+		[[ ${_undo_executed[$i]} -eq 1 ]] || continue
+		echo "  exit code: ${_undo_ec[$i]}"
+		echo "     output:"
+		echo "${_undo_output[$i]}" | _do_padding
+	done
+}
+
+_undo_trap(){
+	local ec=$? i
+	trap - ERR EXIT SIGINT SIGHUP SIGTERM
+	_on_error_undo
+	exit "${ec}"
 }
 
 #====================================================================
