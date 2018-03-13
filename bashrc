@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=584
-FileVersion=584
+# FileVersion=585
+FileVersion=585
 
 # Environment functions:
 #   count-lines
@@ -1718,7 +1718,7 @@ _source_utilities(){
 						remove=1
 					fi
 					if [[ ${remove} -eq 1 ]]; then
-						echo "Removing dead lock: uid(${uid}) pid(${pid}) comm(${comm})."
+						[[ "${i}" =~ bashrc_update_files.running ]] || echo "Removing dead lock with uid(${uid}) pid(${pid}) comm(${comm}) on ${i/*\/}."
 						sed -i "/^${uid} ${pid} ${comm}/d" "${i}"
 					fi
 				done
