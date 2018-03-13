@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=585
-FileVersion=585
+# FileVersion=586
+FileVersion=586
 
 # Environment functions:
 #   count-lines
@@ -104,9 +104,9 @@ _main(){
 		export bashrc_interactive=1
 		_binary_decode
 		_check_first_run
-		if [[ -f /tmp/${UID}.$$.bashrcupdate ]]; then
-			rm /tmp/${UID}.$$.bashrcupdate
+		if [[ ${_FileVersion} -gt ${_FileVersionOld} ]]; then
 			_post_bash_update
+			sed -i "s/^_FileVersionOld=.*/_FileVersionOld=${_FileVersion}/" "${HOME}/.bashrc.options"
 		fi
 		(_update_files &)
 	fi
@@ -585,10 +585,14 @@ _update_files_notify(){
 			_files_updated=1
 			_files_update_text="$(</tmp/${UID}.$$.bashrcupdate)"
 			if [[ ${_files_update_text} =~ $HOME/.bashrc: ]]; then
-				. $HOME/.bashrc
-			else
-				rm /tmp/${UID}.$$.bashrcupdate
+				local text version= i
+				readarray -n10 -t text < "${HOME}/.bashrc"
+				for (( i=0; i<${#text[@]}; i++ )); do
+					[[ "${text[$i]}" =~ FileVersion=[0-9]+ ]] && [[ ${BASH_REMATCH} =~ [0-9]+ ]] && version = "${BASH_REMATCH}" && break
+				done
+				[[ ${version} -gt 0 ]] && sed -i "s/^_FileVersion=.*/_FileVersion=${version}/" "${HOME}/.bashrc.options"
 			fi
+			rm /tmp/${UID}.$$.bashrcupdate
 		fi
 	fi
 }
@@ -659,6 +663,8 @@ _source_bash_options(){
 	_bash_options_add           _ps1_bash_update 1
 	_bash_options_add           _binary_tmuxconf 1
 	_bash_options_add           _histgrep_compact 1
+	_bash_options_add           _FileVersion    ${FileVersion}
+	_bash_options_add           _FileVersionOld ${FileVersion}
 	_bash_options_add commented _update_00_url  'https://raw.githubusercontent.com/amospalla/bashrc/master/bashrc'
 	_bash_options_add           _update_00_url_version 'https://raw.githubusercontent.com/amospalla/bashrc/master/bashrc.version'
 	_bash_options_add commented _update_00_path '${HOME}/.bashrc'
