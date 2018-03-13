@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=586
-FileVersion=586
+# FileVersion=587
+FileVersion=587
 
 # Environment functions:
 #   count-lines
@@ -404,7 +404,9 @@ _update_files(){
 		ps1_text="$(trim "${ps1_text}")"
 		echo "${ps1_text}" > "/tmp/${UID}.$$.bashrcupdate"
 	fi
+	_debug "Unlocking"
 	\lock unlock bashrc_update_files $$
+	_debug "Unlocked"
 	return 0
 }
 
@@ -585,10 +587,10 @@ _update_files_notify(){
 			_files_updated=1
 			_files_update_text="$(</tmp/${UID}.$$.bashrcupdate)"
 			if [[ ${_files_update_text} =~ $HOME/.bashrc: ]]; then
-				local text version= i
+				local text version=0 i
 				readarray -n10 -t text < "${HOME}/.bashrc"
 				for (( i=0; i<${#text[@]}; i++ )); do
-					[[ "${text[$i]}" =~ FileVersion=[0-9]+ ]] && [[ ${BASH_REMATCH} =~ [0-9]+ ]] && version = "${BASH_REMATCH}" && break
+					[[ "${text[$i]}" =~ FileVersion=[0-9]+ ]] && [[ ${BASH_REMATCH} =~ [0-9]+ ]] && version="${BASH_REMATCH}" && break
 				done
 				[[ ${version} -gt 0 ]] && sed -i "s/^_FileVersion=.*/_FileVersion=${version}/" "${HOME}/.bashrc.options"
 			fi
@@ -667,6 +669,7 @@ _source_bash_options(){
 	_bash_options_add           _FileVersionOld ${FileVersion}
 	_bash_options_add commented _update_00_url  'https://raw.githubusercontent.com/amospalla/bashrc/master/bashrc'
 	_bash_options_add           _update_00_url_version 'https://raw.githubusercontent.com/amospalla/bashrc/master/bashrc.version'
+	_bash_options_add           _update_00_mode '0755'
 	_bash_options_add commented _update_00_path '${HOME}/.bashrc'
 	_bash_options_add commented _update_99_url  'http://www.foo.com/vimrc  #example (mandatory)'
 	_bash_options_add commented _update_99_path '${HOME}/.vimrc           #example (mandatory)'
