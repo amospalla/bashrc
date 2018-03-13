@@ -498,7 +498,7 @@ _program_load(){
 	_source_variables
 	# At this point, this file is being executed, so we set -euo pipefail, trap, and do exit at the end.
 	[[ ${1:-__None__} == "--debug" ]] && shift && set -x
-	set -euo pipefail
+	set -euo pipefail -o errtrace
 	trap '_exit $? ${BASH_COMMAND}' ERR SIGINT SIGTERM SIGHUP
 	${program_name} "$@"
 	exit $?
