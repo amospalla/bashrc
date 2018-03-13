@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=581
-FileVersion=581
+# FileVersion=582
+FileVersion=582
 
 # Environment functions:
 #   count-lines
@@ -1008,12 +1008,12 @@ _source_utilities(){
 
 	run-every(){
 		arguments_list=(args1)
-		args1='{interval:time} {subintervals:integer} {myinterval:integer} [-s|--shift] [command...]'
+		args1='[-s|--shift] {interval:time} {subintervals:integer} {myinterval:integer} [command...]'
 		arguments_description=('run-every' 'Given an interval time and a number of subintervals, return if myinterval is active.')
-		arguments_parameters=('{interval}: general time interval.'
+		arguments_parameters=('-s|--shift]: shift by one on each interval.'
+		                      '{interval}: general time interval.'
 		                      '{subintervals}: number of subintervals on which to divide the main interval.'
 		                      '{myinterval}: interval to test for.'
-		                      '[-s|--shift]: shift by one on each interval.'
 		                      '[command...]: execute a command.' )
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
