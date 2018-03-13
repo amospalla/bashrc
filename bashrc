@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=580
-FileVersion=580
+# FileVersion=581
+FileVersion=581
 
 # Environment functions:
 #   count-lines
@@ -1008,11 +1008,13 @@ _source_utilities(){
 
 	run-every(){
 		arguments_list=(args1)
-		args1='{interval:time} {subintervals:integer} {myinterval:integer} [command...]'
+		args1='{interval:time} {subintervals:integer} {myinterval:integer} [-s|--shift] [command...]'
 		arguments_description=('run-every' 'Given an interval time and a number of subintervals, return if myinterval is active.')
 		arguments_parameters=('{interval}: general time interval.'
 		                      '{subintervals}: number of subintervals on which to divide the main interval.'
-		                      '{myinterval}: interval to test for.' )
+		                      '{myinterval}: interval to test for.'
+		                      '[-s|--shift]: shift by one on each interval.'
+		                      '[command...]: execute a command.' )
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		local interval_seconds subinterval_seconds seconds_midnight seconds_midnight_tomorrow found=0 current_date tmp subinterval=0
@@ -1022,10 +1024,14 @@ _source_utilities(){
 		interval_seconds="$(\unit-conversion time -d 0 s ${arguments[interval]})"
 		subinterval_seconds=$(( interval_seconds / ${arguments[subintervals]} ))
 		
-		tmp=$(( current_date - seconds_midnight ))
-		tmp=$(( tmp % interval_seconds ))
-		tmp=$(( tmp / subinterval_seconds ))
-		if [[ $(( tmp + 1 )) -eq ${arguments[myinterval]} ]]; then
+		tmp=$(( current_date - seconds_midnight )) # seconds transcurred since midnight
+		if [[ ${arguments[-s]:-0} -eq 0 ]]; then
+			tmp=$(( tmp % interval_seconds )) # seconds transcurred since last interval start
+			tmp=$(( tmp / subinterval_seconds )) # subinterval
+		else
+			tmp=$(( (tmp / interval_seconds) % arguments[subintervals] )) # shift
+		fi
+		if [[ ${tmp} -eq ${arguments[myinterval]} ]]; then
 			[[ $# -gt 0 ]] && exec "$@" || exit 0
 		else
 			[[ $# -gt 0 ]] && exit 0 || exit 1
