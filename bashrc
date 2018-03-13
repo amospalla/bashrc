@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=579
-FileVersion=579
+# FileVersion=580
+FileVersion=580
 
 # Environment functions:
 #   count-lines
@@ -278,7 +278,7 @@ _update_files(){
 	
 	_update_files_get_online_text(){
 		[[ ${online_text_retrieved} -eq 0 ]] || return 0
-		online_text="$(wget --timeout=10 ${url} -O - 2> /dev/null)" || return 1
+		online_text="$(wget --timeout=1 ${url} -O - 2> /dev/null)" || return 1
 		if [[ -n "${pass}" ]]; then
 			if type -a openssl >/dev/null 2>&1; then
 				export pass
@@ -333,7 +333,7 @@ _update_files(){
 		if [[ ${url_version} != 0 ]]; then
 			# Version retrieved by download a url
 			_debug "  get_online_version: online_url"
-			online_version="$(wget --timeout=10 ${url_version} -O - 2> /dev/null)" || return 1
+			online_version="$(wget --timeout=1 ${url_version} -O - 2> /dev/null)" || return 1
 		elif [[ ${version} -eq 0 ]]; then
 			# Version embedded in online file
 			_debug "  get_online_version: embedded"
