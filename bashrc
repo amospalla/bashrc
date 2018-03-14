@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=588
-FileVersion=588
+# FileVersion=589
+FileVersion=589
 
 # Environment functions:
 #   count-lines
@@ -1606,22 +1606,32 @@ _source_utilities(){
 		}
 		
 		_lock_list(){
-			local file first=1 line tmp
-			find "${basefolder}" -maxdepth 1 -type f -name "*.waiting" | sed -e "s;${basefolder}/;;" -e "s/\.waiting//" | while read file; do
+			local file list=() first=1 line tmp i found
+			for file in "${basefolder}"/*.running "${basefolder}"/*.waiting; do
+				[[ -f "${file}" ]] || continue
+				found=0
+				file=${file/*\/}
+				file=${file/\.*}
+				for (( i=0; i<${#list[@]}; i++ )); do
+					[[ ${list[$i]} == ${file} ]] && found=1 && break
+				done
+				[[ ${#list[@]} -eq 0 || ${found} -eq 0 ]] && list[${#list[@]}]=${file}
+			done
+			for (( i=0; i<${#list[@]}; i++ )); do
 				[[ ${first} -eq 1 ]] && first=0 || printf "\n"
-				printf "${file} "
-				if [[ -f "${basefolder}/${file}.max" ]]; then
-					printf "(max $(cat "${basefolder}/${file}.max")):\n"
+				printf "${list[$i]} "
+				if [[ -f "${basefolder}/${list[$i]}.max" ]]; then
+					printf "(max $(cat "${basefolder}/${list[$i]}.max")):\n"
 				else
 					printf "(max 1):\n"
 				fi
 				for tmp in running waiting; do
-					if [[ -f "${basefolder}/${file}.${tmp}" ]]; then
+					if [[ -f "${basefolder}/${list[$i]}.${tmp}" ]]; then
 						printf "${tmp}:"
-						if [[ $(cat "${basefolder}/${file}.${tmp}" | count-lines) -eq 0 ]]; then
+						if [[ $(cat "${basefolder}/${list[$i]}.${tmp}" | count-lines) -eq 0 ]]; then
 							printf " none\n"
 						else
-							printf "\n"; cat "${basefolder}/${file}.${tmp}" | while read line; do
+							printf "\n"; cat "${basefolder}/${list[$i]}.${tmp}" | while read line; do
 								printf "  ${line}\n"
 							done
 						fi
@@ -1650,18 +1660,31 @@ _source_utilities(){
 			fi
 		}
 		
-		_lock_wait(){
-			local max_slots used_slots am_i_next
+		_lock_lock(){
+			local max_slots used_slots am_i_next first_run=1
 			local chars="-\|/"
 			local -i current_char=0 i
+			# Check if supplied program exists or exit
+			if [[ ${lockmode} == run ]]; then
+				program-exists -m "${1}" || exit 1
+			fi
 			while [[ ${found_free_slot} -eq 0 ]]; do
 				_lock_sub_lock
 				max_slots=$(_lock_get_max ${id})
 				used_slots=$(_lock_get_used_slots running)
 				if [[ ${used_slots} -lt ${max_slots} ]] && _lock_am_i_next; then
+					[[ ${first_run} -eq 0 ]] && _lock_remove_waiting
 					_lock_add_running "$@"
-					_lock_remove_waiting
 					found_free_slot=1
+				elif [[ ${first_run} -eq 1 ]]; then
+					if [[ ${arguments[-f]:-0} -eq 1 ]]; then
+						# -f and no free slots
+						_lock_sub_unlock
+						[[ ${arguments[-q]:-0} -eq 0 ]] && echo "Lock has no free slots, exiting."
+						[[ ${arguments[noerror]:-0} -eq 0 ]] && exit 1 || exit 0
+					fi
+					first_run=0
+					_lock_add_waiting "$@"
 				fi
 				_lock_sub_unlock
 				if [[ ${found_free_slot} -eq 0 && ${arguments[-q]:-0} -eq 1 ]]; then
@@ -1713,7 +1736,9 @@ _source_utilities(){
 		
 		_lock_am_i_next(){
 			local text
+			[[ -f "${basefolder}/${id}.waiting" ]] || return 0 # nobody waiting
 			readarray -t text < "${basefolder}/${id}.waiting"
+			[[ ${#text[@]} -eq 0 ]]  && return 0 # nobody waiting
 			[[ ${text[0]} =~ ^${EUID}" "$$" "$(</proc/$$/comm) ]]
 		}
 		
@@ -1754,24 +1779,6 @@ _source_utilities(){
 					fi
 				done
 			done
-		}
-		
-		_lock_lock(){
-			# Check if supplied program exists or exit
-			if [[ ${lockmode} == run ]]; then
-				program-exists -m "${1}" || exit
-			fi
-			_lock_sub_lock
-			if [[ ${arguments[-f]:-0} -eq 1 && $(_lock_get_max ${id}) -le $(_lock_get_used_slots running) ]]; then
-				# -f and no free slots
-				_lock_sub_unlock
-				[[ ${arguments[-q]:-0} -eq 0 ]] && echo "Lock has no free slots, exiting."
-				[[ ${arguments[noerror]:-0} -eq 0 ]] && exit 1 || exit 0
-			else
-				_lock_add_waiting "$@"
-				_lock_sub_unlock
-				_lock_wait "$@"
-			fi
 		}
 		
 		_lock_unlock(){
