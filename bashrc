@@ -2046,7 +2046,6 @@ _source_utilities(){
 				echo -e "No new emails noticing the problem will be sent until ${next_date}.\n\nCommand:\n$@\n\nOutput was:\n\n${output}" | mailx -s "${error_message}" "${arguments[recipient]}"
 			fi
 		fi
-
 	}
 
 	status-changed(){
