@@ -66,7 +66,7 @@ else
 fi
 
 if [ "$SLEEP_TIME" == "" ]; then # Leave the possibity to set SLEEP_TIME as environment variable when runinng with bash -x in order to avoid spamming console
-	SLEEP_TIME=.05
+	SLEEP_TIME=.10
 fi
 
 SCRIPT_PID=$$
@@ -625,7 +625,7 @@ function WaitForTaskCompletion {
 	local pids="${1}" # pids to wait for, separated by semi-colon
 	local softMaxTime="${2:-0}"	# If process(es) with pid(s) $pids take longer than $softMaxTime seconds, will log a warning, unless $softMaxTime equals 0.
 	local hardMaxTime="${3:-0}"	# If process(es) with pid(s) $pids take longer than $hardMaxTime seconds, will stop execution, unless $hardMaxTime equals 0.
-	local sleepTime="${4:-.05}"	# Seconds between each state check, the shorter this value, the snappier it will be, but as a tradeoff cpu power will be used (general values between .05 and 1).
+	local sleepTime="${4:-.10}"	# Seconds between each state check, the shorter this value, the snappier it will be, but as a tradeoff cpu power will be used (general values between .05 and 1).
 	local keepLogging="${5:-0}"	# Every keepLogging seconds, an alive log message is send. Setting this value to zero disables any alive logging.
 	local counting="${6:-true}"	# Count time since function has been launched (true), or since script has been launched (false)
 	local spinner="${7:-true}"	# Show spinner (true), don't show anything (false)
@@ -763,7 +763,7 @@ function ParallelExec {
 	local readFromFile="${3:-false}" 	# commandsArg is a file (true), or a string (false)
 	local softMaxTime="${4:-0}"		# If process(es) with pid(s) $pids take longer than $softMaxTime seconds, will log a warning, unless $softMaxTime equals 0.
 	local hardMaxTime="${5:-0}"		# If process(es) with pid(s) $pids take longer than $hardMaxTime seconds, will stop execution, unless $hardMaxTime equals 0.
-	local sleepTime="${6:-.05}"		# Seconds between each state check, the shorter this value, the snappier it will be, but as a tradeoff cpu power will be used (general values between .05 and 1).
+	local sleepTime="${6:-.10}"		# Seconds between each state check, the shorter this value, the snappier it will be, but as a tradeoff cpu power will be used (general values between .05 and 1).
 	local keepLogging="${7:-0}"		# Every keepLogging seconds, an alive log message is send. Setting this value to zero disables any alive logging.
 	local counting="${8:-true}"		# Count time since function has been launched (true), or since script has been launched (false)
 	local spinner="${9:-false}"		# Show spinner (true), don't show spinner (false)
@@ -2004,7 +2004,7 @@ else
 fi
 
 if [ "$SLEEP_TIME" == "" ]; then # Leave the possibity to set SLEEP_TIME as environment variable when runinng with bash -x in order to avoid spamming console
-	SLEEP_TIME=.05
+	SLEEP_TIME=.10
 fi
 function TrapError {
 	local job="$0"
@@ -2328,7 +2328,7 @@ else
 fi
 
 if [ "$SLEEP_TIME" == "" ]; then # Leave the possibity to set SLEEP_TIME as environment variable when runinng with bash -x in order to avoid spamming console
-	SLEEP_TIME=.05
+	SLEEP_TIME=.10
 fi
 function TrapError {
 	local job="$0"
@@ -3172,7 +3172,7 @@ else
 fi
 
 if [ "$SLEEP_TIME" == "" ]; then # Leave the possibity to set SLEEP_TIME as environment variable when runinng with bash -x in order to avoid spamming console
-	SLEEP_TIME=.05
+	SLEEP_TIME=.10
 fi
 function TrapError {
 	local job="$0"
