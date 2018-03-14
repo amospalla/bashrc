@@ -1,1 +1,2 @@
 apt-get install python3-taskw # taskwarrior ~/bin/task-recurring-delete
+apt-get install w3m isync urlview poppler-utils caca-utils mpv par notmuch-mutt # mutt
