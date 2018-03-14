@@ -4410,6 +4410,7 @@ if [ "$IS_STABLE" != "yes" ]; then
 GetLocalOS
 InitLocalOSDependingSettings
 PreInit
+SSH_OPTS="${SSH_OPTS} -o ControlMaster=auto -o  ControlPath=/tmp/osync.${profile}.socket"
 Init
 CheckEnvironment
 PostInit
