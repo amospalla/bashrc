@@ -1765,6 +1765,7 @@ _source_utilities(){
 			if [[ ${arguments[-f]:-0} -eq 1 && $(_lock_get_max ${id}) -le $(_lock_get_used_slots running) ]]; then
 				# -f and no free slots
 				_lock_sub_unlock
+				[[ ${arguments[-q]:-0} -eq 0 ]] && echo "Lock has no free slots, exiting."
 				[[ ${arguments[noerror]:-0} -eq 0 ]] && exit 1 || exit 0
 			else
 				_lock_add_waiting "$@"
