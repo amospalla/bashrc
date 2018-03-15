@@ -2249,7 +2249,15 @@ _source_utilities(){
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		"${HOME}/bin/program-exists" --message curl || return 1
-		curl -s --form-string "token=${_pushover_token}" --form-string "user=${_pushover_user}" --form-string "message=${arguments[message]}" https://api.pushover.net/1/messages.json >/dev/null
+		local file path="${HOME}/.local/bashrcnotify"
+		[[ -d "${path}" ]] || mkdir -p "${path}"
+		file="$(mktemp -p "${path}" XXXX )"
+		echo "${arguments[message]}" > "${file}"
+		for file in "${path}"/*; do
+			if curl -s --form-string "token=${_pushover_token}" --form-string "user=${_pushover_user}" --form-string "message=$(<"${file}")" https://api.pushover.net/1/messages.json >/dev/null; then
+				rm "${file}"
+			fi
+		done
 	}
 
 	tmux-send(){
