@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=589
-FileVersion=589
+# FileVersion=590
+FileVersion=590
 
 # Environment functions:
 #   count-lines
@@ -1019,16 +1019,15 @@ _source_utilities(){
 
 	run-every(){
 		arguments_list=(args1)
-		args1='[-s|--shift] {interval:time} {subintervals:integer} {myinterval:integer} [command...]'
+		args1='{interval:time} {subintervals:integer} {myinterval:integer} [command...]'
 		arguments_description=('run-every' 'Given an interval time and a number of subintervals, return if myinterval is active.')
-		arguments_parameters=('-s|--shift]: shift by one on each interval.'
-		                      '{interval}: general time interval.'
-		                      '{subintervals}: number of subintervals on which to divide the main interval.'
-		                      '{myinterval}: interval to test for.'
-		                      '[command...]: execute a command.' )
+		arguments_parameters=( '{interval}: general time interval.'
+		                       '{subintervals}: number of subintervals on which to divide the main interval.'
+		                       '{myinterval}: interval to test for.'
+		                       '[command...]: execute a command.' )
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
-		local interval_seconds subinterval_seconds seconds_midnight seconds_midnight_tomorrow found=0 current_date tmp subinterval=0
+		local interval_seconds subinterval_seconds seconds_midnight seconds_midnight_tomorrow current_date tmp
 		current_date=$(date_seconds)
 		seconds_midnight="$(date --date $(date --date="today" +%F) +%s)"
 		# seconds_midnight_tomorrow="$(date --date $(date --date="tomorrow" +%F) +%s)"
@@ -1036,12 +1035,8 @@ _source_utilities(){
 		subinterval_seconds=$(( interval_seconds / ${arguments[subintervals]} ))
 		
 		tmp=$(( current_date - seconds_midnight )) # seconds transcurred since midnight
-		if [[ ${arguments[-s]:-0} -eq 0 ]]; then
-			tmp=$(( tmp % interval_seconds )) # seconds transcurred since last interval start
-			tmp=$(( tmp / subinterval_seconds )) # subinterval
-		else
-			tmp=$(( (tmp / interval_seconds) % arguments[subintervals] )) # shift
-		fi
+		tmp=$(( tmp % interval_seconds )) # seconds transcurred since last interval start
+		tmp=$(( tmp / subinterval_seconds )) # subinterval
 		if [[ ${tmp} -eq ${arguments[myinterval]} ]]; then
 			[[ $# -gt 0 ]] && exec "$@" || exit 0
 		else
