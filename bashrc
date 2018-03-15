@@ -1619,7 +1619,7 @@ _source_utilities(){
 			done
 			for (( i=0; i<${#list[@]}; i++ )); do
 				[[ ${first} -eq 1 ]] && first=0 || printf "\n"
-				printf "${list[$i]} "
+				printf -- "${list[$i]} "
 				if [[ -f "${basefolder}/${list[$i]}.max" ]]; then
 					printf "(max $(cat "${basefolder}/${list[$i]}.max")):\n"
 				else
