@@ -1,59 +1,7 @@
 #!/bin/bash
 
-# FileVersion=590
-FileVersion=590
-
-# Environment functions:
-#   count-lines
-#   date_*
-#   perf_start
-#   perf_end
-#   file-readable
-#   folder-exists
-#   folder-writable
-#   is-number
-#   lowercase
-#   uppercase
-#   trim
-#   vimode
-#   color
-#   colors
-# functions:
-#   folder-exists
-#   run-every
-#   message
-#   program-exists
-#   argparse
-#   argparse-create-template
-#   unit-print
-#   show-lvm-thinpool-usage
-#   check-lvm-thinpool-usage
-#   check-ping
-#   unit-conversion
-#   float
-#   check-type
-#   disksinfo
-#   extract
-#   lock
-#   retention
-#   lvmthinsnapshots
-#   status-changed
-#   rescan-scsi-bus
-#   tmuxac
-#   tmux-send
-#   try
-#   wait-ping
-#   sshconnect
-#   beep
-#   max-mtu
-#   pastebin
-#   grepip
-#   repeat
-#   testcpu
-#   testport
-#   timer-countdown
-#   myip
-#   section
+# FileVersion=591
+FileVersion=591
 
 #====================================================================
 # Main
@@ -65,8 +13,10 @@ declare -a arguments_list=() arguments_description=() arguments_examples=() argu
 declare -i arguments_shift _files_update_counter=0 _files_updated _bash_version="${BASH_VERSION:0:1}${BASH_VERSION:2:1}"
 declare _files_update_text=""
 
-declare -a _program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email bashrc-update section muttrc message run-every folder-exists )
-declare -A _program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all [bashrc-update]=all [section]=all [muttrc]=all [message]=all [run-every]=all [folder-exists]=all )
+_load_program_list(){
+	_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email bashrc-update section muttrc message run-every folder-exists )
+	_program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all [bashrc-update]=all [section]=all [muttrc]=all [message]=all [run-every]=all [folder-exists]=all )
+}
 
 _status_changed_intervals="1m 5m 15m 1h 1d"
 
@@ -486,6 +436,9 @@ colors(){
 
 _program_load(){
 	declare program_name filename="${0/*\/}" bashrc_path="$(readlink -f "${0}")"
+	declare -a _program_list=()
+	declare -A _program_list_user=()
+	_load_program_list
 	if [[ "${filename}" =~ ^\.?bashrc$ ]]; then                              ## $1 is (.)?bashrc
 		if [[ "${_program_list[@]}" =~ (^| )${1:-__None__}( |$) ]]; then     ##   $1 is a program in list
 			program_name="${1}"; shift
@@ -3145,8 +3098,10 @@ make-links(){
 		printf "\nCreates links to bashrc programs into specified folder (HOME/bin if none specified).\n"
 		printf "When using the system-wide option, copy source file and generate links on /usr/local/bin.\n"
 	}
-	declare -a _program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email bashrc-update section muttrc message run-every folder-exists )
-	declare -A _program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all [bashrc-update]=all [section]=all [muttrc]=all [message]=all [run-every]=all [folder-exists]=all )
+	declare -a _program_list=()
+	declare -A _program_list_user=()
+	_load_program_list
+
 	color magentabold
 	
 	[[ "${1:-}" == "-h" ]] && _show_help && return 0
