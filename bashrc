@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=591
-FileVersion=591
+# FileVersion=592
+FileVersion=592
 
 #====================================================================
 # Main
@@ -2215,6 +2215,7 @@ _source_utilities(){
 				[[ -f "${HOME}/.local/message/${arguments[hostport]}/${file}" ]] || break
 			done
 			date="$(date_history)" hostname="$(hostname -f)" i=1 user=$(whoami)
+			echo "RandomString" > "${HOME}/.local/message/${arguments[hostport]}/${file}"
 			echo "${arguments[message]}" | while read line; do
 				printf "[${date}][${user}@${hostname}][%04g] ${line}\n" ${i} >> "${HOME}/.local/message/${arguments[hostport]}/${file}"
 				i=$(( i + 1 ))
@@ -2228,7 +2229,12 @@ _source_utilities(){
 			socat -v tcp-l:${arguments[port]},crlf,fork exec:"${HOME}/bin/message internal ${arguments[file]}"
 			exit $?
 		elif [[ ${arguments[internal]:-0} -eq 1 ]]; then
+			local header=1
 			while read line; do
+				if [[ ${header} -eq 1 ]]; then
+					header=0
+					[[ "${line}" == RandomString ]] && continue || exit 0
+				fi
 				echo "${line}" >> "${arguments[file]}"
 			done
 		elif [[ ${arguments[send]:-0} -eq 1 ]]; then
