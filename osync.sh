@@ -1566,7 +1566,7 @@ function InitLocalOSDependingSettings {
 		PING_CMD="ping -c 2 -i 1"
 	else
 		FIND_CMD=find
-		PING_CMD="ping -c 2 -i .2"
+		PING_CMD="ping -c 2 -i 1"
 	fi
 
 	if [ "$LOCAL_OS" == "BusyBox" ] || [ "$LOCAL_OS" == "Android" ] || [ "$LOCAL_OS" == "msys" ] || [ "$LOCAL_OS" == "Cygwin" ]; then
