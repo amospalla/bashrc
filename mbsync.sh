@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# FileVersion=5
+
 set -euo pipefail
 account="${1}" GPGKEY="${2}"
 export GPGKEY
