@@ -1,4 +1,4 @@
-# FileVersion=26
+# FileVersion=27
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -20,7 +20,7 @@
 # set mbox                = +Archives
 # set trash               = +Trash
 # mailboxes               = +INBOX
-# unmailboxes = +
+# unmailboxes             = +
 # set ssl_verify_host     = no
 # set ssl_verify_dates    = no
 # set my_tempvar          = `mkdir -p ~/.cache/mutt`
@@ -69,12 +69,12 @@
 # # set ssl_force_tls     = yes
 # set ssl_starttls        = yes
 # set spoolfile           = +INBOX
-# mailboxes               = +INBOX
-# unmailboxes             = imaps://217.150.209.150/
 # set record              = +INBOX
 # set postponed           = +Drafts
 # set mbox                = +Archives
 # set trash               = +Trash
+# mailboxes               = +INBOX
+# unmailboxes             = imaps://217.150.209.150/
 # # set sidebar_delim_chars = "/"
 # set my_tempvar          = `mkdir -p ~/.cache/mutt`
 # set header_cache        = "~/.cache/mutt/header_$imap_user"
@@ -121,12 +121,12 @@
 # # set ssl_force_tls     = yes
 # set ssl_starttls        = yes
 # set spoolfile           = +INBOX
-# mailboxes               = +INBOX
-# unmailboxes             = imaps://outlook.office365.com/
 # set record              = +INBOX
 # set postponed           = +Borradores
 # set mbox                = +Archivo
 # set trash               = +Trash
+# mailboxes               = +INBOX
+# unmailboxes             = imaps://outlook.office365.com/
 # # set sidebar_delim_chars = "/"
 # set my_tempvar          = `mkdir -p ~/.cache/mutt`
 # set header_cache        = "~/.cache/mutt/header_$imap_user"
