@@ -13,6 +13,10 @@ if ! ssh jordi@backup2.amospalla.es -f -N -M -S ${socket} >/dev/null 2>&1; then
 	exit 1
 fi
 
+. "${HOME}/.osync/${profile}.conf"
+mkdir -p "${INITIATOR_SYNC_DIR}/.sync_dates"
+date +"%Y%m%d%H%M%S" > "${INITIATOR_SYNC_DIR}/.sync_dates/$(hostname -f)"
+
 osync.sh "${HOME}/.osync/${profile}.conf" --errors-only --summary --no-prefix
 
 ssh jordi@backup2.amospalla.es -S ${socket} -O exit
