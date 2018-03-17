@@ -1,4 +1,4 @@
-# FileVersion=25
+# FileVersion=26
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -18,6 +18,7 @@
 # set record              = +INBOX
 # set postponed           = +Drafts
 # set mbox                = +Archives
+# set trash               = +Trash
 # mailboxes               = +INBOX
 # unmailboxes = +
 # set ssl_verify_host     = no
@@ -41,6 +42,7 @@
 # set record              = ~/.Mail/jordi@amospalla.es/INBOX
 # set postponed           = ~/.Mail/jordi@amospalla.es/Drafts
 # set mbox                = ~/.Mail/jordi@amospalla.es/Archives
+# set trash               = +Trash
 # # mailboxes `echo -n "+ "; find ~/.Mail/jordi@amospalla.es -maxdepth 4 -type d -name "*" -not \( -name "cur" -or -name "new" -or -name "tmp" \) -printf "+'%p' " | sed "s;${HOME}/.Mail/jordi@amospalla.es/\?;;g"`
 # mailboxes `find ~/.Mail/jordi@amospalla.es -maxdepth 4 -type d -name "*" -not \( -name "cur" -or -name "new" -or -name "tmp" \) -printf "+'%p' " | sed "s;${HOME}/.Mail/jordi@amospalla.es/\?;;g" | sed "s/^+''// "`
 # set smtp_url            = "smtp://jordi@amospalla.es@amospalla.es:587/"
@@ -70,8 +72,9 @@
 # mailboxes               = +INBOX
 # unmailboxes             = imaps://217.150.209.150/
 # set record              = +INBOX
-# set postponed           = +Borradores
-# set mbox                = +Archivo
+# set postponed           = +Drafts
+# set mbox                = +Archives
+# set trash               = +Trash
 # # set sidebar_delim_chars = "/"
 # set my_tempvar          = `mkdir -p ~/.cache/mutt`
 # set header_cache        = "~/.cache/mutt/header_$imap_user"
@@ -90,8 +93,9 @@
 # set folder              = ~/.Mail/jordi.marques@minorisa.net
 # set spoolfile           = ~/.Mail/jordi.marques@minorisa.net/INBOX
 # set record              = ~/.Mail/jordi.marques@minorisa.net/INBOX
-# set postponed           = ~/.Mail/jordi.marques@minorisa.net/Borradoes
-# set mbox                = ~/.Mail/jordi.marques@minorisa.net/Archivo
+# set postponed           = ~/.Mail/jordi.marques@minorisa.net/Drafts
+# set mbox                = ~/.Mail/jordi.marques@minorisa.net/Archives
+# set trash               = ~/.Mail/jordi.marques@minorisa.net/Trash
 # # mailboxes `echo -n "+ "; find ~/.Mail/jordi.marques@minorisa.net -maxdepth 4 -type d -name "*" -not \( -name "cur" -or -name "new" -or -name "tmp" \) -printf "+'%p' " | sed "s;${HOME}/.Mail/jordi.marques@minorisa.net/\?;;g"`
 # mailboxes `find ~/.Mail/jordi.marques@minorisa.net -maxdepth 4 -type d -name "*" -not \( -name "cur" -or -name "new" -or -name "tmp" \) -printf "+'%p' " | sed "s;${HOME}/.Mail/jordi.marques@minorisa.net/\?;;g" | sed "s/^+''// "`
 # set smtp_url            = "smtp://jordi.marques@minorisa.net@zimbra.ini6.com:587/"
@@ -120,8 +124,9 @@
 # mailboxes               = +INBOX
 # unmailboxes             = imaps://outlook.office365.com/
 # set record              = +INBOX
-# set postponed           = +Drafts
-# set mbox                = +Archives
+# set postponed           = +Borradores
+# set mbox                = +Archivo
+# set trash               = +Trash
 # # set sidebar_delim_chars = "/"
 # set my_tempvar          = `mkdir -p ~/.cache/mutt`
 # set header_cache        = "~/.cache/mutt/header_$imap_user"
