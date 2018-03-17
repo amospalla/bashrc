@@ -9,7 +9,7 @@ profile="${1}"
 socket=/tmp/osync.${profile}.socket
 if ! ssh jordi@backup2.amospalla.es -f -N -M -S ${socket} >/dev/null 2>&1; then
 	echo "Error starting ssh tunnel, exit."
-	rm $temp
+	rm $socket
 	exit 1
 fi
 
