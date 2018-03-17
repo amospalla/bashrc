@@ -15,7 +15,7 @@ fi
 
 . "${HOME}/.osync/${profile}.conf"
 mkdir -p "${INITIATOR_SYNC_DIR}/.sync_dates"
-date +"%Y%m%d%H%M%S" > "${INITIATOR_SYNC_DIR}/.sync_dates/$(hostname -f)"
+printf "$(date +"%Y%m%d%H%M%S" $(hostname -f))" > "${INITIATOR_SYNC_DIR}/.sync_dates/$(hostname -f)"
 
 osync.sh "${HOME}/.osync/${profile}.conf" --errors-only --summary --no-prefix
 
