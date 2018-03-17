@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=592
-FileVersion=592
+# FileVersion=593
+FileVersion=593
 
 #====================================================================
 # Main
@@ -990,7 +990,7 @@ _source_utilities(){
 		tmp=$(( current_date - seconds_midnight )) # seconds transcurred since midnight
 		tmp=$(( tmp % interval_seconds )) # seconds transcurred since last interval start
 		tmp=$(( tmp / subinterval_seconds )) # subinterval
-		if [[ ${tmp} -eq ${arguments[myinterval]} ]]; then
+		if [[ $(( tmp + 1 )) -eq ${arguments[myinterval]} ]]; then
 			[[ $# -gt 0 ]] && exec "$@" || exit 0
 		else
 			[[ $# -gt 0 ]] && exit 0 || exit 1
