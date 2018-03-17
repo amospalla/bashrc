@@ -1,4 +1,4 @@
-# FileVersion=24
+# FileVersion=25
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -27,7 +27,7 @@
 # set message_cachedir    = "~/.cache/mutt"
 # set imap_check_subscribed
 # source "$HOME/.muttrc.global"
-# # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'" | gpg -r jordi.marques@minorisa.net -e > ~/.mutt/jordi@amospalla.es.mutt.gpg
+# # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'" | gpg -r jordi@amospalla.es -e > ~/.mutt/jordi@amospalla.es.mutt.gpg
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi@amospalla.es.mutt.gpg |"
 ### account: jordi@amospalla.es-imap
 
@@ -50,7 +50,7 @@
 # set net_inc             = 5
 # set imap_keepalive      = 300
 # source "$HOME/.muttrc.global"
-# # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'" | gpg -r jordi.marques@minorisa.net -e > ~/.mutt/jordi@amospalla.es.mutt.gpg
+# # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'" | gpg -r jordi@amospalla.es -e > ~/.mutt/jordi@amospalla.es.mutt.gpg
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi@amospalla.es.mutt.gpg |"
 ### account: jordi@amospalla.es-mbsync
 
@@ -79,7 +79,7 @@
 # set imap_check_subscribed
 # source "$HOME/.muttrc.global"
 # # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'" | gpg2 -r jordi.marques@minorisa.net -e > ~/.mutt/jordi.marques@minorisa.net.mutt.gpg
-# source "gpg -q -d ~/.mutt/jordi.marques@minorisa.net.mutt.gpg |"
+# source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi.marques@minorisa.net.mutt.gpg |"
 ### account: jordi.marques@minorisa.net-imap
 
 
