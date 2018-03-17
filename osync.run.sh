@@ -22,6 +22,7 @@ mkdir -p "${INITIATOR_SYNC_DIR}/.sync_dates"
 printf "$(date +"%Y%m%d%H%M%S") $(hostname -f)" > "${INITIATOR_SYNC_DIR}/.sync_dates/$(hostname -f)"
 printf "$(date +"%Y%m%d%H%M%S") ${PROFILE} $(hostname -f)" > "${HOME}/.osync/lastrun.${PROFILE}"
 
-osync.sh "${HOME}/.osync/${PROFILE}.conf" --errors-only --summary --no-prefix
+osync.sh "${HOME}/.osync/${PROFILE}.conf" --errors-only --summary --no-prefix && ec=$? || ec=$?
 
 ssh ${SSH_USERHOST} -p ${SSH_PORT} -S ${socket} -O exit
+exit $ec
