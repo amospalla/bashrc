@@ -3195,6 +3195,13 @@ declare -a _undo_command=() _undo_start=() _undo_end=() _undo_doc=() _undo_outpu
 declare -a _do_tmp=() _do_tmp2=()
 declare -i _do_padding_size=12 _do_error_by_command=0
 
+_undo_reset(){
+	_do_command=()   _do_start=()   _do_end=()   _do_doc=()   _do_output=()   _do_ec=()   _do_singleline=()   _do_executed=()
+	_undo_command=() _undo_start=() _undo_end=() _undo_doc=() _undo_output=() _undo_ec=() _undo_singleline=() _undo_executed=()
+	_do_tmp=() _do_tmp2=()
+	_do_error_by_command=0
+}
+
 # #!/bin/bash
 # 
 # . $HOME/.bashrc
@@ -3239,7 +3246,7 @@ _on_error_undo(){
 	else
 		echo "Error produced by executed command."
 	fi
-	for (( i=0; i<${#_undo_start[@]}; i++ )); do
+	for (( i=$(( ${#_undo_start[@]} -1 )); i>=0; i-- )); do
 		if [[ ${_undo_executed} -eq 0 ]]; then
 			_do_exec_next undo
 		fi
@@ -3290,7 +3297,7 @@ _do_exec(){
 			tmp=( "${tmp2[@]}" "${_do_command[$i]}" )
 			tmp2=( "${tmp[@]}" )
 		done
-		echo "# ${_do_doc[${index}]}"
+		[[ -n "${_do_doc[${index}]:-}" ]] && echo "# ${_do_doc[${index}]}"
 		echo "$ ${_do_singleline[${index}]}"
 		_do_output[${index}]="$("${tmp[@]}" 2>&1)" && ec=0 || ec=$?
 		[[ ${ec} -eq 1 ]] && _do_error_by_command=1
@@ -3301,7 +3308,7 @@ _do_exec(){
 			tmp=( "${tmp2[@]}" "${_undo_command[$i]}" )
 			tmp2=( "${tmp[@]}" )
 		done
-		echo "# ${_undo_doc[${index}]}"
+		[[ -n "${_undo_doc[${index}]:-}" ]] && echo "# ${_undo_doc[${index}]}"
 		echo "$ ${_undo_singleline[${index}]}"
 		_undo_output[${index}]="$("${tmp[@]}" 2>&1)" && ec=0 || ec=$?
 		[[ ${ec} -eq 1 ]] && _do_error_by_command=1
@@ -3327,6 +3334,17 @@ _do_exec_next(){
 		done
 	fi
 }
+
+_do_exec_remaining(){
+	local i ec
+	for (( i=0; i<${#_do_executed[@]}; i++ )); do
+		if [[ ${_do_executed[$i]} -eq 0 ]]; then
+			_do_exec do ${i} && ec=0 || ec=$?
+			[[ ${ec} -ne 0 ]] && return ${ec}
+		fi
+	done
+}
+
 
 _do_print_command(){
 	local mode="${1}" num="${2}" first=1 i
@@ -3392,7 +3410,7 @@ _do_print_history(){
 	local i
 	for (( i=0; i<${#_do_singleline[@]}; i++ )); do
 		echo ""
-		echo "Do command number ${i}: ${_do_doc[$i]}"
+		echo "Do command number ${i}:" # ${_do_doc[$i]}
 		echo "    command: ${_do_singleline[$i]}"
 		echo "   executed: ${_do_executed[$i]}" 
 		[[ ${_do_executed[$i]} -eq 1 ]] || continue
@@ -3402,7 +3420,7 @@ _do_print_history(){
 	done
 	for (( i=0; i<${#_undo_singleline[@]}; i++ )); do
 		echo ""
-		echo "Undo command number ${i}: ${_undo_doc[$i]}"
+		echo "Undo command number ${i}:" # ${_undo_doc[$i]}
 		echo "    command: ${_undo_singleline[$i]}"
 		echo "   executed: ${_undo_executed[$i]}"
 		[[ ${_undo_executed[$i]} -eq 1 ]] || continue
