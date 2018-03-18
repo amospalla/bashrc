@@ -4,3 +4,5 @@ apt-get install python3-taskw
 apt-get install w3m isync urlview poppler-utils caca-utils mpv par notmuch-mutt
 # autossh
 apt-get install autossh
+# utilitats
+kpcli
