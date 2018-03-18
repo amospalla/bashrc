@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=595
-FileVersion=595
+# FileVersion=596
+FileVersion=596
 
 #====================================================================
 # Main
