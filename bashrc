@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=593
-FileVersion=593
+# FileVersion=594
+FileVersion=594
 
 #====================================================================
 # Main
@@ -2314,9 +2314,10 @@ _source_utilities(){
 	}
 
 	wait-ping(){
-		arguments_list=(args1); args1='[-i|--interval {seconds}] {host}'
+		arguments_list=(args1); args1='[-i|--interval {seconds}] [-q|--quiet] {host}'
 		arguments_description=( 'wait-ping' 'Wait until ping succeeds.')
-		arguments_parameters=( '[-i|--interval {seconds}]: interval between tries (1 second by default).' )
+		arguments_parameters=( '[-i|--interval {seconds}]: interval between tries (1 second by default).'
+		                       '[-q|--quiet]: quiet mode.' )
 		arguments_examples=( '$ wait-ping 1.2.3.4' 'keeps executing until it succeeds.')
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
@@ -2324,7 +2325,9 @@ _source_utilities(){
 		while true; do
 			ping -c 1 -w 1 -q ${arguments[host]} >/dev/null 2>&1 && break
 			read -t${arguments[interval]:-1} || true
+			[[ ${arguments[-q]:-0} -eq 0 ]] && printf "."
 		done
+		[[ ${arguments[-q]:-0} -eq 0 ]] && printf "\://ispconfig.org/downloads/ISPConfig-3.1.11.tar.gzggn"
 	}
 
 	sshconnect(){
