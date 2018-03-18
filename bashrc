@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=596
-FileVersion=596
+# FileVersion=597
+FileVersion=597
 
 #====================================================================
 # Main
@@ -2259,6 +2259,7 @@ _source_utilities(){
 		[[ -d "${path}" ]] || mkdir -p "${path}"
 		file="$(mktemp -p "${path}" XXXX )"
 		echo "${arguments[message]}" > "${file}"
+		. "${HOME}/.bashrc.options"
 		for file in "${path}"/*; do
 			if curl -s --form-string "token=${_pushover_token}" --form-string "user=${_pushover_user}" --form-string "message=$(<"${file}")" https://api.pushover.net/1/messages.json >/dev/null; then
 				rm "${file}"
