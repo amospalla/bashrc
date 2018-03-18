@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=594
-FileVersion=594
+# FileVersion=595
+FileVersion=595
 
 #====================================================================
 # Main
@@ -622,10 +622,10 @@ _source_bash_options(){
 	_bash_options_add           _histgrep_compact 1
 	_bash_options_add           _FileVersion    ${FileVersion}
 	_bash_options_add           _FileVersionOld ${FileVersion}
-	_bash_options_add commented _update_00_url  'https://raw.githubusercontent.com/amospalla/bashrc/master/bashrc'
+	_bash_options_add           _update_00_url  'https://raw.githubusercontent.com/amospalla/bashrc/master/bashrc'
 	_bash_options_add           _update_00_url_version 'https://raw.githubusercontent.com/amospalla/bashrc/master/bashrc.version'
 	_bash_options_add           _update_00_mode '0755'
-	_bash_options_add commented _update_00_path '${HOME}/.bashrc'
+	_bash_options_add           _update_00_path '${HOME}/.bashrc'
 	_bash_options_add commented _update_99_url  'http://www.foo.com/vimrc  #example (mandatory)'
 	_bash_options_add commented _update_99_path '${HOME}/.vimrc           #example (mandatory)'
 	_bash_options_add commented _update_99_user 'all|user|root            #example (optional)'
