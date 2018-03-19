@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=597
-FileVersion=597
+# FileVersion=598
+FileVersion=598
 
 #====================================================================
 # Main
@@ -1636,11 +1636,11 @@ _source_utilities(){
 				fi
 				_lock_sub_unlock
 				if [[ ${found_free_slot} -eq 0 && ${arguments[-q]:-0} -eq 1 ]]; then
-					read -t4 >/dev/null || true
+					sleep 4 >/dev/null || true
 				elif [[ ${found_free_slot} -eq 0 && ${arguments[-q]:-0} -eq 0 ]]; then
 					for i in {1..16}; do
 						current_char+=1 && printf "\r${chars:$(( ${current_char} % 4 )):1}"
-						read -t1 2>/dev/null || true
+						sleep 1 2>/dev/null || true
 					done
 				fi
 			done
@@ -2309,7 +2309,7 @@ _source_utilities(){
 			else
 				$@ || break
 			fi
-			read -t ${arguments[seconds]:-1} || true
+			sleep ${arguments[seconds]:-1} || true
 			tries=$(( ${tries} + 1 ))
 		done
 	}
@@ -2325,7 +2325,7 @@ _source_utilities(){
 		"${HOME}/bin/program-exists" ping || ( echo "ping program not found."; exit 1 )
 		while true; do
 			ping -c 1 -w 1 -q ${arguments[host]} >/dev/null 2>&1 && break
-			read -t${arguments[interval]:-1} || true
+			sleep ${arguments[interval]:-1} || true
 			[[ ${arguments[-q]:-0} -eq 0 ]] && printf "."
 		done
 		[[ ${arguments[-q]:-0} -eq 0 ]] && printf "\://ispconfig.org/downloads/ISPConfig-3.1.11.tar.gzggn"
@@ -2536,9 +2536,9 @@ _source_utilities(){
 			[[ ${arguments[-c]:-0} -eq 0 && ${arguments[-w]:-0} -eq 0 ]] && exit ${ec}
 			[[ ${arguments[-w]:-0} -eq 1 && ${ec} -eq 0 ]] && exit ${ec}
 			if [[ ${ec} -eq 0 ]]; then
-				printf "|"; read -t${interval} || true
+				printf "|"; sleep ${interval} || true
 			else
-				printf "."; read -t${interval} || true
+				printf "."; sleep ${interval} || true
 			fi
 		done
 	}
