@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=598
-FileVersion=598
+# FileVersion=599
+FileVersion=599
 
 #====================================================================
 # Main
@@ -579,6 +579,7 @@ _source_aliases_amospalla(){
 	alias vzlist='vzlist -o ctid,name,ip,status,onboot,laverage,diskspace,physpages,swappages -a'
 	alias dstat2='dstat     --time --cpu --disk --io --net --page --sys --mem --swap --int --top-cpu --top-io --top-mem --fs --tcp --proc-count'
 	alias dstat2full='dstat --time --cpu --disk --io --net --page --sys --mem --swap --int --top-cpu --top-io --top-mem --fs --tcp --proc-count --full'
+	alias killmosh='who | grep -o "(mosh \[[0-9]\+])" | grep -o "[0-9]\+" | xargs kill'
 }
 
 #====================================================================
@@ -2259,7 +2260,8 @@ _source_utilities(){
 		[[ -d "${path}" ]] || mkdir -p "${path}"
 		file="$(mktemp -p "${path}" XXXX )"
 		echo "${arguments[message]}" > "${file}"
-		. "${HOME}/.bashrc.options"
+		[[ -f "${HOME}/.bashrc.options" ]] && "${HOME}/.bashrc.options"
+		[[ -f "${HOME}/.bashrc.options.local" ]] && "${HOME}/.bashrc.options.local"
 		for file in "${path}"/*; do
 			if curl -s --form-string "token=${_pushover_token}" --form-string "user=${_pushover_user}" --form-string "message=$(<"${file}")" https://api.pushover.net/1/messages.json >/dev/null; then
 				rm "${file}"
