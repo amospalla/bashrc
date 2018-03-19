@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=599
-FileVersion=599
+# FileVersion=600
+FileVersion=600
 
 #====================================================================
 # Main
@@ -14,8 +14,8 @@ declare -i arguments_shift _files_update_counter=0 _files_updated _bash_version=
 declare _files_update_text=""
 
 _load_program_list(){
-	_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email bashrc-update section muttrc message run-every folder-exists )
-	_program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all [bashrc-update]=all [section]=all [muttrc]=all [message]=all [run-every]=all [folder-exists]=all )
+	_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email bashrc-update section muttrc message run-every folder-exists ssh-socket )
+	_program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all [bashrc-update]=all [section]=all [muttrc]=all [message]=all [run-every]=all [folder-exists]=all [ssh-socket]=all )
 }
 
 _status_changed_intervals="1m 5m 15m 1h 1d"
@@ -481,6 +481,7 @@ _bashrc_show_help(){
 	color blue; printf "status-changed-email"; color; echo ": send an email noticing a recovery or error condition."
 	color blue; printf "check-lvm-thinpool-usage"; color; echo ": notify by email when lvm thinpool data/metadata usage is below a threshold."
 	color blue; printf "argparse"; color; echo ": argument parser."
+	color blue; printf "ssh-socket"; color; echo ": manage ssh connection sharing."
 	color blue; printf "lowercase"; color; echo ": prints args in lowercase."
 	color blue; printf "uppercase"; color; echo ": prints args in uppercase."
 	color blue; printf "check-type"; color; echo ": checks input argument to be of a specified type."
@@ -969,6 +970,54 @@ _source_utilities(){
 		color
 		[[ ${debug} -eq 1 ]] && set -x
 		exit "${1:-0}"
+	}
+
+	ssh-socket(){
+		arguments_list=(args1 args2 args3)
+		args1='start {args...}'
+		args2='check [{socket}]'
+		args3='stop [{socket}]'
+		arguments_description=('ssh-socket' 'Open a SSH connection and return a socket to the shared connection.')
+		arguments_parameters=( 'start {args...}: open a SSH connect and return the path to socket.'
+		                       'check {socket}: checks a SSH connection on a socket.'
+		                       'stop {socket}: close a SSH connection running on a socket.' )
+		arguments_examples=('$ ssh-socket start user@host -p 22' 'Open SSH connection and prints a path to a socket.'
+		                    '$ export socket=...' 'Export socket for future ssh-socket calls.'
+		                    '$ ssh -o ControlMaster=auto -o ControlPath=${socket} user@host' 'Use the shared connection.'
+		                    '$ ssh-socket stop ${socket}' 'Stop the shared connection.')
+		_get_socket(){
+			if [[ -n "${socket:-}" ]]; then
+				true # socket already set
+			elif [[ -n "${arguments[socket]:-}" ]]; then
+				socket=${arguments[socket]}
+			else
+				echo "Error: socket not set, must specify either on command line argument or set 'socket' environment variable."
+			fi
+			if ! [[ -S "${socket}" ]]; then
+				echo "Error: '${socket}' is not a socket or does not exist."
+				exit 1
+			fi
+		}
+		local -A arguments=()
+		argparse "$@" && shift ${arguments_shift}
+		
+		if [[ ${arguments[start]:-0} -eq 1 ]]; then
+			local socket=$(mktemp -p /tmp sshsocket.XXXXXXX)
+			rm ${socket}
+			if ssh -f -N -M -S ${socket} $@ 1>&2; then
+				echo ${socket}
+				exit 0
+			else
+				echo "Error: could not start SSH connection."
+				exit 1
+			fi
+		elif [[ ${arguments[check]:-0} -eq 1 ]]; then
+			_get_socket
+			ssh RandomString -S ${socket} -O check
+		elif [[ ${arguments[stop]:-0} -eq 1 ]]; then
+			_get_socket
+			ssh RandomString -S ${socket} -O exit
+		fi
 	}
 
 	run-every(){
