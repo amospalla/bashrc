@@ -13,9 +13,6 @@ _OFUNCTIONS_VERSION=2.1
 _OFUNCTIONS_BUILD=2017032301
 _OFUNCTIONS_BOOTSTRAP=true
 
-_do_sleep(){
-	read -t${1} || true
-}
 ## BEGIN Generic bash functions written in 2013-2017 by Orsiris de Jong - http://www.netpower.fr - ozy@netpower.fr
 
 ## To use in a program, define the following variables:
@@ -110,7 +107,7 @@ ALERT_LOG_FILE="$RUN_DIR/$PROGRAM.$SCRIPT_PID.$TSTAMP.last.log"
 
 function Dummy {
 
-	_do_sleep $SLEEP_TIME
+	sleep $SLEEP_TIME
 }
 
 #### Logger SUBSET ####
@@ -313,7 +310,7 @@ function KillChilds {
 			kill -s TERM "$pid"
 			Logger "Sent SIGTERM to process [$pid]." "DEBUG"
 			if [ $? != 0 ]; then
-				_do_sleep 15
+				sleep 15
 				Logger "Sending SIGTERM to process [$pid] failed." "DEBUG"
 				kill -9 "$pid"
 				if [ $? != 0 ]; then
@@ -738,7 +735,7 @@ function WaitForTaskCompletion {
 
 		pidsArray=("${newPidsArray[@]}")
 		# Trivial wait time for bash to not eat up all CPU
-		_do_sleep $sleepTime
+		sleep $sleepTime
 	done
 
 
@@ -896,7 +893,7 @@ function ParallelExec {
 		pidsArray=("${newPidsArray[@]}")
 
 		# Trivial wait time for bash to not eat up all CPU
-		_do_sleep $sleepTime
+		sleep $sleepTime
 	done
 
 	return $errorCount
@@ -4206,7 +4203,7 @@ function SyncOnChanges {
 		retval=$?
 		if [ $retval -eq 0 ]; then
 			Logger "#### Changes detected, waiting $MIN_WAIT seconds before running next sync." "NOTICE"
-			_do_sleep $MIN_WAIT
+			sleep $MIN_WAIT
 		# inotifywait --timeout result is 2, WaitForTaskCompletion HardTimeout is 1
 		elif [ "$LOCAL_OS" == "MacOSX" ]; then
 			Logger "#### Changes or error detected, waiting $MIN_WAIT seconds before running next sync." "NOTICE"
@@ -4214,7 +4211,7 @@ function SyncOnChanges {
 			Logger "#### $MAX_WAIT timeout reached, running sync." "NOTICE"
 		elif [ $retval -eq 1 ]; then
 			Logger "#### inotify error  detected, waiting $MIN_WAIT seconds before running next sync." "ERROR" $retval
-			_do_sleep $MIN_WAIT
+			sleep $MIN_WAIT
 		fi
 	done
 
