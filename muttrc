@@ -1,4 +1,4 @@
-# FileVersion=27
+# FileVersion=28
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -341,7 +341,7 @@ color body       brightmagenta   	  default 	 "^>[ ]?>[^>].*(wrote|writes|said|s
 # set index_format = "[%Z] %<[y?%<[7d?%<[d?%[%H:%M ]&%[%a %d]>&%[%b %d]>&%[%Y %b %d]> %-20.20F %s%> %g (%4c){%X}"
 # Default
 # set index_format = "%4C %Z %{%b %d} %-15.15L (%?l?%4l&%4c?) %s"
-set index_format = "%4C [%Z] %[%Y-%m-%d %H:%M] %-27.27a %-25.25n (%?l?%4l&%4c?) %?X?%X& ? %s"
+set index_format = "%4C [%Z] %[%Y-%m-%d %H:%M] %-27.27a %-25.25n (%?l?%4l&%4c?) %?X?%X& ? %M %s"
 
 ## Ctrl-R to mark all as read
 macro index \Cr "T~U<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>" "mark all messages as read"
