@@ -2260,8 +2260,8 @@ _source_utilities(){
 		[[ -d "${path}" ]] || mkdir -p "${path}"
 		file="$(mktemp -p "${path}" XXXX )"
 		echo "${arguments[message]}" > "${file}"
-		[[ -f "${HOME}/.bashrc.options" ]] && "${HOME}/.bashrc.options"
-		[[ -f "${HOME}/.bashrc.options.local" ]] && "${HOME}/.bashrc.options.local"
+		[[ -r "${HOME}/.bashrc.options" ]]       && . "${HOME}/.bashrc.options"
+		[[ -r "${HOME}/.bashrc.options.local" ]] && . "${HOME}/.bashrc.options.local"
 		for file in "${path}"/*; do
 			if curl -s --form-string "token=${_pushover_token}" --form-string "user=${_pushover_user}" --form-string "message=$(<"${file}")" https://api.pushover.net/1/messages.json >/dev/null; then
 				rm "${file}"
