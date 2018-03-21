@@ -14,8 +14,8 @@ fi
 socket=/tmp/osync.${PROFILE}.socket
 if ! ssh ${SSH_USERHOST} -p ${SSH_PORT} -f -N -M -S ${socket} >/dev/null 2>&1; then
 	echo "Error starting ssh tunnel, exit."
-	rm $socket
-	exit 1
+	[[ -S ${socket} ]] && rm ${socket}
+	exit 0
 fi
 
 mkdir -p "${INITIATOR_SYNC_DIR}/.sync_dates"
