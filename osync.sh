@@ -63,7 +63,7 @@ else
 fi
 
 if [ "$SLEEP_TIME" == "" ]; then # Leave the possibity to set SLEEP_TIME as environment variable when runinng with bash -x in order to avoid spamming console
-	SLEEP_TIME=0.5
+	SLEEP_TIME=0.1
 fi
 
 SCRIPT_PID=$$
@@ -2001,7 +2001,7 @@ else
 fi
 
 if [ "$SLEEP_TIME" == "" ]; then # Leave the possibity to set SLEEP_TIME as environment variable when runinng with bash -x in order to avoid spamming console
-	SLEEP_TIME=0.5
+	SLEEP_TIME=0.1
 fi
 function TrapError {
 	local job="$0"
@@ -2325,7 +2325,7 @@ else
 fi
 
 if [ "$SLEEP_TIME" == "" ]; then # Leave the possibity to set SLEEP_TIME as environment variable when runinng with bash -x in order to avoid spamming console
-	SLEEP_TIME=0.5
+	SLEEP_TIME=0.1
 fi
 function TrapError {
 	local job="$0"
@@ -3169,7 +3169,7 @@ else
 fi
 
 if [ "$SLEEP_TIME" == "" ]; then # Leave the possibity to set SLEEP_TIME as environment variable when runinng with bash -x in order to avoid spamming console
-	SLEEP_TIME=0.2
+	SLEEP_TIME=0.1
 fi
 function TrapError {
 	local job="$0"
