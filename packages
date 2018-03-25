@@ -1,3 +1,5 @@
+# main
+mc mosh ncdu dstat tmux mbuffer
 # taskwarrior ~/bin/task-recurring-delete
 apt-get install python3-taskw
 # mutt
@@ -6,3 +8,5 @@ apt-get install w3m isync urlview poppler-utils caca-utils mpv par notmuch-mutt
 apt-get install autossh
 # utilitats
 kpcli
+# X
+rxvt-unicode xfonts-terminus xfonts-terminus-oblique fonts-inconsolata
