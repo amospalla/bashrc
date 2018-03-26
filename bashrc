@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=601
-FileVersion=601
+# FileVersion=602
+FileVersion=602
 
 #====================================================================
 # Main
@@ -308,7 +308,7 @@ _update_files(){
 		fi
 	}
 	
-	if \lock lock -q -f bashrc_update_files pid $$; then
+	if ${HOME}/bin/lock lock -q -f bashrc_update_files pid $$; then
 		_debug "Lock acquired!"
 	else
 		_debug "Error obtaining lock bashrc_update_files"
@@ -356,7 +356,7 @@ _update_files(){
 		echo "${ps1_text}" > "/tmp/${UID}.$$.bashrcupdate"
 	fi
 	_debug "Unlocking"
-	\lock unlock bashrc_update_files $$
+	${HOME}/bin/lock unlock bashrc_update_files $$
 	_debug "Unlocked"
 	return 0
 }
