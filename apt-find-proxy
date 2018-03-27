@@ -1,7 +1,46 @@
 #!/bin/bash
 
-# FileVersion=1
+# FileVersion=3
 
-if nc -z -w1 proxy.casa.amospalla.es 3142 >/dev/null 2>&1; then
-	echo http://proxy.casa.amospalla.es:3142
+read_proxy(){
+	if [[ -f "${source_file}" ]]; then
+		. "${source_file}"
+	else
+		echo "Source file '${source_file}' does not exist."
+		echo "Write the proxy url on that file, for example:"
+		echo '$ echo "proxy=http://fqdn:port" > '"${source_file}"
+	fi
+}
+
+set_aptconf(){
+	if [[ -f "${conf_file}" ]]; then
+		grep -q '^Acquire::http::ProxyAutoDetect "/usr/local/bin/apt-find-proxy";$' "${conf_file}" && set_conf=0 || set_conf=1
+	else
+		set_conf=1
+	fi
+	if [[ ${set_conf} -eq 1 ]]; then
+		echo "Commenting out all lines on '${conf_file}'"
+		[[ -f "${conf_file}" ]] && sed -i 's/^[^#]/#/' "${conf_file}"
+		echo 'Setting: Acquire::http::ProxyAutoDetect "/usr/local/bin/apt-find-proxy";'
+		echo 'Acquire::http::ProxyAutoDetect "/usr/local/bin/apt-find-proxy";' >> "${conf_file}"
+		exit
+	fi
+}
+
+get_proxy(){
+	proxy_host="$(echo "${proxy}" | sed -e 's;.*//;;' -e 's/:[0-9]\+//')"
+	proxy_port="$(echo "${proxy}" | sed -e 's;.*:;;')"
+	echo "${proxy_host}"
+	echo "${proxy_port}"
+}
+
+source_file="${HOME}/.apt-find-proxy.conf"
+conf_file=/etc/apt/apt.conf.d/02proxy
+
+set_aptconf
+read_proxy
+get_proxy
+
+if ${HOME}/bin/testport ${proxy_host} ${proxy_port} >/dev/null 2>&1; then
+	echo ${proxy}
 fi
