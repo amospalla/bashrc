@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=602
-FileVersion=602
+# FileVersion=603
+FileVersion=603
 
 #====================================================================
 # Main
@@ -1945,7 +1945,7 @@ _source_utilities(){
 		argparse "$@" && shift ${arguments_shift}
 		local prefix=${arguments[prefix]:-snapshot}
 		local -a snapshots
-		local use_retention name i delete vg lv threshold current_date below_threshold thinpool exit_code=0
+		local use_retention name i delete vg lv threshold current_date below_threshold thinpool
 		[[ ${arguments[seconds]:-0} -gt 0 || ${arguments[minutes]:-0} -gt 0 || ${arguments[hours]:-0} -gt 0 || ${arguments[days]:-0} -gt 0 || ${arguments[weeks]:-0} -gt 0 || ${arguments[months]:-0} -gt 0 || ${arguments[years]:-0} -gt 0 ]] && use_retention=1 || use_retention=0
 		
 		# Get information
@@ -2019,11 +2019,10 @@ _source_utilities(){
 		for (( i=0; i<${#lvs[@]}; i++ )); do
 			if [[ ${threshold_data[${vgs[$i]}/${lvs[$i]}]} == above || ${threshold_metadata[${vgs[$i]}/${lvs[$i]}]} == above ]]; then
 				echo "Error: ${vgs[$i]/${thinpools[$i]}} usage above threshold ${threshold}."
-				exit_code=1
 			fi
 		done
 		
-		exit ${exit_code}
+		exit 0
 	}
 
 	status-changed-email(){
