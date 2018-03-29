@@ -3,3 +3,4 @@
 - ._sync_*.db-wal
 - ._sync_*.db-shm
 - .osync_workdir/
+- rcver/i3/config
