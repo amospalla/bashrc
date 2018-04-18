@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=603
-FileVersion=603
+# FileVersion=604
+FileVersion=604
 
 #====================================================================
 # Main
@@ -853,7 +853,8 @@ _source_utilities(){
 				# {files...} like, must end with three dots, we expect there are pending input arguments to process
 				if [[ "${token}" =~ '...'$ ]]; then # last argument_parameter was {foo...} like
 					[[ $# -gt 0 ]] && ec=0 || ec=1
-				elif [[ "${template_args}" =~ "["[0-9a-zA-Z_-.:@#%]+"...] "$ ]]; then   # last argument_parameter was [foo...] like
+				# elif [[ "${template_args}" =~ "["[0-9a-zA-Z_-.:@#%]+"...] "$ ]]; then   # last argument_parameter was [foo...] like
+				elif [[ "${template_args}" =~ (^|" ")"["[^" "]+"...]"" "$ ]]; then   # last argument_parameter was [foo...] like
 					local arg_last="${BASH_REMATCH}" && arg_last=${arg_last/[} && arg_last=${arg_last/...] }
 					arguments[${arg_last}]=1
 					[[ $# -gt 0 ]] && ec=0 || ec=0
