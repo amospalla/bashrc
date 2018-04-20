@@ -8,6 +8,12 @@ PROFILE="${1}"
 . "${HOME}/.osync/${PROFILE}.conf"
 # "${HOME}/bin/message" send amospalla.es:55555 "sync start ${PROFILE}"
 
+hostname="${SSH_USERHOST/*@}"
+if ! ping -c1 -w1 ${hostname}; then
+	echo "Could not ping to ${hostname}."
+	exit 0
+fi
+
 if [[ -S /tmp/osync.${PROFILE}.socket ]]; then
 	rm /tmp/osync.${PROFILE}.socket
 fi
