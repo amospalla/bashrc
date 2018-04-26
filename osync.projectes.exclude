@@ -4,3 +4,4 @@
 - ._sync_*.db-shm
 - .osync_workdir/
 - rcver/i3/config
+- rcver/i3/conky/conky.rc
