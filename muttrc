@@ -1,4 +1,4 @@
-# FileVersion=29
+# FileVersion=30
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -11,7 +11,7 @@
 # set folder              = imaps://amospalla.es/
 # set imap_user           = jordi@amospalla.es
 # # set imap_pass         = your-imap-password
-# set smtp_url            = "smtps://jordi@amospalla.es@amospalla.es:587/"
+# set smtp_url            = "smtp://jordi@amospalla.es@amospalla.es:587/"
 # # set ssl_force_tls     = yes
 # # set ssl_starttls      = yes
 # set spoolfile           = +INBOX
@@ -65,7 +65,8 @@
 # set folder              = imaps://217.150.209.150/
 # set imap_user           = jordi.marques@minorisa.net
 # # set imap_pass         = your-imap-password
-# set smtp_url            = "smtp://jordi.marques@minorisa.net@zimbra.ini6.com:587/"
+# # set smtp_url            = "smtp://jordi.marques@minorisa.net@zimbra.ini6.com:587/"
+# set smtp_url            = "smtp://jordi.marques@minorisa.net@217.150.209.150:587/"
 # # set ssl_force_tls     = yes
 # set ssl_starttls        = yes
 # set spoolfile           = +INBOX
