@@ -8,6 +8,13 @@ PROFILE="${1}"
 . "${HOME}/.osync/${PROFILE}.conf"
 # "${HOME}/bin/message" send amospalla.es:55555 "sync start ${PROFILE}"
 
+if ! [[ -w "${INITIATOR_SYNC_DIR}" ]]; then
+	if ! mkdir -p "${INITIATOR_SYNC_DIR}"; then
+		echo "[Error] can not create '${INITIATOR_SYNC_DIR}'."
+		exit 1
+	fi
+fi
+
 hostname="${SSH_USERHOST/*@}"
 if ! ping -c1 -w1 ${hostname}; then
 	echo "Could not ping to ${hostname}."
