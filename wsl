@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=2
+# FileVersion=3
 
 set -eu -o pipefail -o errtrace
 sudo_file=/etc/sudoers.d/wsl
@@ -57,11 +57,11 @@ check_bashrc_local_display(){
 	if [[ -f "${HOME}/.bashrc.local" ]]; then
 		local text
 		readarray -t text < "${HOME}/.bashrc.local"
-		if [[ ${text[$(( ${#text[@]} -1 ))]} != "export DISPLAY=${display}" ]]; then
-			echo "export DISPLAY=${display}" >> "${HOME}/.bashrc.local"
+		if [[ ${text[$(( ${#text[@]} -1 ))]} != "export DISPLAY=localhost${display}" ]]; then
+			echo "export DISPLAY=localhost${display}" >> "${HOME}/.bashrc.local"
 		fi
 	else
-		echo "export DISPLAY=${display}" >> "${HOME}/.bashrc.local"
+		echo "export DISPLAY=localhost${display}" >> "${HOME}/.bashrc.local"
 	fi
 }
 
