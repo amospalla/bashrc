@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=604
-FileVersion=604
+# FileVersion=605
+FileVersion=605
 
 #====================================================================
 # Main
@@ -451,7 +451,7 @@ _program_load(){
 		return 0
 	fi
 	_source_utilities
-	_source_variables
+	# _source_variables
 	# At this point, this file is being executed, so we set -euo pipefail, trap, and do exit at the end.
 	[[ ${1:-__None__} == "--debug" ]] && shift && set -x
 	set -euo pipefail -o errtrace
@@ -853,7 +853,7 @@ _source_utilities(){
 				# {files...} like, must end with three dots, we expect there are pending input arguments to process
 				if [[ "${token}" =~ '...'$ ]]; then # last argument_parameter was {foo...} like
 					[[ $# -gt 0 ]] && ec=0 || ec=1
-				# elif [[ "${template_args}" =~ "["[0-9a-zA-Z_-.:@#%]+"...] "$ ]]; then   # last argument_parameter was [foo...] like
+				# elif [[ "${template_args}" =~ "["[0-9a-zA-Z_-.:@#%]+"...] "$ ]]; then   # last argument_parameter was [foo...] like # this regex does not work correctly under wsl 4.3
 				elif [[ "${template_args}" =~ (^|" ")"["[^" "]+"...]"" "$ ]]; then   # last argument_parameter was [foo...] like
 					local arg_last="${BASH_REMATCH}" && arg_last=${arg_last/[} && arg_last=${arg_last/...] }
 					arguments[${arg_last}]=1
