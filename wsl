@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# FileVersion=1
+# FileVersion=2
 
-set -euo pipefail
+set -eu -o pipefail -o errtrace
 sudo_file=/etc/sudoers.d/wsl
 
 am_i_wsl(){
@@ -30,16 +30,25 @@ check_sudo(){
 	fi
 }
 
+test_x_display(){
+	xset -display ${display} q >/dev/null 2>&1
+}
+
 run_vcxsrv(){
 	DISPLAY=${display}
-	if ! xset q >/dev/null 3>&1; then
-		echo "Starting X11 (VcXsrv)"
-		"/mnt/c/Program Files/VcXsrv/vcxsrv.exe" ${display} -noreset -multiwindow -wgl &
-		sleep 3
-		if xset q >/dev/null 3>&1; then
-			echo "X11 (VcXsrv) started."
+	if ! test_x_display; then
+		if [[ -f "/mnt/c/Program Files/VcXsrv/vcxsrv.exe" ]]; then
+			echo "Starting X11 (VcXsrv)"
+			"/mnt/c/Program Files/VcXsrv/vcxsrv.exe" ${display} -noreset -multiwindow -wgl &
+			sleep 3
+			if test_x_display; then
+				echo "X11 (VcXsrv) started."
+			else
+				echo "Error starting X11 (VcXsrv)."
+			fi
 		else
-			echo "Error starting X11 (VcXsrv)."
+			echo "[Error] Please install VcXsrv."
+			exit 1
 		fi
 	fi
 }
@@ -57,6 +66,9 @@ check_bashrc_local_display(){
 }
 
 install_package(){
+	if ! [[ -f "${HOME}/.wsl_apt_get_updated" ]]; then
+		sudo apt-get update && touch "${HOME}/.wsl_apt_get_updated"
+	fi
 	local file="${1}" package="${2}"
  	if ! [[ -f "${file}" ]]; then
  		echo "Installing ${package}"
@@ -73,10 +85,67 @@ create_rxvt_script(){
 }
 
 rxvt-link(){
+	local user choice
+	local -a users=()
 	rxvt_lnk="H4sICCPxt1oCA3J4dnQubG5rAIVVe0iTURT/bVlpjZxYK3tphTIp57RmZgjmylYtWy20YpbzEa42Z23NSUFQ/1QkFJHYyyxSCSqICv/InlB/WUgPK8mKiooehEbREzvn+n22zUH3cu6537n3/O455557PjMAxWgluF0XI/J+IRIJNFF92dWgnXNf4bxg7Yq4eV8xQlMgOCYrEMd6CG5zFKMRb3mxrCPhfZZDffJxJKbr9cfikGrMsmFwK0Ca4D5zUq0ahY7KMne1BzmIQgQ+X81e0ryAV3S0I3IYwhzn+L0IhXCgEmVwoxoekmmwRkKtMbdVqGGt8XjLXTPTgdwAXF5j3Icx4XAz3l+CFTWE50U5XJgJUsc4QiZOrvvMqtoElNg9Fbpyf3kgstbFa4z8M5dD2h/W1wPI34qiFCWwE3IFdITtJ2JkYAnRRMkW5imSxmIiNnIIUZ2l+6mahRROKVo22T/bP3OmErQOtqAxOEy2Qe7ZEGpWLIzICqPpCdHUkKmllC2p2ELyzcSdtLeU0Jw0LxHaqST3w0daU5AYdPYK2uumeWJYm6wwYQHM1PlbR1Y4qXMIhgKNicS7pXCNpO/q/Bvj3yqL8lvn686fW17fymvF/aFrXCWFs8q92Wv3OpzyhWx7sH3Wx0OmpfuPTOjUj736qG1Nl2GG/l3MzujI4kqT/+P/1tv7L7lxOL6Sh8nT/JgckkxqZNC4j+7VSJ5Wkodu8sEuknUl9Twh9WId9eCmjVmb/2c7+fiz18o8TpIrAogTM0KSq1QqYHYXYk+MQlZdN25Fx2PX2HrcOAq0t7fD5/Nhrr8Pmtsq2Ds78dZUgItowI+eJvT29uIaORJFvqwmrDSrxfpJf6XLiN0LW753xJ7yrJ+aTfIyPihevDMMurAEaMMmTbJkYK0E/HLPqrw2c6bx8u/YA0n1rrubZCcYOFUAp9AjToGBKF3M0pBJPYOO0WM2Ec9TxBfLDGJXOs0yhUYGdYPQmSXWDAJBTz1tILo7JGOGDytU1Q15ZjxmfzXl0XNLkvzYOKXQ19f/+hShAmWoIEIWQHqwomLxtj5JMDRQhdtpyQJ9T2Lr54Xj1U09yuK9DR/OcF6PkMNBF4LBFQMYQxTNkxwe3mw8znWahSp5lSsVt+TA6PL581BFGegQb7SU+Be6KllplAw5UOq5zkqGNm8o1WYfvBdzqRPXlz0Z17GUD5GRJ3FdClsx/l9rBv4f0kHnNa75Z2urTC2mHN2pbP9exq7gDSairVXKwy1lP3Iv2ovuWArOXgn8sfwFRjHlOs0GAAA="
-	if ! [[ -f "${HOME}/bin/rxvt.lnk" ]]; then
-		echo "${rxvt_lnk}" | base64 -d | gzip -d > "${HOME}/bin/rxvt.lnk"
+	if ! [[ -f "${HOME}/.wsl_rxvt_link_created" ]]; then
+		for user in /mnt/c/Users/*; do
+			[[ -f "${user}" ]] && continue
+			[[ "${user}" =~ ^/mnt/c/Users/("All Users"|"Default User"|Default|Public)$ ]] && continue
+			[[ -w "${user}" ]] || continue
+			users[${#users[@]}]="${user/*\/}"
+		done
+		echo "Specify the user where to copy rxvt link. Available users: ${users[@]}"
+		choice="____None_Random___"
+		while ! [[ -w /mnt/c/Users/${choice}/Desktop ]]; do
+			read -p"Select: " choice
+		done
+		echo "${rxvt_lnk}" | base64 -d | gzip -d > "/mnt/c/Users/${choice}/Desktop/rxvt.lnk"
+		touch "${HOME}/.wsl_rxvt_link_created"
 	fi
+}
+
+running_background(){
+	pgrep -f "/bin/bash ${HOME}/bin/wsl_keep_background" >/dev/null
+}
+
+start_background(){
+	local user founduser
+	for user in /mnt/c/Users/*; do
+		[[ -d "${user}" ]] || continue
+		[[ "${user}" =~ /(Public|Default)$ ]] && continue
+		if [[ -w "${user}" ]]; then
+			echo "Using ${user} for setHidden.vbs script."
+			if ! [[ -f "${user}/runHidden.vbs" ]]; then
+				echo "Copying setHidden.vgs script."
+cat <<EOFD > "${user}/runHidden.vbs"
+' Simple command-line help.
+select case WScript.Arguments(0)
+	case "-?", "/?", "-h", "--help"
+		WScript.echo "Usage: runHidden executable [...]" & vbNewLine & vbNewLine & "Runs the specified command hidden (without a visible window)."
+		WScript.Quit(0)
+end select
+
+' Separate the arguments into the executable name
+' and a single string containing all arguments.
+exe = WScript.Arguments(0)
+sep = ""
+for i = 1 to WScript.Arguments.Count -1
+	' Enclose arguments in "..." to preserve their original partitioning.
+	args = args & sep & """" & WScript.Arguments(i) & """"
+	sep = " "
+next
+
+' Execute the command with its window *hidden* (0)
+WScript.CreateObject("Shell.Application").ShellExecute exe, args, "", "open", 0
+EOFD
+			fi
+		break
+		fi
+	done
+	founduser="${user/*\/}"
+	[[ -L "${HOME}/bin/wsl_keep_background" ]] || ln -s "${HOME}/bin/wsl" "${HOME}/bin/wsl_keep_background"
+	wscript.exe c:\\Users\\${founduser}\\runHidden.vbs bash -c "$HOME/bin/wsl_keep_background 0"
 }
 
 if [[ ${1:-} == "setup" && $# -eq 2 ]]; then
@@ -86,6 +155,8 @@ elif [[ ${1:-} == "rxvt" ]]; then
 	create_rxvt_script
 elif [[ ${#} -eq 1 && ${1} =~ ^:[0-9]+$ ]]; then
 	display=${1}
+elif [[ "$(basename "${0}")" == wsl_keep_background ]]; then
+	sleep inf
 else
 	echo "Usage: $(basename ${0}) {display}"
 	echo "Example: $(basename ${0}) :0"
@@ -93,31 +164,23 @@ else
 fi
 
 if am_i_wsl; then
-	check_sudo
-	install_package /usr/bin/xset x11-xserver-utils
-	install_package /usr/bin/at at
-	install_package /usr/bin/rxvt rxvt-unicode
-	install_package /usr/share/fonts/truetype/inconsolata/Inconsolata.otf fonts-inconsolata
-	install_package /usr/share/doc/xfonts-terminus/README.gz xfonts-terminus
-	install_package /usr/share/doc/xfonts-terminus-oblique/README.gz xfonts-terminus-oblique
-	run_vcxsrv
-	start_service rsyslog /etc/init.d/rsyslog
-	start_service cron /etc/init.d/cron
-	start_service sshd /etc/init.d/ssh
-	start_service atd  /etc/init.d/atd
-	start_service master /etc/init.d/postfix
-	check_bashrc_local_display
-	[[ -f /usr/local/bin/rxvt ]] || sudo "${0}" rxvt
-	rxvt-link
+	if ! running_background; then
+		check_sudo
+		install_package /usr/bin/xset x11-xserver-utils
+		install_package /usr/bin/at at
+		install_package /usr/bin/rxvt rxvt-unicode
+		install_package /usr/share/fonts/truetype/inconsolata/Inconsolata.otf fonts-inconsolata
+		install_package /usr/share/doc/xfonts-terminus/README.gz xfonts-terminus
+		install_package /usr/share/doc/xfonts-terminus-oblique/README.gz xfonts-terminus-oblique
+		run_vcxsrv
+		start_service rsyslog /etc/init.d/rsyslog
+		start_service cron /etc/init.d/cron
+		start_service sshd /etc/init.d/ssh
+		start_service atd  /etc/init.d/atd
+		start_service master /etc/init.d/postfix
+		check_bashrc_local_display
+		[[ -f /usr/local/bin/rxvt ]] || sudo "${0}" rxvt
+		rxvt-link
+		start_background
+	fi
 fi
-
-echo ""
-echo ""
-echo ""
-echo "###############################################################"
-echo "###############################################################"
-echo "###############################################################"
-while true; do
-	read -p"Do not close this terminal while there are remaining terminals."
-	sleep 0.1
-done
