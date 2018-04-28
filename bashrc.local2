@@ -1,0 +1,19 @@
+############
+# Keychain #
+############
+
+export GPGKEY=ABCDEFGH
+# ssh + gpg
+# eval $(keychain --quiet --agents ssh,gpg --eval id_rsa $GPGKEY)
+
+# ssh
+# eval `keychain --quiet --agents ssh --eval id_rsa`
+
+# gpg
+# eval `keychain --quiet --agents gpg --eval $GPGKEY`
+
+############
+# Misc     #
+############
+
+# export CEPH_ARGS="--conf /etc/ceph/ceph10.conf --keyring /etc/ceph/ceph10.client.admin.keyring"
