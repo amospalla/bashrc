@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=4
+# FileVersion=5
 
 set -eu -o pipefail -o errtrace
 sudo_file=/etc/sudoers.d/wsl
@@ -110,8 +110,8 @@ running_background(){
 }
 
 check_ssh_port(){
-	if ! grep -q "^port 10022" /etc/ssh/sshd_config; then
-		sudo bash -c "echo port 10022 >> /etc/ssh/sshd_config"
+	if ! grep -qi "^port 10022" /etc/ssh/sshd_config; then
+		sudo bash -c "echo Port 10022 >> /etc/ssh/sshd_config"
 	fi
 }
 
