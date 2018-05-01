@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=605
-FileVersion=605
+# FileVersion=606
+FileVersion=606
 
 #====================================================================
 # Main
@@ -37,14 +37,13 @@ _main(){
 	export LC_MESSAGES=C LC_NUMERIC=C
 	[[ -x "${HOME}/.bashrc" ]] || chmod u+x "${HOME}/.bashrc"
 
+	_source_path_add_home_bin
 	if [[ $- != *i* ]] ; then
 		export bashrc_interactive=0
-		_source_path_add_home_bin
 		_program_load "$@" # Check if ${0} is this .bashrc or a link to it and execute the program asked for and exit, else we return.
 		# Shell is non-interactive.  Be done now!
 		return
 	else
-		_source_path_add_home_bin
 		_source_bash_options
 		_source_variables
 		_source_dir_stack
@@ -59,6 +58,7 @@ _main(){
 			_post_bash_update
 			sed -i "s/^_FileVersionOld=.*/_FileVersionOld=${_FileVersion}/" "${HOME}/.bashrc.options"
 		fi
+		_test_wsl && [[ ${PWD} = /mnt/c/Windows/System32 ]] && cd $HOME
 		(_update_files &)
 	fi
 }
@@ -94,6 +94,10 @@ _source_variables_amospalla(){
 #====================================================================
 # Functions
 #====================================================================
+
+_test_wsl(){
+	[[ $(</proc/version) =~ Microsoft ]]
+}
 
 date_seconds(){
 	[[ ${_bash_version} -gt 41 ]] && printf "%(%s)T" || date +%s
