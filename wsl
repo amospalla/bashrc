@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=5
+# FileVersion=6
 
 set -eu -o pipefail -o errtrace
 sudo_file=/etc/sudoers.d/wsl
@@ -109,10 +109,9 @@ running_background(){
 	pgrep -f "/bin/bash ${HOME}/bin/wsl_keep_background" >/dev/null
 }
 
-check_ssh_port(){
-	if ! grep -qi "^port 10022" /etc/ssh/sshd_config; then
-		sudo bash -c "echo Port 10022 >> /etc/ssh/sshd_config"
-	fi
+check_ssh(){
+	grep -qi "^port 10022" /etc/ssh/sshd_config || sudo bash -c "echo Port 10022 >> /etc/ssh/sshd_config"
+	sudo sed -i -e 's/^PermitRootLogin prohibit-password/PermitRootLogin yes/' -e 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
 }
 
 start_background(){
@@ -181,7 +180,7 @@ if am_i_wsl; then
 		run_vcxsrv
 		start_service rsyslog /etc/init.d/rsyslog
 		start_service cron /etc/init.d/cron
-		check_ssh_port
+		check_ssh
 		start_service sshd /etc/init.d/ssh
 		start_service atd  /etc/init.d/atd
 		start_service master /etc/init.d/postfix
