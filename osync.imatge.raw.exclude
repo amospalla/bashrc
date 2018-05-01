@@ -3,3 +3,4 @@
 - ._sync_*.db-wal
 - ._sync_*.db-shm
 - .osync_workdir/
+- lightroom/programa/Data/local/modified/@APPDATALOCAL@/Adobe/Lightroom
