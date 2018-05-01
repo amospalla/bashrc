@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=3
+# FileVersion=4
 
 set -eu -o pipefail -o errtrace
 sudo_file=/etc/sudoers.d/wsl
@@ -109,6 +109,12 @@ running_background(){
 	pgrep -f "/bin/bash ${HOME}/bin/wsl_keep_background" >/dev/null
 }
 
+check_ssh_port(){
+	if ! grep -q "^port 10022" /etc/ssh/sshd_config; then
+		sudo bash -c "echo port 10022 >> /etc/ssh/sshd_config"
+	fi
+}
+
 start_background(){
 	local user founduser
 	for user in /mnt/c/Users/*; do
@@ -175,6 +181,7 @@ if am_i_wsl; then
 		run_vcxsrv
 		start_service rsyslog /etc/init.d/rsyslog
 		start_service cron /etc/init.d/cron
+		check_ssh_port
 		start_service sshd /etc/init.d/ssh
 		start_service atd  /etc/init.d/atd
 		start_service master /etc/init.d/postfix
