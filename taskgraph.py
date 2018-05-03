@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# FileVersion=1
+# FileVersion=2
 
 from taskw import TaskWarrior
 from graphviz import Digraph
@@ -51,6 +51,6 @@ for task in tasks['pending']:
         dot.node(task["uuid"], description)
     if 'depends' in task:
         for dependency in task['depends']:
-            dot.edge(dependency, task["uuid"])
+            dot.edge(task["uuid"], dependency)
 
 dot.render('/tmp/file', view=True)
