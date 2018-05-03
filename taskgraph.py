@@ -1,32 +1,56 @@
-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
-mN+Rc0bQbhq3DHNOoIWs8w==
+#!/usr/bin/env python3
+
+# FileVersion=1
+
+from taskw import TaskWarrior
+from graphviz import Digraph
+import re
+
+dot = Digraph(comment='Taskwarrior')
+
+ignore_tags = ['notes', 'dymo']
+ignore_projects = ['notes']
+
+w = TaskWarrior()
+tasks = w.load_tasks()
+for task in tasks['pending']:
+    if 'recur' in task:
+        continue
+    found = 0
+    if 'tags' in task:
+        for tag in task['tags']:
+            if tag in ignore_tags:
+                found = 1
+                break
+    if 'project' in task:
+        if task['project'] in ignore_projects:
+            found = 1
+    if found == 1:
+        continue
+    match = re.search( '(__)([^_]+)(__)', task["description"], flags = 0)
+    if match:
+        print ('A')
+        description = match.group(2)
+    else:
+        print ('B')
+        description = task['description']
+    print (description)
+    if 'priority' in task:
+        if task['priority'] == "H":
+            pcolor = 'red'
+        if task['priority'] == "M":
+            pcolor = 'green'
+        if task['priority'] == "L":
+            pcolor = 'black'
+    else:
+        pcolor = 'black'
+    dot.node(task["uuid"], description, color = pcolor)
+    if 'priority' in task and task['priority'] == "h":
+        dot.node(task["uuid"], description, color='red')
+    else:
+        dot.node(task["uuid"], description)
+    if 'depends' in task:
+        for dependency in task['depends']:
+            dot.edge(dependency, task["uuid"])
+
+dot.render('/tmp/file', view=True)
