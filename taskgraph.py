@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# FileVersion=3
+# FileVersion=4
 
 from taskw import TaskWarrior
 from graphviz import Digraph
@@ -94,13 +94,13 @@ dot.node('L', 'Low', color='black')
 for task in tasks:
     if 'priority' in task:
         if task['priority'] == "H":
-            pcolor = 'red'
+            color = 'red'
         if task['priority'] == "M":
-            pcolor = 'green'
+            color = 'green'
         if task['priority'] == "L":
-            pcolor = 'black'
+            color = 'black'
     else:
-        pcolor = 'black'
+        color = 'black'
 
     match = re.search( '(__)([^_]+)(__)', task["description"], flags = 0)
     if match:
@@ -108,13 +108,7 @@ for task in tasks:
     else:
         description = task['description']
 
-    dot.node(task["uuid"], description, color = pcolor)
-    if 'priority' in task and task['priority'] == "H":
-        dot.node(task["uuid"], description, color='red')
-    elif 'priority' in task and task['priority'] == "M":
-        dot.node(task["uuid"], description, color='green')
-    else:
-        dot.node(task["uuid"], description)
+    dot.node(task["uuid"], description + "(" + str(task['id']) + ")", color = color)
 
     if 'depends' in task:
         for dependency in task['depends']:
