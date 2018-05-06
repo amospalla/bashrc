@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=610
-FileVersion=610
+# FileVersion=611
+FileVersion=611
 
 #====================================================================
 # Main
@@ -1041,14 +1041,15 @@ _source_utilities(){
 		argparse "$@" && shift ${arguments_shift}
 		declare -a text
 		declare -i i j text_width=0 border_width=${arguments[bordersize]:-2}
-		declare border_char=${arguments[delimiter]:-#} border_text=""
+		declare border_char=${arguments[delimiter]:-#} border_text="" bcolor=${arguments[bcolor]:-none} tcolor=${arguments[tcolor]:-none}
 		border_char=${border_char:0:1}
 		readarray -t text < <(echo "${arguments[text]}")
+		[[ $(tty | sed -e "s/\/dev\///" -e "s/\///" -e "s/not a tty/notatty/") == notatty ]] && bcolor=none && tcolor=none || true
 		for (( i=0; i<${#text[@]}; i++ )); do
 			[[ "${#text[$i]}" -gt ${text_width} ]] && text_width=${#text[$i]}
 		done
 		for (( i=0; i<$(( ${text_width} + 2 + 2 * ${border_width})); i++ )); do
-			color ${arguments[bcolor]:-none}
+			color ${bcolor}
 			printf -- "${border_char}"
 			color
 		done; printf "\n"
@@ -1056,18 +1057,18 @@ _source_utilities(){
 			border_text="${border_text}${border_char}"
 		done
 		for (( i=0; i<${#text[@]}; i++ )); do
-			color ${arguments[bcolor]:-none}
+			color ${bcolor}
 			printf -- "${border_text}"
-			color ${arguments[tcolor]:-none}
+			color ${tcolor}
 			printf -- " ${text[$i]} "
 			for (( j=0; j<$(( ${text_width} - ${#text[$i]} )); j++ )); do
 				printf " "
 			done
-			color ${arguments[bcolor]:-none}
+			color ${bcolor}
 			printf -- "${border_text}\n"
 		done
 		for (( i=0; i<$(( ${text_width} + 2 + 2 * ${border_width})); i++ )); do
-			color ${arguments[bcolor]:-none}
+			color ${bcolor}
 			printf -- "${border_char}"
 			color
 		done; printf "\n"
