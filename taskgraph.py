@@ -1,9 +1,21 @@
 #!/usr/bin/env python3
 
-# FileVersion=5
+# FileVersion=6
 
-from taskw import TaskWarrior
-from graphviz import Digraph
+from sys import exit
+
+try:
+    from taskw import TaskWarrior
+except ImportError:
+    print ("Python taskw not installed: pip3 install taskw.")
+    exit()
+
+try:
+    from graphviz import Digraph
+except ImportError:
+    print ("Python digraph not installed: pip3 install graphviz.")
+    exit()
+
 import re
 
 ignore_tags = ['notes', 'dymo']
