@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# FileVersion=4
+# FileVersion=5
 
 from taskw import TaskWarrior
 from graphviz import Digraph
@@ -8,12 +8,15 @@ import re
 
 ignore_tags = ['notes', 'dymo']
 ignore_projects = ['notes']
-
 dot = Digraph(comment='Taskwarrior')
+dot.attr(rankdir='LR', size='8,5', splines='line')
 tasks_in = TaskWarrior().load_tasks()['pending']
 tasks = []
-root_priorities = {}
-task_has_parents = {}
+priority_groups = []
+group_counter = 0
+group = []
+group_priority = None
+group_found = []
 
 
 def check_has_banned_tag(task):
@@ -58,62 +61,115 @@ def get_higher_priority(priority1, priority2):
         return priority2
 
 
-def get_task_priority_recursive(task):
+def get_task_priority(task):
     if 'priority' in task:
-        highest_priority = task['priority']
+        return task['priority']
     else:
-        highest_priority = 'L'
+        return 'L'
 
-    if 'depends' in task:
-        for uuid in task['depends']:
-            task_has_parents[uuid] = True
-            dep_priority = get_task_priority_recursive(get_task_with_uuid(uuid))
-            highest_priority = get_higher_priority(highest_priority, dep_priority)
-    return highest_priority
+
+def task_in_group(task_in):
+    # Returns if a task is already on a priority group
+    for group in priority_groups:
+        for task in group['tasks']:
+            if int(task['id']) == int(task_in['id']):
+                return group['id']
+    return 0
+
+
+def add_task_group(task, length, priority='L'):
+    global group_counter
+    global group
+    global group_priority
+    global group_found
+    global priority_groups
+
+    if task_in_group(task) > 0:
+        if length == 0:
+            # First recursive call and task already in a group: exit
+            pass
+        else:
+            # task already in a group, add group to be merged and return
+            group_found.append(task_in_group(task))
+    else:
+        # task does not belong to another group
+        priority = get_higher_priority(get_task_priority(task), priority)
+
+        if length == 0:
+            group = []
+            group_priority = priority
+            group_found = []
+        group.append(task)
+        if 'depends' in task:
+            for uuid in task['depends']:
+                add_task_group(get_task_with_uuid(uuid), priority=priority,
+                               length=length + 1)
+
+        group_counter += 1  # Get new group id
+        if length == 0 and not group_found:
+            priority_groups.append({'id': group_counter, 'tasks': group,
+                                    'priority': priority})
+        elif length == 0 and group_found:
+            # Merge group_found's and temporary 'group' into a new group
+            for g in priority_groups:
+                if g['id'] in group_found:
+                    priority = get_higher_priority(priority, g['priority'])
+                    group.extend(g['tasks'])
+            for g in priority_groups[:]:
+                if g['id'] in group_found:
+                    priority_groups.remove(g)
+            priority_groups.append({'id': group_counter, 'tasks': group,
+                                    'priority': priority})
 
 
 # Discard unwanted tasks:
 for task in tasks_in:
-    if not (check_recurrent(task) or check_has_banned_tag(task) or check_has_banned_project(task)):
+    if not (check_recurrent(task) or check_has_banned_tag(task) or
+            check_has_banned_project(task)):
         tasks.append(task)
-
-# Set parent a root priority:
-for task in tasks:
-    root_priorities[task['uuid']] = 'Low'
-    task_has_parents[task['uuid']] = False
 
 # Get higher priority (root parent) for every task, including its dependencies
 # and only for tasks without reverse dependencies:
 for task in tasks:
-    root_priorities[task['uuid']]=(get_task_priority_recursive(task))
+    add_task_group(task, length=0)
 
-dot.node('H', 'High', color='red')
-dot.node('M', 'Medium', color='green')
-dot.node('L', 'Low', color='black')
+for cluster in ['Low', 'Medium', 'High']:
+    priority_found = False
+    for group in priority_groups:
+        if group['priority'] == cluster[0:1]:
+            priority_found = True
+            break
+    if not priority_found:
+        continue
+    with dot.subgraph(name='cluster_'+cluster) as c:
+        c.attr(rankdir='TB')
+        c.attr(style='filled')
+        c.attr(color='lightgrey')
+        c.node_attr.update(style='filled', color='white')
+        c.attr(label=cluster)
+        for group in priority_groups:
+            if not group['priority'] == cluster[0:1]:
+                continue
 
-for task in tasks:
-    if 'priority' in task:
-        if task['priority'] == "H":
-            color = 'red'
-        if task['priority'] == "M":
-            color = 'green'
-        if task['priority'] == "L":
-            color = 'black'
-    else:
-        color = 'black'
+            for task in group['tasks']:
+                if 'priority' in task and task['priority'] == "H":
+                    color = 'red'
+                elif 'priority' in task and task['priority'] == "M":
+                    color = 'green'
+                else:
+                    color = 'white'
 
-    match = re.search( '(__)([^_]+)(__)', task["description"], flags = 0)
-    if match:
-        description = match.group(2)
-    else:
-        description = task['description']
+                match = re.search( '(__)([^_]+)(__)', task["description"], flags = 0)
+                if match:
+                    description = match.group(2)
+                else:
+                    description = task['description']
 
-    dot.node(task["uuid"], description + "(" + str(task['id']) + ")", color = color)
+                c.node(task["uuid"], description + "(" + str(task['id']) + ")", color = color)
+                if 'depends' in task:
+                    for dependency in task['depends']:
+                        c.edges([(task['uuid'], dependency)])
 
-    if 'depends' in task:
-        for dependency in task['depends']:
-            dot.edge(task["uuid"], dependency)
-    if not task_has_parents[task['uuid']]:
-        dot.edge(root_priorities[task['uuid']], task["uuid"])
 
-dot.render('/tmp/file', view=True)
+dot.view()
+# dot.render('/tmp/file', view=True)
