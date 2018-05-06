@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=609
-FileVersion=609
+# FileVersion=610
+FileVersion=610
 
 #====================================================================
 # Main
@@ -1042,6 +1042,7 @@ _source_utilities(){
 		declare -a text
 		declare -i i j text_width=0 border_width=${arguments[bordersize]:-2}
 		declare border_char=${arguments[delimiter]:-#} border_text=""
+		border_char=${border_char:0:1}
 		readarray -t text < <(echo "${arguments[text]}")
 		for (( i=0; i<${#text[@]}; i++ )); do
 			[[ "${#text[$i]}" -gt ${text_width} ]] && text_width=${#text[$i]}
