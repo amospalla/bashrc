@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=607
-FileVersion=607
+# FileVersion=608
+FileVersion=608
 
 #====================================================================
 # Main
@@ -14,8 +14,8 @@ declare -i arguments_shift _files_update_counter=0 _files_updated _bash_version=
 declare _files_update_text=""
 
 _load_program_list(){
-	_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email bashrc-update section muttrc message run-every folder-exists ssh-socket filewatch)
-	_program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all [bashrc-update]=all [section]=all [muttrc]=all [message]=all [run-every]=all [folder-exists]=all [ssh-socket]=all [filewatch]=all)
+	_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo color lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email bashrc-update section muttrc message run-every folder-exists ssh-socket filewatch print-color)
+	_program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [color]=all [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all [bashrc-update]=all [section]=all [muttrc]=all [message]=all [run-every]=all [folder-exists]=all [ssh-socket]=all [filewatch]=all [print-color]=all)
 }
 
 _status_changed_intervals="1m 5m 15m 1h 1d"
@@ -470,6 +470,7 @@ _bashrc_show_help(){
 	color blue; printf "lvmthinsnapshots"; color; echo ": create lvm of thin volume snapshots with an optional retention."
 	color blue; printf "run-every"; color; echo ": given a time interval and a number of fractions return if we are on the specified."
 	color blue; printf "filewatch"; color; echo ": monitor a file for changes."
+	color blue; printf "print-color"; color; echo ": prints a text coloured."
 	color blue; printf "retention"; color; echo ": helper to mantain a retention with given dates."
 	color blue; printf "program-exists"; color; echo ": check if a list of programs are available."
 	color blue; printf "try"; color; echo ": tries executing a command until it succeeds."
@@ -1036,7 +1037,7 @@ _source_utilities(){
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
 		file-readable -m "${arguments[file]}" || exit 1
-
+		
 		local date_old="$(stat -c %Y "${arguments[file]}")" date_new
 		date_new=${date_old}
 		while "true"; do
@@ -1048,6 +1049,26 @@ _source_utilities(){
 			[[ ${arguments[-c]:-0} -eq 0 ]] && break
 			date_old=${date_new}
 		done
+	}
+
+	print-color(){
+		_show_help(){
+			echo "Usage: print-color [color] text"
+			echo ""
+			echo "Available: white, black, red, green, yellow, blue, magenta, cyan."
+			echo "Prefixes: bold, dim, underline, blink, reverse, hidden"
+			exit ${1:-0}
+		}
+		local color
+		[[ ${#} -eq 0 ]] && _show_help 1
+		if [[ ${1} =~ white|black|red|green|yellow|blue|magenta|cyan ]]; then
+			color="${1}"
+			shift
+		else
+			color=""
+		fi
+		[[ ${#} -eq 0 ]] && _show_help 1
+		color ${color}; printf -- "${@}"; color
 	}
 
 	run-every(){
