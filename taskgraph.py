@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# FileVersion=6
+# FileVersion=7
 
 from sys import exit
 
@@ -84,7 +84,7 @@ def task_in_group(task_in):
     # Returns if a task is already on a priority group
     for group in priority_groups:
         for task in group['tasks']:
-            if int(task['id']) == int(task_in['id']):
+            if task['id'] == task_in['id']:
                 return group['id']
     return 0
 
@@ -114,6 +114,8 @@ def add_task_group(task, length, priority='L'):
         group.append(task)
         if 'depends' in task:
             for uuid in task['depends']:
+                if get_task_with_uuid(uuid) is None:  # taskwarrior depends is an uuid
+                    continue
                 add_task_group(get_task_with_uuid(uuid), priority=priority,
                                length=length + 1)
 
