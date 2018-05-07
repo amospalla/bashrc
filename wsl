@@ -2,7 +2,7 @@
 
 # postfix: main.cf: alias_maps = hash:/etc/aliases
 
-# FileVersion=7
+# FileVersion=8
 
 set -eu -o pipefail -o errtrace
 sudo_file=/etc/sudoers.d/wsl
@@ -172,7 +172,7 @@ fi
 
 if am_i_wsl; then
 	if ! running_background; then
-		check_sudo
+		[[ ${EUID} -gt 0 ]] && check_sudo || true
 		install_package /usr/bin/xset x11-xserver-utils
 		install_package /usr/bin/at at
 		install_package /usr/bin/rxvt rxvt-unicode
