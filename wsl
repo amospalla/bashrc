@@ -2,7 +2,7 @@
 
 # postfix: main.cf: alias_maps = hash:/etc/aliases
 
-# FileVersion=8
+# FileVersion=9
 
 set -eu -o pipefail -o errtrace
 sudo_file=/etc/sudoers.d/wsl
@@ -80,7 +80,8 @@ install_package(){
 
 create_rxvt_script(){
 	echo "#!/bin/bash" > /usr/local/bin/rxvt
-	echo '. ${HOME}/.bashrc.local' >> /usr/local/bin/rxvt
+	# echo '. ${HOME}/.bashrc.local' >> /usr/local/bin/rxvt
+	echo '~/bin/wsl :0' >> /usr/local/bin/rxvt
 	echo "exec nohup /usr/bin/rxvt >/dev/null 2>&1 &" >> /usr/local/bin/rxvt
 	chmod 0755 /usr/local/bin/rxvt
 	exit 0
