@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=1
+# FileVersion=2
 
 set -euo pipefail
 
@@ -9,7 +9,7 @@ set -euo pipefail
 ####################
 
 show_profiles(){
-	find "${profiles}" -type f -name "*.conf" | sed -e "s;${profiles}/\?;;" -e 's/\.conf$//'
+	find "${profiles}" -type f -name "*.conf" | sed -e "s;${profiles}/\?;;" -e 's/\.conf$//' | sort
 }
 
 main(){
