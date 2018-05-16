@@ -1,0 +1,92 @@
+#!/bin/bash
+
+# FileVersion=1
+
+set -euo pipefail
+
+####################
+#### Functions #####
+####################
+
+show_profiles(){
+	find "${profiles}" -type f -name "*.conf" | sed -e "s;${profiles}/\?;;" -e 's/\.conf$//'
+}
+
+main(){
+	eval $(keychain --quiet --noask --agents ssh --eval id_rsa) || exit 1
+	PROFILE="${1}"
+	. "${profiles}/${PROFILE}.conf"
+	# "${HOME}/bin/message" send amospalla.es:55555 "sync start ${PROFILE}"
+
+	if ! [[ -w "${INITIATOR_SYNC_DIR}" ]]; then
+		if ! mkdir -p "${INITIATOR_SYNC_DIR}"; then
+			echo "[Error] can not create '${INITIATOR_SYNC_DIR}'."
+			exit 1
+		fi
+	fi
+
+	hostname="${SSH_USERHOST/*@}"
+	if ! ping -c1 -w1 ${hostname}; then
+		echo "Could not ping to ${hostname}."
+		exit 0
+	fi
+
+	if [[ -S /tmp/osync.${PROFILE}.socket ]]; then
+		rm /tmp/osync.${PROFILE}.socket
+	fi
+
+	socket=/tmp/osync.${PROFILE}.socket
+	if ! ssh ${SSH_USERHOST} -p ${SSH_PORT} -f -N -M -S ${socket} >/dev/null 2>&1; then
+		echo "Error starting ssh tunnel, exit."
+		[[ -S ${socket} ]] && rm ${socket}
+		# "${HOME}/bin/message" send amospalla.es:55555 "sync end ${PROFILE} (error starting ssh tunnel)"
+		exit 0
+	fi
+
+	mkdir -p "${INITIATOR_SYNC_DIR}/.sync_dates"
+	printf "$(date +"%Y%m%d%H%M%S") $(hostname -f)" > "${INITIATOR_SYNC_DIR}/.sync_dates/$(hostname -f)"
+	printf "$(date +"%Y%m%d%H%M%S") ${PROFILE} $(hostname -f)" > "${profiles}/lastrun.${PROFILE}"
+
+	osync.sh "${profiles}/${PROFILE}.conf" --errors-only --summary --no-prefix && ec=$? || ec=$?
+
+	ssh ${SSH_USERHOST} -p ${SSH_PORT} -S ${socket} -O exit
+	# "${HOME}/bin/message" send amospalla.es:55555 "sync end ${PROFILE} (${ec})"
+	exit $ec
+}
+
+check_profile_exists(){
+	local profile="${1}"
+	[[ ! -f "${profiles}/${profile}.conf" ]] && echo "Error: profile does not exist." && exit 1 || true
+
+}
+
+####################
+#### Variables #####
+####################
+
+profiles="${HOME}/.osync"
+
+if [[ "${1:-__Random123__}" == execute ]]; then
+	main "${2}"
+else
+	source "${HOME}/.bashrc"; _source_utilities
+	args1='run {profile}'
+	args2='list'
+	arguments_list=(args1 args2)
+	arguments_description=('osync' 'Osync.sh wrapper')
+	arguments_parameters=( '{profile}: profile to run.'
+						   'list: list available profiles.')
+	argparse "$@" && shift ${arguments_shift}
+fi
+
+if [[ ${arguments[list]:-0} -eq 1 ]]; then
+	show_profiles
+	exit 0
+fi
+
+if [[ ${arguments[run]:-0} -eq 1 ]]; then
+	check_profile_exists "${arguments[profile]}"
+	profile=${arguments[profile]}
+	profile=${profile//./-} # lock does not like dots
+	exec lock lock -f noerror osync-${profile} "${0}" execute ${arguments[profile]}
+fi
