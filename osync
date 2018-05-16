@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=2
+# FileVersion=3
 
 set -euo pipefail
 
@@ -74,7 +74,7 @@ else
 	args2='list'
 	arguments_list=(args1 args2)
 	arguments_description=('osync' 'Osync.sh wrapper')
-	arguments_parameters=( '{profile}: profile to run.'
+	arguments_parameters=( 'run {profile}: profile to run.'
 						   'list: list available profiles.')
 	argparse "$@" && shift ${arguments_shift}
 fi
