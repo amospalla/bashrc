@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=612
-FileVersion=612
+# FileVersion=613
+FileVersion=613
 
 #====================================================================
 # Main
@@ -14,8 +14,8 @@ declare -i arguments_shift _files_update_counter=0 _files_updated _bash_version=
 declare _files_update_text=""
 
 _load_program_list(){
-	_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email bashrc-update section muttrc message run-every folder-exists ssh-socket filewatch print-color box)
-	_program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all [bashrc-update]=all [section]=all [muttrc]=all [message]=all [run-every]=all [folder-exists]=all [ssh-socket]=all [filewatch]=all [print-color]=all [box]=all)
+	_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email bashrc-update section muttrc message run-every folder-exists ssh-socket filewatch print-color box dstatw)
+	_program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all [bashrc-update]=all [section]=all [muttrc]=all [message]=all [run-every]=all [folder-exists]=all [ssh-socket]=all [filewatch]=all [print-color]=all [box]=all [dstatw]=all)
 }
 
 _status_changed_intervals="1m 5m 15m 1h 1d"
@@ -472,6 +472,7 @@ _bashrc_show_help(){
 	color blue; printf "filewatch"; color; echo ": monitor a file for changes."
 	color blue; printf "box"; color; echo ": print a text surrounded by a box."
 	color blue; printf "print-color"; color; echo ": prints a text coloured."
+	color blue; printf "dstatw"; color; echo ": dstatw wrapper."
 	color blue; printf "retention"; color; echo ": helper to mantain a retention with given dates."
 	color blue; printf "program-exists"; color; echo ": check if a list of programs are available."
 	color blue; printf "try"; color; echo ": tries executing a command until it succeeds."
@@ -1072,6 +1073,150 @@ _source_utilities(){
 			printf -- "${border_char}"
 			color
 		done; printf "\n"
+	}
+
+	dstatw(){
+		# TODO: add rbd with find /dev/rbd
+		arguments_list=(args1 args2)
+		args1='list'
+		args2='[{profile}]'
+		arguments_description=('dstatw' 'Dstat wrapper.')
+		arguments_parameters=( 'list: list profiles (TODO).'
+		                       '[{profile}]: run with the specified profile (TODO).' )
+		local -A arguments=()
+		argparse "$@" && shift ${arguments_shift}
+
+		local -i i counter=0 disk_total=0 disk_start=0 network_total=0 network_start=0 disk_selected=0 network_selected=0
+		local -A disk=() network=() selected=() disk_short=() disk_real=()
+		local -a network_ignore=( "lo" )
+		local -a disk_ignore=( "/dev/mapper/control" "/dev/mapper/.*_tdata" "/dev/mapper/.*_tmeta" "/dev/mapper/.*-tpool" "/dev/mapper/.*thinpool[0-9]+" "/dev/mapper/.*-real" "/dev/mapper/.*-cow")
+		local dev profiles="${HOME}/.dstatw.rc"
+
+		profile_list(){
+			if [[ -f "${profiles}" ]]; then
+				cat "${profiles}"
+			else
+				echo default
+			fi
+		}
+		[[ ${arguments[list]:-0} -eq 1 ]] && profile_list && exit 0
+
+		# Read Disk
+		for dev in $(echo /dev/sd* /dev/vd* /dev/xvd* /dev/hd* /dev/mapper/* /dev/md/* | sort -g) total; do
+			[[ ${dev} =~ "*" ]] && continue
+			for (( i=0; i<${#disk_ignore[@]}; i++ )); do
+				[[ ${dev} =~ ^${disk_ignore[$i]}$ ]] && continue 2
+			done
+			counter=$(( counter + 1))
+			disk[${counter}]="${dev}"
+			disk_short[${counter}]="$(basename "${dev}")"
+			disk_real[${counter}]="$( basename "$( readlink -f "${dev}")")"
+			[[ ${disk_start} -eq 0 ]] && disk_start=$(( counter ))
+			disk_total=$(( disk_total + 1 ))
+			selected[${counter}]=0
+		done
+
+		# Read Network
+		for dev in $(ip link show up | grep "^[0-9]" | sed -e 's/^[0-9]\+: //' -e 's/:.*//' -e 's/@if[0-9]\+//' | sort -g) total; do
+			for (( i=0; i<${#network_ignore[@]}; i++ )); do
+				[[ ${dev} =~ ^${network_ignore[$i]}$ ]] && continue 2
+			done
+			counter=$(( counter + 1))
+			[[ ${network_start} -eq 0 ]] && network_start=$(( counter ))
+			network[${counter}]="${dev}"
+			network_total=$(( network_total + 1 ))
+			selected[${counter}]=0
+		done
+
+		# Menu
+		while clear; do
+			color boldblue; printf "Block devices:\n"; color
+			for (( i=$(( disk_start)); i<$((disk_start + disk_total)); i++ )); do
+				if [[ ${selected[${i}]} -eq 1 ]]; then
+					color red; printf "  %3d)" ${i}
+					[[ ${disk_real[$i]} == ${disk_short[$i]} ]] || printf " %5s" ${disk_real[$i]}
+					printf " ${disk[$i]}\n"
+					color
+				else
+					printf "  %3d)" ${i}
+					[[ ${disk_real[$i]} == ${disk_short[$i]} ]] || printf " %5s" ${disk_real[$i]}
+					printf " ${disk[$i]}\n"
+				fi
+			done
+
+			echo ""
+			color boldblue; printf "Network devices:\n"; color
+			for (( i=$(( network_start )); i<$(( network_start + network_total )); i++ )); do
+				if [[ ${selected[${i}]} -eq 1 ]]; then
+					color red; printf "  %3d) ${network[$i]}\n" ${i}; color
+				else
+					printf "  %3d) ${network[$i]}\n" ${i}
+				fi
+			done
+
+			echo ""
+			color boldblue; printf "Actions:\n"; color
+			echo "0-9*) select/unselect"
+			echo "   l) load"
+			echo "   s) save"
+			echo "   c) continue"
+			read next; printf "\n"
+			case "${next}" in
+				l)
+					echo stub load
+					;;
+				s)
+					echo stub save
+					;;
+				c)
+					break
+					;;
+				0*|1*|2*|3*|4*|5*|6*|7*|8*|9*)
+					[[ ${next} =~ ^[0-9]+$ ]] || continue
+					if [[ ${next} -ge ${disk_start} && ${next} -lt $(( disk_start + disk_total )) ]]; then
+						if [[ selected[${next}] -eq 0 ]]; then
+							selected[${next}]=1 && disk_selected=$(( disk_selected + 1 ))
+						else
+							selected[${next}]=0 && disk_selected=$(( disk_selected - 1 ))
+						fi
+					fi
+					if [[ ${next} -ge ${network_start} && ${next} -lt $(( network_start + network_total )) ]]; then
+						if [[ selected[${next}] -eq 0 ]]; then
+							selected[${next}]=1 && network_selected=$(( network_selected + 1 ))
+						else
+							selected[${next}]=0 && network_selected=$(( network_selected - 1 ))
+						fi
+					fi
+					;;
+			esac
+		done
+
+		local disks=""
+		for (( i=$(( disk_start)); i<$((disk_start + disk_total)); i++ )); do
+			[[ ${selected[${i}]} -eq 1 ]] && disks="${disks},${disk_real[$i]}"
+		done
+		disks="$(echo "${disks}" | sed -e 's/\/dev\///g' -e 's/^,//')"
+
+		local networks=""
+		for (( i=$(( network_start)); i<$((network_start + network_total)); i++ )); do
+			[[ ${selected[${i}]} -eq 1 ]] && networks="${networks},${network[$i]}"
+		done
+		networks="$(echo "${networks}" | sed -e 's/^,//')"
+
+		local opts=""
+		if [[ ${disk_selected} -gt 0 ]]; then
+			opts="${opts} -D ${disks} --disk --io"
+		else
+			opts="${opts} -D total --disk --io"
+		fi
+
+		if [[ ${network_selected} -gt 0 ]]; then
+			opts="${opts} -N ${networks} --net"
+		else
+			opts="${opts} -N total --net"
+		fi
+
+		dstat -c ${opts} -gy
 	}
 
 	filewatch(){
