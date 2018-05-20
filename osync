@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=3
+# FileVersion=4
 
 set -euo pipefail
 
@@ -70,12 +70,12 @@ if [[ "${1:-__Random123__}" == execute ]]; then
 	main "${2}"
 else
 	source "${HOME}/.bashrc"; _source_utilities
-	args1='run {profile}'
-	args2='list'
+	args1='list'
+	args2='{profile}'
 	arguments_list=(args1 args2)
 	arguments_description=('osync' 'Osync.sh wrapper')
-	arguments_parameters=( 'run {profile}: profile to run.'
-						   'list: list available profiles.')
+	arguments_parameters=( 'list: list available profiles.'
+	                       '{profile}: profile to run.' )
 	argparse "$@" && shift ${arguments_shift}
 fi
 
@@ -84,9 +84,7 @@ if [[ ${arguments[list]:-0} -eq 1 ]]; then
 	exit 0
 fi
 
-if [[ ${arguments[run]:-0} -eq 1 ]]; then
-	check_profile_exists "${arguments[profile]}"
-	profile=${arguments[profile]}
-	profile=${profile//./-} # lock does not like dots
-	exec lock lock -f noerror osync-${profile} "${0}" execute ${arguments[profile]}
-fi
+check_profile_exists "${arguments[profile]}"
+profile=${arguments[profile]}
+profile=${profile//./-} # lock does not like dots
+exec lock lock -f noerror osync-${profile} "${0}" execute ${arguments[profile]}
