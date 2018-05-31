@@ -1,4 +1,4 @@
-" FileVersion=57
+" FileVersion=58
 
 " To install Vundle:
 " git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
@@ -80,10 +80,9 @@ Bundle 'recover.vim'
 set t_Co=256                    " Enable 256 color mode
 syntax enable
 highlight Comment cterm=italic
-if &diff
-	set background=dark
-endif
-set background=dark
+" if &diff
+" 	set background=dark
+" endif
 colorscheme solarized
 " let g:solarized_termcolors=256
 " let g:solarized_visibility="high"
@@ -228,6 +227,7 @@ highlight DiffAdd term=reverse cterm=bold ctermbg=green ctermfg=white
 highlight DiffChange term=reverse cterm=bold ctermbg=cyan ctermfg=black
 highlight DiffText term=reverse cterm=bold ctermbg=gray ctermfg=black
 highlight DiffDelete term=reverse cterm=bold ctermbg=red ctermfg=black
+set background=dark
 
 " """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " " http://vim.wikia.com/wiki/Change_statusline_color_to_show_insert_or_normal_mode "
