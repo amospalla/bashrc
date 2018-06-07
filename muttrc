@@ -1,4 +1,4 @@
-# FileVersion=30
+# FileVersion=31
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -271,7 +271,7 @@ bind index        r toggle-new
 #bind pager        r mark-as-new
 
 macro index,pager d "<delete-message><next-undeleted>"
-macro index,pager D "<delete-message><next-undeleted>"
+macro index,pager D "<delete-thread><next-undeleted>"
 # bind index,pager  d delete-message
 bind index,pager  u undelete-message
 
