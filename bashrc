@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=613
-FileVersion=613
+# FileVersion=614
+FileVersion=614
 
 #====================================================================
 # Main
@@ -237,7 +237,7 @@ _update_files(){
 		if [[ -n "${pass}" ]]; then
 			if type -a openssl >/dev/null 2>&1; then
 				export pass
-				if ! online_text="$(echo "${online_text}" | openssl aes-256-cbc -d -a -pass env:pass 2>&1)"; then
+				if ! online_text="$(echo "${online_text}" | openssl aes-256-cbc -md MD5 -d -a -pass env:pass 2>&1)"; then
 					ps1_text="${filepath}-error-decrypting ${ps1_text}"
 					return 1
 				fi
