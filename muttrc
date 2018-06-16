@@ -1,4 +1,4 @@
-# FileVersion=31
+# FileVersion=33
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -11,6 +11,7 @@
 # set folder              = imaps://amospalla.es/
 # set imap_user           = jordi@amospalla.es
 # # set imap_pass         = your-imap-password
+# set imap_idle           = yes
 # set smtp_url            = "smtp://jordi@amospalla.es@amospalla.es:587/"
 # # set ssl_force_tls     = yes
 # # set ssl_starttls      = yes
@@ -50,7 +51,6 @@
 # # set sidebar_delim_chars = "/."
 # set timeout             = 10
 # set net_inc             = 5
-# set imap_keepalive      = 300
 # source "$HOME/.muttrc.global"
 # # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'" | gpg -r jordi@amospalla.es -e > ~/.mutt/jordi@amospalla.es.mutt.gpg
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi@amospalla.es.mutt.gpg |"
@@ -65,6 +65,7 @@
 # set folder              = imaps://217.150.209.150/
 # set imap_user           = jordi.marques@minorisa.net
 # # set imap_pass         = your-imap-password
+# set imap_idle           = yes
 # # set smtp_url            = "smtp://jordi.marques@minorisa.net@zimbra.ini6.com:587/"
 # set smtp_url            = "smtp://jordi.marques@minorisa.net@217.150.209.150:587/"
 # # set ssl_force_tls     = yes
@@ -104,7 +105,6 @@
 # set ssl_starttls        = yes
 # set timeout             = 10
 # set net_inc             = 5
-# set imap_keepalive      = 300
 # source "$HOME/.muttrc.global"
 # # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'" | gpg -r jordi.marques@minorisa.net -e > ~/.mutt/jordi.marques@minorisa.net.mutt.gpg
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi.marques@minorisa.net.mutt.gpg |"
@@ -118,6 +118,7 @@
 # set folder              = imaps://outlook.office365.com/
 # set imap_user           = jordi.marques@minorisa.net
 # # set imap_pass         = your-imap-password
+# set imap_idle           = yes
 # set smtp_url            = "smtp://jordi.marques@minorisa.net@outlook.office365.com:587/"
 # # set ssl_force_tls     = yes
 # set ssl_starttls        = yes
@@ -138,6 +139,8 @@
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi.marques@minorisa.net-exchange.mutt.gpg |"
 ### account: jordi.marques@minorisa.net-exchange-imap
 
+
+set new_mail_command = "notify-send -t 3 '%v: New Mail in %f'"
 
 # Search inbox
 macro index <F3> \
