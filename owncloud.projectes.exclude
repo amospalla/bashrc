@@ -1,0 +1,7 @@
+.owncloudsync.log*
+._sync_*.db
+._sync_*.db-wal
+._sync_*.db-shm
+.osync_workdir/
+rcver/i3/config
+rcver/i3/conky/conky.rc

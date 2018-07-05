@@ -1,0 +1,80 @@
+#!/bin/bash
+
+# TODO: log: modificacions i noms incorrectes, excloure tot el ja conegut i enviar si hi ha alguna cosa nova. Fer bateria de proves.
+
+# FileVersion=1
+
+# https://software.opensuse.org/download/package?project=isv:ownCloud:desktop&package=owncloud-client
+
+####################
+#### Functions #####
+####################
+
+show_profiles(){
+	find "${profiles_path}" -type f -name "*.conf" | sed -e "s;${profiles_path}/\?;;" -e 's/\.conf$//' | sort
+}
+
+check_profile_exists(){
+	local profile="${1}"
+	[[ ! -f "${profiles_path}/${profile}.conf" ]] && echo "Error: profile does not exist." && exit 1 || true
+}
+
+main(){
+	local profile="${1}" opts="" output="" ec=0
+	. "${profiles_path}/${profile}.conf"
+
+	if ! [[ -w "${path_local}/.sync_dates" ]]; then
+		if ! [[ -d "${path_local}/.sync_dates" ]]; then
+			if ! mkdir -p "${path_local}/.sync_dates"; then
+				echo "[Error] can not create '${path_local}/.sync_dates'."
+				exit 1
+			fi
+		fi
+	fi
+
+	printf "$(date +"%Y%m%d%H%M%S") $(hostname -f)" > "${path_local}/.sync_dates/$(hostname -f)"
+	path_remote="$(echo "${path_remote}" | sed 's/^\///')" # Remove heading slash from local path
+
+	[[ -f "${profiles_path}/${profile}.exclude" ]] && opts="${opts} --exclude ${profiles_path}/${profile}.exclude" || true
+	output="$(owncloudcmd ${opts} -h --trust --non-interactive -n ${path_local} ${hostname}/remote.php/webdav/${path_remote} 2>&1)" && ec=0 || ec=$?
+	# echo "${output}" | grep -vE -e "Database entry found, compare: " -e "instruction: INSTRUCTION_(NONE|EVAL) <<="
+	echo "${output}" | sed -e '0,/#### Discovery end ###/d' -e '/#### Reconcile end ###########/,$d' -e 's/.*info sync.csync.reconciler ]:\s*//' | grep -v -e "INSTRUCTION_IGNORE" -e "\.sync_dates" | sort -k 2,2
+
+	return ${ec}
+}
+
+####################
+#### Variables #####
+####################
+
+profiles_path="${HOME}/.owncloud"
+
+####################
+#### Code      #####
+####################
+
+if [[ "${1:-}" == execute ]]; then
+	main "${2}"
+	exit $?
+else
+	source "${HOME}/.bashrc"; _source_utilities
+	args1='list'
+	args2='{profile}'
+	arguments_list=(args1 args2)
+	arguments_description=('owncloudsync' 'Owncloudcmd wrapper')
+	arguments_parameters=( 'list: list available profiles.'
+						   '{profile}: profile to run.' )
+	argparse "$@" && shift ${arguments_shift}
+fi
+
+set -eu o pipefail  -o errtrace
+
+if [[ ${arguments[list]:-0} -eq 1 ]]; then
+	show_profiles
+	exit 0
+fi
+
+check_profile_exists "${arguments[profile]}"
+profile=${arguments[profile]}
+profile=${profile//./-} # lock does not like dots
+exec lock lock -f noerror owncloud-${profile} "${0}" execute ${arguments[profile]}
