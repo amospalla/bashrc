@@ -1,8 +1,6 @@
 #!/bin/bash
 
-# TODO: log: modificacions i noms incorrectes, excloure tot el ja conegut i enviar si hi ha alguna cosa nova. Fer bateria de proves.
-
-# FileVersion=1
+# FileVersion=2
 
 # https://software.opensuse.org/download/package?project=isv:ownCloud:desktop&package=owncloud-client
 
@@ -20,7 +18,7 @@ check_profile_exists(){
 }
 
 main(){
-	local profile="${1}" opts="" output="" ec=0
+	local profile="${1}" opts="" output="" output2="" ec=0
 	. "${profiles_path}/${profile}.conf"
 
 	if ! [[ -w "${path_local}/.sync_dates" ]]; then
@@ -31,6 +29,7 @@ main(){
 			fi
 		fi
 	fi
+	[[ -d "${path_local}/.sync_log" ]] || mkdir -p "${path_local}/.sync_log"
 
 	printf "$(date +"%Y%m%d%H%M%S") $(hostname -f)" > "${path_local}/.sync_dates/$(hostname -f)"
 	path_remote="$(echo "${path_remote}" | sed 's/^\///')" # Remove heading slash from local path
@@ -38,7 +37,8 @@ main(){
 	[[ -f "${profiles_path}/${profile}.exclude" ]] && opts="${opts} --exclude ${profiles_path}/${profile}.exclude" || true
 	output="$(owncloudcmd ${opts} -h --trust --non-interactive -n ${path_local} ${hostname}/remote.php/webdav/${path_remote} 2>&1)" && ec=0 || ec=$?
 	# echo "${output}" | grep -vE -e "Database entry found, compare: " -e "instruction: INSTRUCTION_(NONE|EVAL) <<="
-	echo "${output}" | sed -e '0,/#### Discovery end ###/d' -e '/#### Reconcile end ###########/,$d' -e 's/.*info sync.csync.reconciler ]:\s*//' | grep -v -e "INSTRUCTION_IGNORE" -e "\.sync_dates" | sort -k 2,2
+	output2="$(echo "${output}" | sed -e '0,/#### Discovery end ###/d' -e '/#### Reconcile end ###########/,$d' -e 's/.*info sync.csync.reconciler ]:\s*//' | grep -v -e "INSTRUCTION_IGNORE" -e "\.sync_dates" -e "\.sync_log" | sort -k 2,2)"
+	[[ ${#output2} -gt 0 ]] && echo "${output2}" > "${path_local}/.sync_log/$(printf "%(%Y%m%d%H%M%S)T")-$(hostname -f).log" || true
 
 	return ${ec}
 }
@@ -59,12 +59,15 @@ if [[ "${1:-}" == execute ]]; then
 else
 	source "${HOME}/.bashrc"; _source_utilities
 	args1='list'
-	args2='{profile}'
-	arguments_list=(args1 args2)
+	args2='run_serial {profiles...}'
+	args3='{profile}'
+	arguments_list=(args1 args2 args3)
 	arguments_description=('owncloudsync' 'Owncloudcmd wrapper')
 	arguments_parameters=( 'list: list available profiles.'
+						   'run_serial {profiles}: execute profiles serially.'
 						   '{profile}: profile to run.' )
 	argparse "$@" && shift ${arguments_shift}
+	args="${@}"
 fi
 
 set -eu o pipefail  -o errtrace
@@ -72,6 +75,12 @@ set -eu o pipefail  -o errtrace
 if [[ ${arguments[list]:-0} -eq 1 ]]; then
 	show_profiles
 	exit 0
+elif [[ ${arguments[run_serial]:-0} -eq 1 ]]; then
+	ec=0
+	for i in ${args}; do
+		"${0}" ${i} || ec=1
+	done
+	exit ${ec}
 fi
 
 check_profile_exists "${arguments[profile]}"
