@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=6
+# FileVersion=9
 
 # https://software.opensuse.org/download/package?project=isv:ownCloud:desktop&package=owncloud-client
 
@@ -45,7 +45,9 @@ main(){
 	[[ ${#invalid_filename} -gt 0 ]] && output2="$(echo "${output2}"; echo "${invalid_filename}")" && ec=1
 	echo "${output2}" | grep -q "INSTRUCTION_CONFLICT" && ec=1 || true
 	[[ ${#output2} -gt 0 ]] && echo "${output2}" > "${path_local}/.sync_log/$(printf "%(%Y%m%d%H%M%S)T")-$(hostname -f).log" || true
-	[[ ${ec} -gt 0 ]] && echo "${output2}" || true
+	if [[ ${ec} -gt 0 || ${3} -eq 1 ]] && [[ ${#output2} -gt 0 ]]; then
+		echo "${output2}"
+	fi
 
 	return ${ec}
 }
@@ -61,18 +63,18 @@ profiles_path="${HOME}/.owncloud"
 ####################
 
 if [[ "${1:-}" == execute ]]; then
-	main "${2}" "${3}"
+	main "${2}" "${3}" "${4}"
 	exit $?
 else
 	source "${HOME}/.bashrc"; _source_utilities
 	args1='list'
 	args2='run_serial {profiles...}'
-	args3='[-c|--command] {profile}'
+	args3='[-c|--command] [-l|--log] {profile}'
 	arguments_list=(args1 args2 args3)
 	arguments_description=('owncloudsync' 'Owncloudcmd wrapper')
 	arguments_parameters=( 'list: list available profiles.'
 						   'run_serial {profiles}: execute profiles serially.'
-						   '[-c|--command] {profile}: execute profile. Show only owncloudcmd command and arguments if --command is used.' )
+						   '[-c|--command] [-l|--log] {profile}: execute profile. -c: only only owncloudcmd command. -l: show log on stdout.' )
 	argparse "$@" && shift ${arguments_shift}
 	args="${@}"
 fi
@@ -93,4 +95,4 @@ fi
 check_profile_exists "${arguments[profile]}"
 profile=${arguments[profile]}
 profile=${profile//./-} # lock does not like dots
-exec lock lock -f noerror owncloud-${profile} "${0}" execute ${arguments[profile]} ${arguments[--command]:-0}
+exec lock lock -f noerror owncloud-${profile} "${0}" execute ${arguments[profile]} ${arguments[--command]:-0}  ${arguments[--log]:-0}
