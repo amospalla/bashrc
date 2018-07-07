@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=2
+# FileVersion=3
 
 # https://software.opensuse.org/download/package?project=isv:ownCloud:desktop&package=owncloud-client
 
@@ -18,7 +18,7 @@ check_profile_exists(){
 }
 
 main(){
-	local profile="${1}" opts="" output="" output2="" ec=0
+	local profile="${1}" opts="" output="" output2="" invalid_filename="" ec=0
 	. "${profiles_path}/${profile}.conf"
 
 	if ! [[ -w "${path_local}/.sync_dates" ]]; then
@@ -36,9 +36,11 @@ main(){
 
 	[[ -f "${profiles_path}/${profile}.exclude" ]] && opts="${opts} --exclude ${profiles_path}/${profile}.exclude" || true
 	output="$(owncloudcmd ${opts} -h --trust --non-interactive -n ${path_local} ${hostname}/remote.php/webdav/${path_remote} 2>&1)" && ec=0 || ec=$?
-	# echo "${output}" | grep -vE -e "Database entry found, compare: " -e "instruction: INSTRUCTION_(NONE|EVAL) <<="
+	invalid_filename="$(echo "${output}" | grep -o "Could not complete propagation of.*File name contains at least one invalid character"  | sed -e 's/ by OCC::PropagateIgnoreJob.*with status 2 and error:.*File name contains at least one invalid character.*//' -e 's/Could not complete propagation of/Invalid filename: /')"
 	output2="$(echo "${output}" | sed -e '0,/#### Discovery end ###/d' -e '/#### Reconcile end ###########/,$d' -e 's/.*info sync.csync.reconciler ]:\s*//' | grep -v -e "INSTRUCTION_IGNORE" -e "\.sync_dates" -e "\.sync_log" | sort -k 2,2)"
+	[[ ${#invalid_filename} -gt 0 ]] && output2="$(echo "${output2}"; echo "${invalid_filename}")"
 	[[ ${#output2} -gt 0 ]] && echo "${output2}" > "${path_local}/.sync_log/$(printf "%(%Y%m%d%H%M%S)T")-$(hostname -f).log" || true
+	[[ ${ec} -gt 0 ]] && echo "${output2}" || true
 
 	return ${ec}
 }
