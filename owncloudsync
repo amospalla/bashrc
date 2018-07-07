@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=5
+# FileVersion=6
 
 # https://software.opensuse.org/download/package?project=isv:ownCloud:desktop&package=owncloud-client
 
@@ -43,6 +43,7 @@ main(){
 	invalid_filename="$(echo "${output}" | grep -o "Could not complete propagation of.*\(File name contains at least one invalid character\|characters are not supported in file names\)"  | sed -e 's/ by OCC::PropagateIgnoreJob.*//' -e 's/Could not complete propagation of/Invalid filename: /')"
 	output2="$(echo "${output}" | sed -e '0,/#### Discovery end ###/d' -e '/#### Reconcile end ###########/,$d' -e 's/.*info sync.csync.reconciler ]:\s*//' | grep -v -e "INSTRUCTION_IGNORE" -e "\.sync_dates" -e "\.sync_log" | sort -k 2,2)"
 	[[ ${#invalid_filename} -gt 0 ]] && output2="$(echo "${output2}"; echo "${invalid_filename}")" && ec=1
+	echo "${output2}" | grep -q "INSTRUCTION_CONFLICT" && ec=1 || true
 	[[ ${#output2} -gt 0 ]] && echo "${output2}" > "${path_local}/.sync_log/$(printf "%(%Y%m%d%H%M%S)T")-$(hostname -f).log" || true
 	[[ ${ec} -gt 0 ]] && echo "${output2}" || true
 
