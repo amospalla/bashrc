@@ -20,6 +20,12 @@ check_profile_exists(){
 main(){
 	local profile="${1}" opts="" output="" output2="" invalid_filename="" ec=0
 	. "${profiles_path}/${profile}.conf"
+	path_remote="$(echo "${path_remote}" | sed 's/^\///')" # Remove heading slash from local path
+	[[ -f "${profiles_path}/${profile}.exclude" ]] && opts="${opts} --exclude ${profiles_path}/${profile}.exclude" || true
+	if [[ ${2} -eq 1 ]]; then
+		echo "owncloudcmd ${opts} -h --trust --non-interactive -n ${path_local} ${hostname}/remote.php/webdav/${path_remote}"
+		return 0
+	fi
 
 	if ! [[ -w "${path_local}/.sync_dates" ]]; then
 		if ! [[ -d "${path_local}/.sync_dates" ]]; then
@@ -32,10 +38,7 @@ main(){
 	[[ -d "${path_local}/.sync_log" ]] || mkdir -p "${path_local}/.sync_log"
 
 	printf "$(date +"%Y%m%d%H%M%S") $(hostname -f)" > "${path_local}/.sync_dates/$(hostname -f)"
-	path_remote="$(echo "${path_remote}" | sed 's/^\///')" # Remove heading slash from local path
 
-	[[ -f "${profiles_path}/${profile}.exclude" ]] && opts="${opts} --exclude ${profiles_path}/${profile}.exclude" || true
-	echo "owncloudcmd ${opts} -h --trust --non-interactive -n ${path_local} ${hostname}/remote.php/webdav/${path_remote}"
 	output="$(owncloudcmd ${opts} -h --trust --non-interactive -n ${path_local} ${hostname}/remote.php/webdav/${path_remote} 2>&1)" && ec=0 || ec=$?
 	invalid_filename="$(echo "${output}" | grep -o "Could not complete propagation of.*\(File name contains at least one invalid character\|characters are not supported in file names\)"  | sed -e 's/ by OCC::PropagateIgnoreJob.*//' -e 's/Could not complete propagation of/Invalid filename: /')"
 	output2="$(echo "${output}" | sed -e '0,/#### Discovery end ###/d' -e '/#### Reconcile end ###########/,$d' -e 's/.*info sync.csync.reconciler ]:\s*//' | grep -v -e "INSTRUCTION_IGNORE" -e "\.sync_dates" -e "\.sync_log" | sort -k 2,2)"
@@ -57,18 +60,18 @@ profiles_path="${HOME}/.owncloud"
 ####################
 
 if [[ "${1:-}" == execute ]]; then
-	main "${2}"
+	main "${2}" "${3}"
 	exit $?
 else
 	source "${HOME}/.bashrc"; _source_utilities
 	args1='list'
 	args2='run_serial {profiles...}'
-	args3='{profile}'
+	args3='[-c|--command] {profile}'
 	arguments_list=(args1 args2 args3)
 	arguments_description=('owncloudsync' 'Owncloudcmd wrapper')
 	arguments_parameters=( 'list: list available profiles.'
 						   'run_serial {profiles}: execute profiles serially.'
-						   '{profile}: profile to run.' )
+						   '[-c|--command] {profile}: execute profile. Show only owncloudcmd command and arguments if --command is used.' )
 	argparse "$@" && shift ${arguments_shift}
 	args="${@}"
 fi
@@ -89,4 +92,4 @@ fi
 check_profile_exists "${arguments[profile]}"
 profile=${arguments[profile]}
 profile=${profile//./-} # lock does not like dots
-exec lock lock -f noerror owncloud-${profile} "${0}" execute ${arguments[profile]}
+exec lock lock -f noerror owncloud-${profile} "${0}" execute ${arguments[profile]} ${arguments[--command]:-0}
