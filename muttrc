@@ -1,4 +1,4 @@
-# FileVersion=33
+# FileVersion=34
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -35,6 +35,9 @@
 
 
 ### account: jordi@amospalla.es-mbsync
+# #  * * * * *    pgrep mutt >/dev/null && lock lock -q -f noerror mbsync-jordi@amospalla.es    ~/.mutt/bin/mbsync.sh jordi@amospalla.es >/dev/null 2>&1 || true
+# macro index gr "<shell-escape>${HOME}/.mutt/bin/mbsync.sh jordi@amospalla.es-inbox<enter>"
+# macro index gR "<shell-escape>${HOME}/.mutt/bin/mbsync.sh jordi@amospalla.es      <enter>"
 # set realname            = "Jordi Marqués"
 # set from                = "jordi@amospalla.es"
 # set mbox_type           = Maildir
@@ -52,7 +55,8 @@
 # set timeout             = 10
 # set net_inc             = 5
 # source "$HOME/.muttrc.global"
-# # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'" | gpg -r jordi@amospalla.es -e > ~/.mutt/jordi@amospalla.es.mutt.gpg
+# # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'te" | gpg -r jordi@amospalla.es -e > ~/.mutt/jordi@amospalla.es.mutt.gpg
+# # read -s -p password: pass && echo ${pass} | gpg2 -r jordi@amospalla.es -e > ~/.mutt/jordi@amospalla.es.mbsync.gpg
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi@amospalla.es.mutt.gpg |"
 ### account: jordi@amospalla.es-mbsync
 
@@ -89,6 +93,9 @@
 
 
 ### account: jordi.marques@minorisa.net-mbsync
+# #  * * * * *    pgrep mutt >/dev/null && lock lock -q -f noerror mbsync-jordi.marques@minorisa.net    ~/.mutt/bin/mbsync.sh jordi.marques@minorisa.net >/dev/null 2>&1 || true
+# macro index gr "<shell-escape>${HOME}/.mutt/bin/mbsync.sh jordi.marques@minorisa.net-inbox<enter>"
+# macro index gR "<shell-escape>${HOME}/.mutt/bin/mbsync.sh jordi.marques@minorisa.net      <enter>"
 # set realname            = "Jordi Marqués"
 # set from                = "jordi.marques@minorisa.net"
 # set mbox_type           = Maildir
@@ -203,7 +210,7 @@ set strict_threads=yes
 set sort_browser=alpha
 set sort_aux=reverse-last-date-received
 
-# auto_view text/html                                      # view html automatically
+auto_view text/html                                      # view html automatically
 alternative_order text/plain text/enriched text/html     # save html for last
 
 bind index,pager gm imap-fetch-mail
@@ -338,11 +345,6 @@ color body       brightred              default 	  "^>[^>].*(wrote|writes|said|s
 color body       brightmagenta   	  default 	 "^>[ ]?>[^>].*(wrote|writes|said|says|schrieb|schreibt|schrub|\
 							 <F3>schreibselte|tippte|meinte|teilte folgendes mit|escreveu|escribió|scripsit|[0-9]+\\]|\\.[a-z]{2,4}>).*:"
 
-
-# ## Sync email
-# macro index O       "<shell-escape>offlineimap<enter>"           "run offlineimap to sync all mail"
-# macro index o "<shell-escape>offlineimap -qf INBOX<enter>" "run offlineimap to sync all inboxes."
-
 # set date_format = "%y%m%d %h%d"
 # set index_format = "[%Z] %<[y?%<[7d?%<[d?%[%H:%M ]&%[%a %d]>&%[%b %d]>&%[%Y %b %d]> %-20.20F %s%> %g (%4c){%X}"
 # Default
@@ -367,8 +369,6 @@ bind pager,browser          <space> next-page
 bind pager ] skip-quoted
 
 set pager_stop=yes # Don't skip to next message at end of message
-
-auto_view text/html
 
 bind index,pager \CP sidebar-prev
 bind index,pager \CN sidebar-next

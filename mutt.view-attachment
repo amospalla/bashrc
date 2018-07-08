@@ -1,6 +1,12 @@
 #!/bin/bash
 
-# FileVersion=1
+# FileVersion=3
+
+# poppler-utils: pdftotext
+# feh catimg caca-utils mediainfo
+
+
+set -eu -o pipefail -o errtrace
 
 display_available(){
 	[[ -n "${DISPLAY:-}" ]] && xset -q >/dev/null 2>&1
@@ -11,15 +17,87 @@ mkdir -p "${path}"
 
 type="${1}"
 file="${2}"
-echo "'${type}' '${file}'" >> /tmp/file
+# echo "'${type}' '${file}'" >> /tmp/file
 
 mv -f "${file}" "${path}"
 file="${path}/$(basename "${file}")"
 
+show_no_program_defined(){
+	read -p "No defined program in $(readlink -f "${0}") for type ${type}" || true
+}
+
+run_image(){
+	if display_available; then
+		if program-exists feh; then
+			feh --scale-down "${file}" & exit
+		fi
+	else
+		if program-exists catimg && program-exists mediainfo; then
+				# VARS
+				terminal_aspect_ratio=1950
+				rotate=90
+				# VARS
+				printf "\n\n\n\n\n\n"
+				cols="$(tput cols)"
+				lines="$(tput lines)"
+				width="$(mediainfo "${file}" 2>&1)"
+				height="$(echo "${width}" | grep -o "^Height.* pixels" | grep -o "[0-9 ]\+" | sed 's/ //g' | grep -o "[0-9]\+")"
+				width="$(echo "${width}" | grep -o "^Width.* pixels" | grep -o "[0-9 ]\+" | sed 's/ //g' | grep -o "[0-9]\+")"
+				ratio_pixels=$(( height * 1000 / width ))
+				ratio_terminal=$(( lines * ${terminal_aspect_ratio} / cols ))
+				if [[ ${ratio_pixels} -gt 1000 && ${ratio_terminal} -lt 1000 ]] || [[ ${ratio_pixels} -lt 1000 && ${ratio_terminal} -gt 1000 ]]; then
+					convert -rotate ${rotate} "${file}" "${file}.png"
+					file="${file}.png"
+					width="$(mediainfo "${file}" 2>&1)"
+					height="$(echo "${width}" | grep -o "^Height.* pixels" | grep -o "[0-9 ]\+" | sed 's/ //g' | grep -o "[0-9]\+")"
+					width="$(echo "${width}" | grep -o "^Width.* pixels" | grep -o "[0-9 ]\+" | sed 's/ //g' | grep -o "[0-9]\+")"
+					ratio_pixels=$(( height * 1000 / width ))
+				fi
+				echo "terminal: $cols x $lines (ratio: $ratio_terminal)"
+				echo "imatge:   $width x $height (ratio: $ratio_pixels)"
+				ratio=$(( ratio_terminal * 1000 / ratio_pixels ))
+				echo "ratio: $ratio"
+				colsnew=$(( 2 * cols * ratio / 1000 ))
+				printf "\n\n\n\n\n"
+				catimg -w ${colsnew} "${file}"
+				read -n1 || true
+				exit
+		elif program-exists cacaview; then
+			cacaview "${file}" || true
+			rm -f "${file}"; exit
+		fi
+	fi
+	show_no_program_defined
+}
+
+run_msword(){
+	if display_available; then
+		if program-exists lowriter; then
+			lowriter "${file}"
+			rm -f "${file}"; exit
+		elif program-exists cacaview; then
+			cacaview "${fpile}"
+			rm -f "${file}"; exit
+		fi
+	fi
+	show_no_program_defined
+}
+
+run_audio(){
+	if program-exists mpv; then
+		mpv "${file}"
+		rm -f "${file}"; exit
+	fi
+	show_no_program_defined
+}
+
 case "${type}" in
-	image) display_available && feh --scale-down "${file}" || cacaview "${file}";;
-	audio) mpv "${file}" ;;
-	video) display_available && mpv "${file}" || mpv -vo caca "${file}";;
-	pdf) display_available && zathura "${file}" || pdf2text "${file}";;
-	html) display_available && firefox "${file}"
+	image)  run_image ;;
+	audio)  run_adio ;;
+	msword) run_msword ;;
+	video)  display_available && mpv "${file}"              || mpv -vo caca "${file}" || true ;;
+	pdf)    display_available && zathura "${file}"          || pdftotext "${file}" - | less     || true ;;
+	html)   display_available && firefox "${file}"                                    || true ;;
 esac
+
+# rm -f "${file}"

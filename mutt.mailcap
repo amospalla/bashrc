@@ -1,40 +1,39 @@
-# FileVersion=3
+# FileVersion=4
 
 # text/html; lynx -assume_charset=%{charset} -display_charset=utf-8 -dump %s; nametemplate=%s.html; copiousoutput
 text/html; ~/.mutt/bin/view-attachment html %s;
 text/html; w3m -I %{charset} -T text/html; copiousoutput;
 # text/html; elinks -dump; copiousoutput;
 
-application/msword;       ~/.mutt/bin/view-attachment msword %s; copiousoutput
-image/*;                  ~/.mutt/bin/view-attachment image %s; copiousoutput
-audio/*;                  ~/.mutt/bin/view-attachment audio %s; copiousoutput
-video/*;                  ~/.mutt/bin/view-attachment video %s; copiousoutput
-application/pdf; zathura '%s'; test=test -n "$DISPLAY"; description="PDF Document"; nametemplate=%s.pdf
-application/pdf; pdftotext '%s' -; copiousoutput; description="PDF Document"; nametemplate=%s.pdf
-application/octet-stream; ~/.mutt/bin/view-attachment "-" %s; copiousoutput
+application/msword;       ~/.mutt/bin/view-attachment msword %s; needsterminal
+image/*;                  ~/.mutt/bin/view-attachment image %s;  needsterminal
+audio/*;                  ~/.mutt/bin/view-attachment audio %s;  needsterminal
+video/*;                  ~/.mutt/bin/view-attachment video %s;  needsterminal
+application/pdf;          ~/.mutt/bin/view-attachment pdf %s;    needsterminal
+# application/pdf; zathura '%s'; test=test -n "$DISPLAY"; description="PDF Document"; nametemplate=%s.pdf
 text/plain;               ~/.mutt/bin/view-attachment text %s; copiousoutput
+application/octet-stream; ~/.mutt/bin/view-attachment "-" %s; needsterminal
 
 # spreadsheets
-application/vnd.ms-excel; oocalc %s; copiousoutput
-application/vnd.openxml; oocalc %s; copiousoutput
-application/excel; oocalc %s; copiousoutput
-application/msexcel; oocalc %s; copiousoutput
-application/x-excel; oocalc %s; copiousoutput
-application/x-msexcel; oocalc %s; copiousoutput
-application/vnd.oasis.opendocument.spreadsheet; oocalc %s; copiousoutput
+# application/vnd.ms-excel; oocalc %s; needsterminal
+# application/vnd.openxml; oocalc %s; needsterminal
+# application/excel; oocalc %s; needsterminal
+# application/msexcel; oocalc %s; needsterminal
+# application/x-excel; oocalc %s; needsterminal
+# application/x-msexcel; oocalc %s; needsterminal
+# application/vnd.oasis.opendocument.spreadsheet; oocalc %s; needsterminal
 
 # slide decks
-application/powerpoint; ooimpress %s; copiousoutput
-application/vnd.ms-powerpoint; ooimpress %s; copiousoutput
-application/x-mspowerpoint; ooimpress %s; copiousoutput
-application/mspowerpoint; ooimpress %s; copiousoutput
-application/vnd.oasis.opendocument.presentation; ooimpress %s; copiousoutput
-application/ppt; ooimpress %s; copiousoutput
-application/pptx; ooimpress %s; copiousoutput
+# application/powerpoint; ooimpress %s; needsterminal
+# application/vnd.ms-powerpoint; ooimpress %s; needsterminal
+# application/x-mspowerpoint; ooimpress %s; needsterminal
+# application/mspowerpoint; ooimpress %s; needsterminal
+# application/vnd.oasis.opendocument.presentation; ooimpress %s; needsterminal
+# application/ppt; ooimpress %s; needsterminal
+# application/pptx; ooimpress %s; needsterminal
 
 # documents
-application/msword; oowriter %s; copiousoutput
-application/vnd.openxmlformats-officedocument.wordprocessingml.document; oowriter %s; copiousoutput
-application/vnd.openxml; oowriter %s; copiousoutput
-application/vnd.sun.xml.writer; oowriter %s; copiousoutput
-application/vnd.oasis.opendocument.text; oowriter %s; copiousoutput
+# application/vnd.openxmlformats-officedocument.wordprocessingml.document; oowriter %s; needsterminal
+# application/vnd.openxml; oowriter %s; needsterminal
+# application/vnd.sun.xml.writer; oowriter %s; needsterminal
+# application/vnd.oasis.opendocument.text; oowriter %s; needsterminal
