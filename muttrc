@@ -1,4 +1,4 @@
-# FileVersion=36
+# FileVersion=37
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -31,6 +31,7 @@
 # source "$HOME/.muttrc.global"
 # # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'" | gpg -r jordi@amospalla.es -e > ~/.mutt/jordi@amospalla.es.mutt.gpg
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi@amospalla.es.mutt.gpg |"
+# bind index,pager gr imap-fetch-mail
 ### account: jordi@amospalla.es-imap
 
 
@@ -90,6 +91,7 @@
 # source "$HOME/.muttrc.global"
 # # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'" | gpg2 -r jordi.marques@minorisa.net -e > ~/.mutt/jordi.marques@minorisa.net.mutt.gpg
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi.marques@minorisa.net.mutt.gpg |"
+# bind index,pager gr imap-fetch-mail
 ### account: jordi.marques@minorisa.net-imap
 
 
@@ -146,6 +148,7 @@
 # source "$HOME/.muttrc.global"
 # # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'" | gpg -r jordi.marques@minorisa.net -e > ~/.mutt/jordi.marques@minorisa.net-exchange.mutt.gpg
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi.marques@minorisa.net-exchange.mutt.gpg |"
+# bind index,pager gr imap-fetch-mail
 ### account: jordi.marques@minorisa.net-exchange-imap
 
 
@@ -214,8 +217,6 @@ set sort_aux=reverse-last-date-received
 
 auto_view text/html                                      # view html automatically
 alternative_order text/plain text/enriched text/html     # save html for last
-
-bind index,pager gm imap-fetch-mail
 
 set sleep_time = 1
 set include=yes
@@ -299,7 +300,11 @@ bind pager        Q skip-quoted
 bind generic,index,pager \Cf next-page
 bind generic,index,pager \Cb previous-page
 bind index,pager w sync-mailbox
-bind generic,pager,browser,attach,compose,pgp,smime,postpone,query <esc> exit
+# bind generic,pager,browser,attach,compose,pgp,smime,postpone,query <esc> exit
+
+set query_command= "khard email --parsable %s"
+bind editor <Tab> complete-query
+bind editor ^T    complete
 
 set sort_browser   = alpha
 
@@ -358,6 +363,7 @@ macro index \Cr "T~U<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>" "ma
 
 bind index,pager            {   previous-thread
 bind index,pager            }   next-thread
+bind index,browser,pager    g   noop
 bind pager                  gg  top
 bind pager                  G   bottom
 bind index,browser          gg  first-entry
@@ -376,6 +382,7 @@ bind index,pager \CP sidebar-prev
 bind index,pager \CN sidebar-next
 bind index,pager \CO sidebar-open
 
+bind index,pager r  noop
 bind index,pager rr reply
 bind index,pager ra group-reply
 
