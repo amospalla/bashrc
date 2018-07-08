@@ -1,10 +1,18 @@
 #!/bin/bash
 
-# FileVersion=5
+# FileVersion=6
 
-set -euo pipefail
-account="${1}" GPGKEY="${2}"
-export GPGKEY
+set -eu -o pipefail -o errtrace
+
+account="${1}"
+hostname="$(hostname -f)"
+
+case "${hostname}" in
+	escriptori.casa.amospalla.es) export GPGKEY=0951EEA0 ;;
+	  portatil.casa.amospalla.es) export GPGKEY=2309924E ;;
+	                           *) echo "Error: no GPGKEY defined in $(readlink -f "${0}") for hostname '${hostname}'."; exit 1 ;;
+esac
+
 eval $(keychain --quiet --noask --agents gpg id_rsa $GPGKEY) || exit 1
-mbsync "${account}"
-${HOME}/bin/program-exists notmuch && grep -q "^path=${HOME}/.Mail/${account}$" "${HOME}/.notmuch-config" && notmuch new || true
+lock lock -q -f noerror mbsync-jordi@amospalla.es mbsync "${account}"
+${HOME}/bin/program-exists -q notmuch && grep -q "^path=${HOME}/.Mail/${account}$" "${HOME}/.notmuch-config" && notmuch new || true

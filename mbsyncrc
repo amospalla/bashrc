@@ -1,4 +1,4 @@
-# FileVersion=6
+# FileVersion=7
 
 ### jordi@amospalla.es
 IMAPAccount jordi@amospalla.es
@@ -6,7 +6,6 @@ Host amospalla.es
 User jordi@amospalla.es
 # read -s -p password: pass && printf "${pass}" | gpg -r jordi@amospalla.es -e > ~/.mutt/jordi@amospalla.es.mbsync.gpg
 PassCmd "gpg2 -d -q --no-tty --batch --pinentry-mode cancel ~/.mutt/jordi@amospalla.es.mbsync.gpg"
-# PassCmd "gpg -d ~/.mutt/isyncpassword.gpg"
 CertificateFile ~/.Mail/cert
 UseIMAPS yes
 
@@ -16,14 +15,29 @@ Account jordi@amospalla.es
 MaildirStore jordi@amospalla.es-local
 Path ~/.Mail/jordi@amospalla.es/
 Inbox ~/.Mail/jordi@amospalla.es/INBOX
+# Ubuntu bionic specific: Subfolders Verbatim
+Subfolders Verbatim
 
 Channel jordi@amospalla.es
 Master :jordi@amospalla.es-remote:
 Slave :jordi@amospalla.es-local:
 Patterns *
 Create Both
+CopyArrivalDate yes
 SyncState *
 Sync All
+
+Channel jordi@amospalla.es-inbox
+Master :jordi@amospalla.es-remote:
+Slave :jordi@amospalla.es-local:
+Patterns INBOX
+Create Both
+CopyArrivalDate yes
+SyncState *
+Sync All
+
+
+
 
 ### jordi.marques@minorisa.net
 IMAPAccount jordi.marques@minorisa.net
@@ -40,14 +54,29 @@ Account jordi.marques@minorisa.net
 MaildirStore jordi.marques@minorisa.net-local
 Path ~/.Mail/jordi.marques@minorisa.net/
 Inbox ~/.Mail/jordi.marques@minorisa.net/INBOX
+# Ubuntu bionic specific: Subfolders Verbatim
+Subfolders Verbatim
 
 Channel jordi.marques@minorisa.net
 Master :jordi.marques@minorisa.net-remote:
 Slave :jordi.marques@minorisa.net-local:
 Patterns *
 Create Both
+CopyArrivalDate yes
 SyncState *
 Sync All
+
+Channel jordi.marques@minorisa.net-inbox
+Master :jordi.marques@minorisa.net-remote:
+Slave :jordi.marques@minorisa.net-local:
+Patterns INBOX
+Create Both
+CopyArrivalDate yes
+SyncState *
+Sync All
+
+
+
 
 ### jordi.marques@minorisa.net (exchange)
 IMAPAccount jordi.marques@minorisa.net-exchange
@@ -64,11 +93,23 @@ Account jordi.marques@minorisa.net-exchange
 MaildirStore jordi.marques@minorisa.net-exchange-local
 Path ~/.Mail/jordi.marques@minorisa.net-exchange/
 Inbox ~/.Mail/jordi.marques@minorisa.net-exchange/INBOX
+# Ubuntu bionic specific: Subfolders Verbatim
+Subfolders Verbatim
 
 Channel jordi.marques@minorisa.net-exchange
 Master :jordi.marques@minorisa.net-exchange-remote:
 Slave :jordi.marques@minorisa.net-exchange-local:
 Patterns *
 Create Both
+CopyArrivalDate yes
+SyncState *
+Sync All
+
+Channel jordi.marques@minorisa.net-exchange-inbox
+Master :jordi.marques@minorisa.net-exchange-remote:
+Slave :jordi.marques@minorisa.net-exchange-local:
+Patterns INBOX
+Create Both
+CopyArrivalDate yes
 SyncState *
 Sync All
