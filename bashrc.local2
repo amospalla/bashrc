@@ -2,6 +2,7 @@
 # Keychain #
 ############
 
+# gpg --list-secret-keys --keyid-format SHORT
 export GPGKEY=ABCDEFGH
 # ssh + gpg
 # eval $(keychain --quiet --agents ssh,gpg --eval id_rsa $GPGKEY)
