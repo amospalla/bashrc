@@ -1,4 +1,4 @@
-# FileVersion=35
+# FileVersion=36
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -35,7 +35,8 @@
 
 
 ### account: jordi@amospalla.es-mbsync
-# #  * * * * *    pgrep mutt >/dev/null && lock lock -q -f noerror mbsync-jordi@amospalla_es    ~/.mutt/bin/mbsync.sh jordi@amospalla.es >/dev/null 2>&1 || true
+# #  * * * * *              pgrep mutt >/dev/null && lock lock -q -f noerror mbsync-jordi@amospalla_es    ~/.mutt/bin/mbsync.sh jordi@amospalla.es       >/dev/null 2>&1 || true
+# #  * * * * *    sleep 30; pgrep mutt >/dev/null && lock lock -q -f noerror mbsync-jordi@amospalla_es    ~/.mutt/bin/mbsync.sh jordi@amospalla.es-inbox >/dev/null 2>&1 || true
 # macro index gr "<shell-escape>${HOME}/.mutt/bin/mbsync.sh jordi@amospalla.es-inbox<enter>"
 # macro index gR "<shell-escape>${HOME}/.mutt/bin/mbsync.sh jordi@amospalla.es      <enter>"
 # set realname            = "Jordi Marqués"
@@ -93,7 +94,8 @@
 
 
 ### account: jordi.marques@minorisa.net-mbsync
-# #  * * * * *    pgrep mutt >/dev/null && lock lock -q -f noerror mbsync-jordi.marques@minorisa_net    ~/.mutt/bin/mbsync.sh jordi.marques@minorisa.net >/dev/null 2>&1 || true
+# #  * * * * *              pgrep mutt >/dev/null && lock lock -q -f noerror mbsync-jordi.marques@minorisa_net    ~/.mutt/bin/mbsync.sh jordi.marques@minorisa.net       >/dev/null 2>&1 || true
+# #  * * * * *    sleep 30; pgrep mutt >/dev/null && lock lock -q -f noerror mbsync-jordi.marques@minorisa_net    ~/.mutt/bin/mbsync.sh jordi.marques@minorisa.net-inbox >/dev/null 2>&1 || true
 # macro index gr "<shell-escape>${HOME}/.mutt/bin/mbsync.sh jordi.marques@minorisa.net-inbox<enter>"
 # macro index gR "<shell-escape>${HOME}/.mutt/bin/mbsync.sh jordi.marques@minorisa.net      <enter>"
 # set realname            = "Jordi Marqués"
