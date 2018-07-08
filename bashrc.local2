@@ -2,6 +2,9 @@
 # Keychain #
 ############
 
+# Ubuntu bionic: /usr/bin/keychain: afegit --keyid-format short
+# pm_gpgsecrets="`gpg --list-secret-keys --keyid-format short 2>/dev/null | cut -d/ -f2 | cut -d' ' -f1 | xargs`"
+
 # gpg --list-secret-keys --keyid-format SHORT
 export GPGKEY=ABCDEFGH
 # ssh + gpg
