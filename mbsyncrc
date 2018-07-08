@@ -1,4 +1,4 @@
-# FileVersion=7
+# FileVersion=8
 
 ### jordi@amospalla.es
 IMAPAccount jordi@amospalla.es
@@ -7,7 +7,11 @@ User jordi@amospalla.es
 # read -s -p password: pass && printf "${pass}" | gpg -r jordi@amospalla.es -e > ~/.mutt/jordi@amospalla.es.mbsync.gpg
 PassCmd "gpg2 -d -q --no-tty --batch --pinentry-mode cancel ~/.mutt/jordi@amospalla.es.mbsync.gpg"
 CertificateFile ~/.Mail/cert
-UseIMAPS yes
+# Old
+# UseIMAPS yes
+# New
+SSLType IMAPS
+SSLVersions TLSv1.2
 
 IMAPStore jordi@amospalla.es-remote
 Account jordi@amospalla.es
@@ -46,7 +50,11 @@ User jordi.marques@minorisa.net
 # read -s -p password: pass && printf "${pass}" | gpg -r jordi.marques@minorisa.net -e > ~/.mutt/jordi.marques@minorisa.net.mbsync.gpg
 PassCmd "gpg2 -d -q --no-tty --batch --pinentry-mode cancel ~/.mutt/jordi.marques@minorisa.net.mbsync.gpg"
 # PassCmd "gpg -d ~/.mutt/isyncpassword.gpg"
-UseIMAPS yes
+# Old
+# UseIMAPS yes
+# New
+SSLType IMAPS
+SSLVersions TLSv1.2
 
 IMAPStore jordi.marques@minorisa.net-remote
 Account jordi.marques@minorisa.net
@@ -85,7 +93,11 @@ User jordi.marques@minorisa.net
 # read -s -p password: pass && printf "${pass}" | gpg -r jordi.marques@minorisa.net -e > ~/.mutt/jordi.marques@minorisa.net.exchange.mbsync.gpg
 PassCmd "gpg2 -d -q --no-tty --batch --pinentry-mode cancel ~/.mutt/jordi.marques@minorisa.net.exchange.mbsync.gpg"
 # PassCmd "gpg -d ~/.mutt/isyncpassword.gpg"
-UseIMAPS yes
+# Old
+# UseIMAPS yes
+# New
+SSLType IMAPS
+SSLVersions TLSv1.2
 
 IMAPStore jordi.marques@minorisa.net-exchange-remote
 Account jordi.marques@minorisa.net-exchange
