@@ -1,11 +1,13 @@
 #!/bin/bash
 
-# FileVersion=3
+# FileVersion=5
 
+# libreoffice
 # poppler-utils: pdftotext
 # feh catimg caca-utils mediainfo
+# mpv
 
-
+clear
 set -eu -o pipefail -o errtrace
 
 display_available(){
@@ -55,11 +57,15 @@ run_image(){
 				fi
 				echo "terminal: $cols x $lines (ratio: $ratio_terminal)"
 				echo "imatge:   $width x $height (ratio: $ratio_pixels)"
-				ratio=$(( ratio_terminal * 1000 / ratio_pixels ))
-				echo "ratio: $ratio"
-				colsnew=$(( 2 * cols * ratio / 1000 ))
-				printf "\n\n\n\n\n"
-				catimg -w ${colsnew} "${file}"
+				if [[ ${ratio_terminal} -gt ${ratio_pixels} ]]; then
+					catimg "${file}"
+				else
+					ratio=$(( ratio_terminal * 1000 / ratio_pixels ))
+					echo "ratio: $ratio"
+					colsnew=$(( 2 * cols * ratio / 1000 ))
+					printf "\n\n\n\n\n"
+					catimg -w ${colsnew} "${file}"
+				fi
 				read -n1 || true
 				exit
 		elif program-exists cacaview; then
@@ -73,11 +79,7 @@ run_image(){
 run_msword(){
 	if display_available; then
 		if program-exists lowriter; then
-			lowriter "${file}"
-			rm -f "${file}"; exit
-		elif program-exists cacaview; then
-			cacaview "${fpile}"
-			rm -f "${file}"; exit
+			lowriter "${file}" & exit
 		fi
 	fi
 	show_no_program_defined
@@ -99,5 +101,3 @@ case "${type}" in
 	pdf)    display_available && zathura "${file}"          || pdftotext "${file}" - | less     || true ;;
 	html)   display_available && firefox "${file}"                                    || true ;;
 esac
-
-# rm -f "${file}"
