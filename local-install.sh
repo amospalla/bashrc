@@ -1,6 +1,15 @@
 #!/bin/bash
 
-# FileVersion=1
+# TODO:
+# cercar forma de fer un make install i saber quins arxius s'han copiat, per fer un paco/porg en bash i poder emprar-lo en qualsevol distro
+# ie:
+#   paco amb definicions d'un programa (arxius conf per programa i/o distro)
+#   generar binaris distribuibles, amb opcio d'instalar dependencies i/o llibreries necesaries per a que funcione
+#   crear contenedor paco-ubuntu-16 per a la instal·lació desde zero de tots els paquets necesaris i dependencies, compilacio i creacio del tar.
+#   els programes en espai d'usuari s'han de provar per veure si es poden executar desde la HOME
+#   els arxius de configuració són l'únic necesari per fer tot el procés (però el contenedor és necesari per generar corrèctament la configuració)
+
+# FileVersion=2
 
 # paco list -a: list all packages
 # paco -f <package>: list package files
