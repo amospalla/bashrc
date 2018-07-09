@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=5
+# FileVersion=7
 
 # libreoffice
 # poppler-utils: pdftotext
@@ -93,11 +93,28 @@ run_audio(){
 	show_no_program_defined
 }
 
+run_pdf(){
+	if display_available; then
+		if program-exists zathura; then
+			zathura "${file}" &
+			exit 0
+		fi
+	else
+		if program-exists pdftotext; then
+			pdftotext "${file}" - | less || true
+			rm -f "${file}"
+			exit 0
+		fi
+	fi
+	show_no_program_defined
+}
+
+
 case "${type}" in
 	image)  run_image ;;
 	audio)  run_adio ;;
 	msword) run_msword ;;
+	pdf)    run_pdf ;;
 	video)  display_available && mpv "${file}"              || mpv -vo caca "${file}" || true ;;
-	pdf)    display_available && zathura "${file}"          || pdftotext "${file}" - | less     || true ;;
 	html)   display_available && firefox "${file}"                                    || true ;;
 esac
