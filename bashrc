@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=614
-FileVersion=614
+# FileVersion=615
+FileVersion=615
 
 #====================================================================
 # Main
@@ -1374,7 +1374,13 @@ _source_utilities(){
 						folder-exists -m "${folder}" || exit 1
 					fi
 				fi
-				exec mutt "$@"
+				if type -a neomutt >/dev/null 2>&1; then
+					exec neomutt "$@"
+				elif type -a mutt >/dev/null 2>&1; then
+					exec mutt "$@"
+				else
+					exit 1
+				fi
 			fi
 		else
 			echo "Error: profile '${arguments[profile]}' not found."
