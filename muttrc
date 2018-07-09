@@ -1,4 +1,4 @@
-# FileVersion=37
+# FileVersion=39
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -363,7 +363,7 @@ macro index \Cr "T~U<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>" "ma
 
 bind index,pager            {   previous-thread
 bind index,pager            }   next-thread
-bind index,browser,pager    g   noop
+#bind index,browser,pager    g   noop
 bind pager                  gg  top
 bind pager                  G   bottom
 bind index,browser          gg  first-entry
@@ -382,7 +382,7 @@ bind index,pager \CP sidebar-prev
 bind index,pager \CN sidebar-next
 bind index,pager \CO sidebar-open
 
-bind index,pager r  noop
+#bind index,pager r  noop
 bind index,pager rr reply
 bind index,pager ra group-reply
 
