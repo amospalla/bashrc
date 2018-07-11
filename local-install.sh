@@ -1,6 +1,10 @@
 #!/bin/bash
 
-# FileVersion=9
+# FileVersion=10
+
+# TODO
+# recomplilar neomutt amb libnotmuch-dev
+# afegir arquitectura
 
 set -eu -o pipefail -o errtrace
 
