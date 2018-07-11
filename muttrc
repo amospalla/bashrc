@@ -1,4 +1,4 @@
-# FileVersion=39
+# FileVersion=40
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -308,9 +308,7 @@ bind editor ^T    complete
 
 set sort_browser   = alpha
 
-set beep_new = yes
-set beep_new
-set beep
+set beep_new = no
 set beep = yes
 
 color sidebar_new  red default
