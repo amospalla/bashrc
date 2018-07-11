@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=6
+# FileVersion=7
 
 set -eu -o pipefail -o errtrace
 
@@ -135,7 +135,7 @@ compile-list-available(){
 get-online-available(){
 	local nofail=${1:-0}
 	if ! online_available=( $(wget -O - -q "${infourl}/info.txt" | grep "${distro}-${version}" | sed "s/-${distro}-${version}//" ) ); then
-		[[ ${nofail} -eq 0 ]] || return 1
+		[[ ${nofail} -eq 0 ]] || return 0
 		echo "Error obtaining online info on ${infourl}/info.txt."
 		exit 1
 	fi
@@ -157,40 +157,38 @@ list-available(){
 }
 
 get-status(){
-	local package packages version_local version_remote isonline
-	get-online-available 1 && isonline=1 || isonline=0
+	local package packages version_local version_remote
+	get-online-available 1
 	get-installed
-	if [[ ${isonline} -eq 1 ]]; then
-		packages="$(for package in $(echo ${online_available[@]:-} ${installed[@]:-} | sed 's/-[^ ]*//g'); do
-			echo ${package}
-		done | sort | uniq)"
-		for package in ${packages}; do
-			unset version_local version_remote
-			
-			for (( i=0; i<${#online_available[@]}; i++ )); do
-				if [[ ${online_available[$i]} =~ ^${package}- ]]; then
-					[[ ${online_available[$i]} =~ -.* ]] && version_remote="${BASH_REMATCH/-}"
-				fi
-			done
-			for (( i=0; i<${#installed[@]}; i++ )); do
-				if [[ ${installed[$i]} =~ ^${package}- ]]; then
-					[[ ${installed[$i]} =~ -.* ]] && version_local="${BASH_REMATCH/-}"
-				fi
-			done
-			packages_status[${#packages_status[@]}]="${package}"              # package
-			packages_status[${#packages_status[@]}]="${version_local:-.}"  # version local
-			packages_status[${#packages_status[@]}]="${version_remote:-.}"     # version remote
-			if [[ ${version_local:-none} != "none" ]]; then
-				if [[ ${version_local} != ${version_remote:-${version_local}} ]]; then
-					packages_status[${#packages_status[@]}]="upgradable"
-				else
-					packages_status[${#packages_status[@]}]="installed"
-				fi
-			else
-				packages_status[${#packages_status[@]}]="not-installed" # upgradable
+	packages="$(for package in $(echo ${online_available[@]:-} ${installed[@]:-} | sed 's/-[^ ]*//g'); do
+		echo ${package}
+	done | sort | uniq)"
+	for package in ${packages}; do
+		unset version_local version_remote
+		
+		for (( i=0; i<${#online_available[@]}; i++ )); do
+			if [[ ${online_available[$i]} =~ ^${package}- ]]; then
+				[[ ${online_available[$i]} =~ -.* ]] && version_remote="${BASH_REMATCH/-}"
 			fi
 		done
-	fi
+		for (( i=0; i<${#installed[@]}; i++ )); do
+			if [[ ${installed[$i]} =~ ^${package}- ]]; then
+				[[ ${installed[$i]} =~ -.* ]] && version_local="${BASH_REMATCH/-}"
+			fi
+		done
+		packages_status[${#packages_status[@]}]="${package}"              # package
+		packages_status[${#packages_status[@]}]="${version_local:-.}"  # version local
+		packages_status[${#packages_status[@]}]="${version_remote:-.}"     # version remote
+		if [[ ${version_local:-none} != "none" ]]; then
+			if [[ ${version_local} != ${version_remote:-${version_local}} ]]; then
+				packages_status[${#packages_status[@]}]="upgradable"
+			else
+				packages_status[${#packages_status[@]}]="installed"
+			fi
+		else
+			packages_status[${#packages_status[@]}]="not-installed" # upgradable
+		fi
+	done
 }
 
 status(){
