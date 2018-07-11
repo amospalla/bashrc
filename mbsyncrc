@@ -1,4 +1,4 @@
-# FileVersion=8
+# FileVersion=9
 
 ### jordi@amospalla.es
 IMAPAccount jordi@amospalla.es
@@ -29,6 +29,7 @@ Patterns *
 Create Both
 CopyArrivalDate yes
 SyncState *
+Expunge Both
 Sync All
 
 Channel jordi@amospalla.es-inbox
@@ -38,6 +39,7 @@ Patterns INBOX
 Create Both
 CopyArrivalDate yes
 SyncState *
+Expunge Both
 Sync All
 
 
@@ -72,6 +74,7 @@ Patterns *
 Create Both
 CopyArrivalDate yes
 SyncState *
+Expunge Both
 Sync All
 
 Channel jordi.marques@minorisa.net-inbox
@@ -81,6 +84,7 @@ Patterns INBOX
 Create Both
 CopyArrivalDate yes
 SyncState *
+Expunge Both
 Sync All
 
 
@@ -115,6 +119,7 @@ Patterns *
 Create Both
 CopyArrivalDate yes
 SyncState *
+Expunge Both
 Sync All
 
 Channel jordi.marques@minorisa.net-exchange-inbox
@@ -124,4 +129,5 @@ Patterns INBOX
 Create Both
 CopyArrivalDate yes
 SyncState *
+Expunge Both
 Sync All
