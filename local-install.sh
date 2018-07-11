@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=4
+# FileVersion=6
 
 set -eu -o pipefail -o errtrace
 
@@ -38,9 +38,7 @@ get-distro(){
 }
 
 install_packages(){
-	# install_packages required $packages: install
-	# install_packages dev      $packages: track if package was installed previously, if not remove after operation
-	local mode="${1}" packages="${2}" package="" packages_install=""
+	local packages="${1}" package="" packages_install=""
 	[[ "${#packages}" -gt 0 ]] || return 0
 	for package in ${packages}; do
 		get_package_installed ${package}
@@ -48,7 +46,10 @@ install_packages(){
 			packages_install="${packages_install} ${package}"
 		fi
 	done
-	[[ ${#packages_install} -eq 0 ]] || apt-get install -y ${packages_install}
+	if [[ ${#packages_install} -gt 0 ]]; then
+		apt-get install -y ${packages_install}
+		apt-mark manual ${packages_install}
+	fi
 }
 
 remove_packages(){
@@ -74,8 +75,8 @@ compile(){
 	fi
 
 	# Install packages
-	install_packages required "${vars[${packagefull}_packages_required]:-}"
-	install_packages dev      "${vars[${packagefull}_packages_dev]:-}"
+	install_packages "${vars[${packagefull}_packages_required]:-}"
+	install_packages "${vars[${packagefull}_packages_dev]:-}"
 
 	# Get source code
 	if [[ ${#vars[${packagefull}_git]} -gt 0 ]]; then
@@ -231,6 +232,9 @@ action(){
 
 do_install(){
 	local package="${1}" package_version
+	if [[ ${#vars[${package}_${distro}_${version}_packages_required]} -gt 0 ]]; then
+		install_packages "${vars[${package}_${distro}_${version}_packages_required]}"
+	fi
 	for (( i=0; i<${#packages_status[@]}; i+=4 )); do
 		if [[ ${packages_status[$i]} == "${package}" ]]; then
 			package_version=${packages_status[$(( i+2))]}
@@ -268,7 +272,7 @@ declare -a online_available=() installed=() packages_status=()
 
 # Required packages: install and left installed
 # Optional packages: install and remove after package installation
-vars["neomutt_Ubuntu_16.04_packages_required"]=""
+vars["neomutt_Ubuntu_16.04_packages_required"]="libc6 libgnutls30 libgpgme11 libgssapi-krb5-2 libidn11 liblua5.3-0 libncursesw5 libnotmuch5 libsasl2-2 libtinfo5 libtokyocabinet9"
 vars["neomutt_Ubuntu_16.04_packages_dev"]="build-essential git gettext xsltproc libxml2-utils docbook-xml docbook-xsl libncursesw5-dev libidn11-dev"
 vars["neomutt_Ubuntu_16.04_git"]="https://github.com/neomutt/neomutt"
 vars["neomutt_Ubuntu_16.04_url"]=""
@@ -288,7 +292,7 @@ vars["polybar_Ubuntu_16.04_git_branch"]="3.1.0"
 vars["polybar_Ubuntu_16.04_git_recursive"]="1"
 vars["polybar_Ubuntu_16.04_install_path"]="/usr/local"
 
-vars["neomutt_Ubuntu_18.04_packages_required"]=""
+vars["neomutt_Ubuntu_18.04_packages_required"]="libc6 libgnutls30 libgpgme11 libgssapi-krb5-2 libidn11 liblua5.3-0 libncursesw5 libnotmuch5 libsasl2-2 libtinfo5 libtokyocabinet9"
 vars["neomutt_Ubuntu_18.04_packages_dev"]="build-essential git gettext xsltproc libxml2-utils docbook-xml docbook-xsl libncursesw5-dev libidn11-dev"
 vars["neomutt_Ubuntu_18.04_git"]="https://github.com/neomutt/neomutt"
 vars["neomutt_Ubuntu_18.04_url"]=""
