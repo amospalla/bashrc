@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=7
+# FileVersion=8
 
 set -eu -o pipefail -o errtrace
 
@@ -270,7 +270,7 @@ declare -a online_available=() installed=() packages_status=()
 
 # Required packages: install and left installed
 # Optional packages: install and remove after package installation
-vars["neomutt_Ubuntu_16.04_packages_required"]="libc6 libgnutls30 libgpgme11 libgssapi-krb5-2 libidn11 liblua5.3-0 libncursesw5 libnotmuch5 libsasl2-2 libtinfo5 libtokyocabinet9"
+vars["neomutt_Ubuntu_16.04_packages_required"]="libc6 libgnutls30 libgpgme11 libgssapi-krb5-2 libidn11 liblua5.3-0 libncursesw5 libnotmuch4 libsasl2-2 libtinfo5 libtokyocabinet9"
 vars["neomutt_Ubuntu_16.04_packages_dev"]="build-essential git gettext xsltproc libxml2-utils docbook-xml docbook-xsl libncursesw5-dev libidn11-dev"
 vars["neomutt_Ubuntu_16.04_git"]="https://github.com/neomutt/neomutt"
 vars["neomutt_Ubuntu_16.04_url"]=""
