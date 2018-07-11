@@ -1,4 +1,4 @@
-# FileVersion=40
+# FileVersion=41
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -560,6 +560,7 @@ macro index,pager C "<copy-message>?<toggle-mailboxes>/\Cu"
 # [ first | second | third ]
   color body       brightyellow           brightred       <'\[ [-a-z ]+ (\| [-a-z ]+)+ \]'
 
+source /usr/local/share/doc/neomutt/colorschemes/vombatidae.neomuttrc
 
 # color index cyan default '~f user@example.com'
 # color header      brightcyan     default "^(From|Subject):"
