@@ -1,4 +1,4 @@
-# FileVersion=41
+# FileVersion=42
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -119,6 +119,7 @@
 # source "$HOME/.muttrc.global"
 # # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'" | gpg -r jordi.marques@minorisa.net -e > ~/.mutt/jordi.marques@minorisa.net.mutt.gpg
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi.marques@minorisa.net.mutt.gpg |"
+# macro index,pager A "<tag-thread><tag-prefix><save-message>=folders/.proveidors/.altres<enter><next-new-then-unread>"
 ### account: jordi.marques@minorisa.net-mbsync
 
 

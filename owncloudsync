@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=10
+# FileVersion=11
 
 # https://software.opensuse.org/download/package?project=isv:ownCloud:desktop&package=owncloud-client
 
@@ -20,6 +20,7 @@ check_profile_exists(){
 main(){
 	local profile="${1}" opts="" output="" output2="" invalid_filename="" ec=0
 	. "${profiles_path}/${profile}.conf"
+	ping -w1 -c1 ${hostname} >/dev/null 2>&1 || exit 0
 	path_remote="$(echo "${path_remote}" | sed 's/^\///')" # Remove heading slash from local path
 	[[ -f "${profiles_path}/${profile}.exclude" ]] && opts="${opts} --exclude ${profiles_path}/${profile}.exclude" || true
 	if [[ ${2} -eq 1 ]]; then
@@ -39,7 +40,7 @@ main(){
 
 	printf "$(date +"%Y%m%d%H%M%S") $(hostname -f)" > "${path_local}/.sync_dates/$(hostname -f)"
 
-	output="$(owncloudcmd ${opts} -h --trust --non-interactive -n ${path_local} ${hostname}/remote.php/webdav/${path_remote} 2>&1)" && ec=0 || ec=$?
+	output="$(owncloudcmd ${opts} -h --trust --non-interactive -n ${path_local} https://${hostname}/remote.php/webdav/${path_remote} 2>&1)" && ec=0 || ec=$?
 	invalid_filename="$(echo "${output}" | grep -o "Could not complete propagation of.*\(File name contains at least one invalid character\|characters are not supported in file names\)"  | sed -e 's/ by OCC::PropagateIgnoreJob.*//' -e 's/Could not complete propagation of/Invalid filename: /')"
 	output2="$(echo "${output}" | sed -e '0,/#### Discovery end ###/d' -e '/#### Reconcile end ###########/,$d' -e 's/.*info sync.csync.reconciler ]:\s*//' | grep -v -e "INSTRUCTION_IGNORE" -e "\.sync_dates" -e "\.sync_log" -e "INSTRUCTION_UPDATE_METADATA\s*[a-z]* dir:" | sort -k 2,2)"
 	[[ ${#invalid_filename} -gt 0 ]] && output2="$(echo "${output2}"; echo "${invalid_filename}")" && ec=1
