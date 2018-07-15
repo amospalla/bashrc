@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# FileVersion=1
+
+set -eu -o pipefail -o errtrace
+
+declare subject
+
+subject="$(grep -m1 "^Subject: " | sed -e 's/^Subject: //' -e 's/[<>|\^$\()*?\\[]/\./g' -e 's/^\s\+$//')"
+
+if [[ ${#subject} -eq 0 ]]; then
+	echo "<delete-message><next-new-then-unread>" > "${1}"
+else
+	echo "push \"<tag-pattern>\^${subject}<enter>\"<tag-prefix><delete-message><next-new-then-unread>" > "${1}"
+fi
+# <sync-mailbox>

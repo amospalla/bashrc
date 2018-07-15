@@ -1,9 +1,9 @@
-# FileVersion=3
+# FileVersion=4
 
-alias muttpi="muttrc  jordi@amospalla.es-imap"
-alias muttpm="muttrc  jordi@amospalla.es-mbsync"
-alias muttwi="muttrc  jordi.marques@minorisa.net-imap"
-alias muttwm="muttrc  jordi.marques@minorisa.net-mbsync"
-alias muttwei="muttrc jordi.marques@minorisa.net-exchange-imap"
+alias email-personal-imap="muttrc  jordi@amospalla.es-imap"
+alias email-personal-maildir="muttrc  jordi@amospalla.es-mbsync"
+alias email-work-imap="muttrc  jordi.marques@minorisa.net-imap"
+alias email-work-maildir="muttrc  jordi.marques@minorisa.net-mbsync"
+alias mail-work-exchange-imap="muttrc jordi.marques@minorisa.net-exchange-imap"
 
 [[ -f "${HOME}/.bashrc.local2" ]] && . "${HOME}/.bashrc.local2"
