@@ -1,16 +1,24 @@
 #!/bin/bash
 
-# FileVersion=3
+# FileVersion=4
 
 set -eu -o pipefail -o errtrace
 
-declare subject
+declare subject email
 
-subject="$(grep -m1 "^Subject: " | sed -e 's/^Subject: //' -e 's/[<>|\^$\()"'\''*?\\[]/\./g' -e 's/^\s\+$//')"
+email="$(cat)"
+
+subject="$(echo "${email}" | grep -i -m1 "^Subject: " | sed 's/^Subject: //I')"
+
+if [[ "${subject}" =~ ^=\?UTF-8 ]]; then
+	subject="$(echo "${subject}" | ~/.mutt/bin/decode-subject.pl)"
+fi
+
+subject="$(echo "${subject}" | sed -e 's/[<>|\^$\()"'\''*?\\[]/\./g' -e 's/^\s\+$//')"
 
 if [[ ${#subject} -eq 0 ]]; then
 	echo "<delete-message><next-new-then-unread>" > "${1}"
 else
-	echo "push \"<tag-pattern>\^${subject}<enter>\"<tag-prefix><delete-message><next-new-then-unread>" > "${1}"
+	echo "push \"<tag-pattern>\^${subject}<enter><tag-prefix><delete-message><next-new-then-unread>\"" > "${1}"
 fi
 # <sync-mailbox>

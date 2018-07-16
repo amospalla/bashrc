@@ -1,4 +1,4 @@
-# FileVersion=44
+# FileVersion=45
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -152,7 +152,7 @@
 # bind index,pager gr imap-fetch-mail
 ### account: jordi.marques@minorisa.net-exchange-imap
 
-macro index,pager B "<enter-command>set pipe_decode=yes<enter><pipe-message> ~/.mutt/bin/remove-with-same-subject /tmp/remove-with-same-subject<enter><enter-command>set pipe_decode=no<enter><enter-command>source /tmp/remove-with-same-subject<enter>"
+macro index,pager B "<pipe-message> ~/.mutt/bin/remove-with-same-subject /tmp/remove-with-same-subject >/tmp/remove-with-same-subject.debug 2>&1<enter><enter-command>source /tmp/remove-with-same-subject<enter>"
 
 set new_mail_command = "notify-send -t 3 '%v: New Mail in %f'"
 
