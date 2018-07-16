@@ -1,17 +1,29 @@
 #!/bin/bash
 
-# FileVersion=4
+# FileVersion=5
+
+tmpfile=/tmp/remove-with-same-subject
 
 set -eu -o pipefail -o errtrace
 
 declare subject email
+declare -a subjectin=()
 
-email="$(cat)"
+email="$(head -n300)"
 
-subject="$(echo "${email}" | grep -i -m1 "^Subject: " | sed 's/^Subject: //I')"
+readarray -t subjectin < <(echo "${email}" | grep -i -m1 -A5 "^Subject:" | sed 's/^Subject:\s*//I')
 
-if [[ "${subject}" =~ ^=\?UTF-8 ]]; then
-	subject="$(echo "${subject}" | ~/.mutt/bin/decode-subject.pl)"
+for (( i=0; i<${#subjectin[@]}; i++ )); do
+	if [[ ${i} -eq 0 ]]; then
+		subject+="${subjectin[$i]}"
+	else
+		[[ ${subjectin[$i]} =~ ^" " ]] && subject+="${subjectin[$i]}" || break
+	fi
+done
+
+if [[ "${subject}" =~ ^=\?[uU][tT][fF]-8 ]]; then
+	subjectnew="$(echo "${subject}" | ~/.mutt/bin/decode-subject.pl)"
+	[[ ${#subjectnew} -eq 0 ]] || subject="${subjectnew}"
 fi
 
 subject="$(echo "${subject}" | sed -e 's/[<>|\^$\()"'\''*?\\[]/\./g' -e 's/^\s\+$//')"
