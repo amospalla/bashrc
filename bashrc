@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=615
-FileVersion=615
+# FileVersion=616
+FileVersion=616
 
 #====================================================================
 # Main
@@ -2627,7 +2627,7 @@ _source_utilities(){
 			sleep ${arguments[interval]:-1} || true
 			[[ ${arguments[-q]:-0} -eq 0 ]] && printf "."
 		done
-		[[ ${arguments[-q]:-0} -eq 0 ]] && printf "\://ispconfig.org/downloads/ISPConfig-3.1.11.tar.gzggn"
+		[[ ${arguments[-q]:-0} -eq 0 ]] && printf "\n"
 	}
 
 	sshconnect(){
@@ -3163,38 +3163,40 @@ _source_ps1(){
 		# load #
 		########
 		if [[ "${_ps1_load}" -eq 1 ]]; then
-			# [[ ${_ps1_get_performance} -eq 1 ]] && perf_start load
-			loadavg="$(</proc/loadavg)"
-			while true; do
-				load="${load:-}${loadavg:0:1}"
-				loadavg=${loadavg:1}
-				[[ ${loadavg:0:1} != . ]] && load="${load}${loadavg:0:2}" && break
-			done
-			
-			if [[ ${load:0:1} -eq 0 ]]; then
-				_color; printf "%.1f" ${load}
-			else
-				_color red; printf "%.1f" ${load}
+			if [[ -e /proc/cpuinfo && -e /proc/loadavg ]]; then
+				# [[ ${_ps1_get_performance} -eq 1 ]] && perf_start load
+				loadavg="$(</proc/loadavg)"
+				while true; do
+					load="${load:-}${loadavg:0:1}"
+					loadavg=${loadavg:1}
+					[[ ${loadavg:0:1} != . ]] && load="${load}${loadavg:0:2}" && break
+				done
+				
+				if [[ ${load:0:1} -eq 0 ]]; then
+					_color; printf "%.1f" ${load}
+				else
+					_color red; printf "%.1f" ${load}
+				fi
+				readarray -t cpu_sockets_in < /proc/cpuinfo
+				cpu_sockets=1
+				cpu_cores_per_socket=0
+				for (( i=0; i<${#cpu_sockets_in[@]}; i++ )); do
+					[[ ${cpu_sockets_in[$i]} =~ ^physical" "id" ".*:" "[0-9]+ ]] && [[ ${BASH_REMATCH} =~ [0-9]+ ]] && cpu_socket=${BASH_REMATCH}
+					[[ ${cpu_socket:-0} -gt cpu_sockets ]] && cpu_sockets=${cpu_socket}
+					[[ ${cpu_sockets_in[$i]} =~ core" "id ]] && cpu_cores_per_socket=$(( ${cpu_cores_per_socket} + 1 ))
+				done
+				
+				[[ ${cpu_cores_per_socket} -eq 0 ]] && cpu_cores_per_socket=1
+				ps1_num_cores="$(( ${cpu_sockets} * ${cpu_cores_per_socket} ))"
+				_color; printf "/"
+				if [[ ${load:0:1} -ge ${ps1_num_cores} ]]; then
+					_color red; printf "${ps1_num_cores}"
+				else
+					_color; printf "${ps1_num_cores}"
+				fi
+				ps1_separator=1 && print_separator
+				# [[ ${_ps1_get_performance} -eq 1 ]] && _ps1_perf_end load
 			fi
-			readarray -t cpu_sockets_in < /proc/cpuinfo
-			cpu_sockets=1
-			cpu_cores_per_socket=0
-			for (( i=0; i<${#cpu_sockets_in[@]}; i++ )); do
-				[[ ${cpu_sockets_in[$i]} =~ ^physical" "id" ".*:" "[0-9]+ ]] && [[ ${BASH_REMATCH} =~ [0-9]+ ]] && cpu_socket=${BASH_REMATCH}
-				[[ ${cpu_socket:-0} -gt cpu_sockets ]] && cpu_sockets=${cpu_socket}
-				[[ ${cpu_sockets_in[$i]} =~ core" "id ]] && cpu_cores_per_socket=$(( ${cpu_cores_per_socket} + 1 ))
-			done
-			
-			[[ ${cpu_cores_per_socket} -eq 0 ]] && cpu_cores_per_socket=1
-			ps1_num_cores="$(( ${cpu_sockets} * ${cpu_cores_per_socket} ))"
-			_color; printf "/"
-			if [[ ${load:0:1} -ge ${ps1_num_cores} ]]; then
-				_color red; printf "${ps1_num_cores}"
-			else
-				_color; printf "${ps1_num_cores}"
-			fi
-			ps1_separator=1 && print_separator
-			# [[ ${_ps1_get_performance} -eq 1 ]] && _ps1_perf_end load
 		fi
 
 		#######
