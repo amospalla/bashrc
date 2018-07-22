@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=14
+# FileVersion=15
 
 # https://software.opensuse.org/download/package?project=isv:ownCloud:desktop&package=owncloud-client
 
@@ -66,18 +66,19 @@ profiles_path="${HOME}/.owncloud"
 ####################
 
 if [[ "${1:-}" == execute ]]; then
-	main "${2}" "${3}" "${4}"
+	lock lock -q -f noerror owncloud-${profile} "${0}" execute2 ${2} ${3}
+	exit $?
+elif [[ "${1:-}" == execute2 ]]; then
+	main ${2} ${3}
 	exit $?
 else
 	source "${HOME}/.bashrc"; _source_utilities
 	args1='list'
-	args2='run_serial {profiles...}'
-	args3='[-c|--command] [-l|--log] {profile}'
-	arguments_list=(args1 args2 args3)
+	args2='[-c|--command] {profiles...}'
+	arguments_list=(args1 args2)
 	arguments_description=('owncloudsync' 'Owncloudcmd wrapper')
 	arguments_parameters=( 'list: list available profiles.'
-						   'run_serial {profiles}: execute profiles serially.'
-						   '[-c|--command] [-l|--log] {profile}: execute profile. -c: only only owncloudcmd command. -l: show log on stdout.' )
+						   '[-c|--command] {profiles...}: execute profiles. -c: only show owncloudcmd command.' )
 	argparse "$@" && shift ${arguments_shift}
 	args="${@}"
 fi
@@ -87,15 +88,26 @@ set -eu o pipefail  -o errtrace
 if [[ ${arguments[list]:-0} -eq 1 ]]; then
 	show_profiles
 	exit 0
-elif [[ ${arguments[run_serial]:-0} -eq 1 ]]; then
-	ec=0
-	for i in ${args}; do
-		"${0}" ${i} || ec=1
-	done
-	exit ${ec}
+else
+ 	ec=0
+	log=""
+	newline="$(printf "\n")"
+ 	for i in ${args}; do
+		check_profile_exists "${i}"
+		profile=${i}
+		profile=${profile//./-} # lock does not like dots
+		output=""
+		output="$( "${0}" execute ${i} ${arguments[--command]:-0} 2>&1 )" || ec=1 
+		if [[ ${#output} -gt 0 ]]; then
+			if [[ ${#log} -eq 0 ]]; then
+				log="$(printf "${i}:\n${output}")"
+			else
+				log="$(printf "${log}\n\n${i}:\n${output}")"
+			fi
+		fi
+ 	done
+	if [[ ${#log} -gt 0 ]]; then
+		echo "${log}"
+	fi
+ 	exit ${ec}
 fi
-
-check_profile_exists "${arguments[profile]}"
-profile=${arguments[profile]}
-profile=${profile//./-} # lock does not like dots
-exec lock lock -f noerror owncloud-${profile} "${0}" execute ${arguments[profile]} ${arguments[--command]:-0}  ${arguments[--log]:-0}
