@@ -1,4 +1,4 @@
-# FileVersion=45
+# FileVersion=46
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -28,7 +28,7 @@
 # set header_cache        = "~/.cache/mutt/header_$imap_user"
 # set message_cachedir    = "~/.cache/mutt"
 # set imap_check_subscribed
-# source "$HOME/.muttrc.global"
+# # source "$HOME/.muttrc.global"
 # # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'" | gpg -r jordi@amospalla.es -e > ~/.mutt/jordi@amospalla.es.mutt.gpg
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi@amospalla.es.mutt.gpg |"
 # bind index,pager gr imap-fetch-mail
@@ -56,7 +56,7 @@
 # # set sidebar_delim_chars = "/."
 # set timeout             = 10
 # set net_inc             = 5
-# source "$HOME/.muttrc.global"
+# # source "$HOME/.muttrc.global"
 # # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'te" | gpg -r jordi@amospalla.es -e > ~/.mutt/jordi@amospalla.es.mutt.gpg
 # # read -s -p password: pass && echo ${pass} | gpg2 -r jordi@amospalla.es -e > ~/.mutt/jordi@amospalla.es.mbsync.gpg
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi@amospalla.es.mutt.gpg |"
@@ -88,7 +88,7 @@
 # set header_cache        = "~/.cache/mutt/header_$imap_user"
 # set message_cachedir    = "~/.cache/mutt"
 # set imap_check_subscribed
-# source "$HOME/.muttrc.global"
+# # source "$HOME/.muttrc.global"
 # # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'" | gpg2 -r jordi.marques@minorisa.net -e > ~/.mutt/jordi.marques@minorisa.net.mutt.gpg
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi.marques@minorisa.net.mutt.gpg |"
 # bind index,pager gr imap-fetch-mail
@@ -116,7 +116,7 @@
 # set ssl_starttls        = yes
 # set timeout             = 10
 # set net_inc             = 5
-# source "$HOME/.muttrc.global"
+# # source "$HOME/.muttrc.global"
 # # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'" | gpg -r jordi.marques@minorisa.net -e > ~/.mutt/jordi.marques@minorisa.net.mutt.gpg
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi.marques@minorisa.net.mutt.gpg |"
 # macro index,pager A "<tag-thread><tag-prefix><save-message>=folders/.proveidors/.altres<enter><next-new-then-unread>"
@@ -146,11 +146,14 @@
 # set header_cache        = "~/.cache/mutt/header_$imap_user"
 # set message_cachedir    = "~/.cache/mutt"
 # set imap_check_subscribed
-# source "$HOME/.muttrc.global"
+# # source "$HOME/.muttrc.global"
 # # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'" | gpg -r jordi.marques@minorisa.net -e > ~/.mutt/jordi.marques@minorisa.net-exchange.mutt.gpg
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi.marques@minorisa.net-exchange.mutt.gpg |"
 # bind index,pager gr imap-fetch-mail
 ### account: jordi.marques@minorisa.net-exchange-imap
+
+bind index,pager g noop
+bind pager r noop
 
 macro index,pager B "<pipe-message> ~/.mutt/bin/remove-with-same-subject /tmp/remove-with-same-subject >/tmp/remove-with-same-subject.debug 2>&1<enter><enter-command>source /tmp/remove-with-same-subject<enter>"
 
@@ -252,7 +255,7 @@ bind index,pager zu undelete-thread
 bind index,pager zk parent-message
 bind index,pager z0 root-message
 
-set pager_context=5				
+set pager_context=5
 #Paging down a message leaves 5 lines of overlap, so you don't get lost.
 
 unset collapse_unread      # don't collapse threads with unread mails
@@ -420,7 +423,7 @@ color quoted      green          default
 color quoted1     yellow         default
 color quoted2     red            default
 color signature   cyan           default
-color indicator   color9         color16  
+color indicator   color9         color16
 color error       brightred      default
 color status      brightwhite    blue
 color tree        brightmagenta  black
@@ -450,7 +453,7 @@ macro index,pager C "<copy-message>?<toggle-mailboxes>/\Cu"
   color body       color76                black           "\\~?\(/[-_.,a-zA-Z0-9{}äöüß]+\)+"
 # Path names i. e. '/path/'
   color body       brightred              black           "\(/[-_.a-zA-Z0-9]+\)+/"
-# URLs 
+# URLs
   color body       blue                   white           "(gopher|finger|ftp|http|telnet)://[^ >]*"
   color body       blue                   default         "news:[^ \">\t\r\n]*"
 # HTTP addresses
@@ -473,7 +476,7 @@ macro index,pager C "<copy-message>?<toggle-mailboxes>/\Cu"
 #  [-=]?          -> optional nose.
 #  [PpD)/(|}{><]  -> different mouths.
 # color body brightyellow black "[ \t]>?[;:][-=]?[PpD)/(|}{><]"
-# 
+#
 # Note the intentional [], which isn't a [] at all. To put a ']' in a
 # character list, the ']' must be the first character listed. To match a '-',
 # put it first or last.
@@ -519,7 +522,7 @@ macro index,pager C "<copy-message>?<toggle-mailboxes>/\Cu"
 # *lol* murphys on tour and his law is right waiting for you.
 # Original attribution-line from a mail:
 # > "On Sat, Sep 06, 2003 at 11:08:22PM +0200, Mark wrote:"
-# and now take a quick look at this ==>   ^^^^^^^^^ 
+# and now take a quick look at this ==>   ^^^^^^^^^
 # You see? ;) shit happens and that doesn't interest me.
   color body       black                  yellow          "[0-9]+[,.][0-9]* *pf/min"
   color body       black                  yellow          "(dm|euro?|\$\$\$) *[1-9][0-9]*([.,][0-9]*-?-?)?"
@@ -563,6 +566,8 @@ macro index,pager C "<copy-message>?<toggle-mailboxes>/\Cu"
   color body       brightyellow           brightred       <'\[ [-a-z ]+ (\| [-a-z ]+)+ \]'
 
 source /usr/local/share/doc/neomutt/colorschemes/vombatidae.neomuttrc
+
+source "$HOME/.muttrc.account"
 
 # color index cyan default '~f user@example.com'
 # color header      brightcyan     default "^(From|Subject):"
@@ -702,7 +707,7 @@ source /usr/local/share/doc/neomutt/colorschemes/vombatidae.neomuttrc
 #      H top-page                                                                                                                                                                              #
 #      L bottom-page                                                                                                                                                                           #
 #      M middle-page                                                                                                                                                                           #
-#      Z previous-page                                                                                                                                                                         # 
+#      Z previous-page                                                                                                                                                                         #
 #      [ half-up                                                                                                                                                                               #
 #      ] half-down                                                                                                                                                                             #
 #      j next-entry                                                                                                                                                                            #
@@ -848,7 +853,7 @@ source /usr/local/share/doc/neomutt/colorschemes/vombatidae.neomuttrc
 #      H top-page                                                                                                                                                                              #
 #      L bottom-page                                                                                                                                                                           #
 #      M middle-page                                                                                                                                                                           #
-#      Z previous-page                                                                                                                                                                         # 
+#      Z previous-page                                                                                                                                                                         #
 #      [ half-up                                                                                                                                                                               #
 #      ] half-down                                                                                                                                                                             #
 #      j next-entry                                                                                                                                                                            #
