@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=616
-FileVersion=616
+# FileVersion=617
+FileVersion=617
 
 #====================================================================
 # Main
@@ -1345,32 +1345,39 @@ _source_utilities(){
 		args1='get'
 		args2='list'
 		args3='[-n|--do-not-run] {profile} [args...]'
-		arguments_description=('muttrc' 'Manages mutt profiles embedded inside ~/.muttrc.global')
+		arguments_description=('muttrc' 'Manages mutt profiles embedded inside ~/.muttrc')
 		arguments_parameters=('get: prints current profile.'
-		                      'list: list profiles embedded into .muttrc.globbal.'
+		                      'list: list profiles embedded into .muttrc.'
 		                      '[-n|--do-not-run] {profile} [args...]: sets ~/.muttrc with specified profile and executes mutt with specified arguments.')
 		local -A arguments=()
 		argparse "$@" && shift ${arguments_shift}
-		file-readable -m "${HOME}/.muttrc.global" || exit 1
+		file-readable -m "${HOME}/.muttrc" || exit 1
 		local section start=0 end=0 folder
 
 		### account: user@tld.com-type
 		if [[ ${arguments[get]:-0} -eq 1 ]]; then
-			grep -m1 "^### account: .*" "${HOME}/.muttrc" | sed 's/^### account: //'
-			exit $?
+			if [[ -f "${HOME}/.muttrc.account" ]]; then
+				if ! grep -m1 "^### account: .*" "${HOME}/.muttrc.account" | sed 's/^### account: //'; then
+					echo "No accounts"
+					exit 1
+				fi
+			else
+				echo "No accounts"
+				exit 1
+			fi
 		elif [[ ${arguments[list]:-0} -eq 1 ]]; then
-			grep "^### account: .*" "${HOME}/.muttrc.global" | sed 's/^### account: //' | sort | uniq
+			grep "^### account: .*" "${HOME}/.muttrc" | sed 's/^### account: //' | sort | uniq
 			exit $?
 		fi
 		
-		if section="$(\section "### account: ${arguments[profile]}" "### account: ${arguments[profile]}" "${HOME}/.muttrc.global")"; then
+		if section="$(\section "### account: ${arguments[profile]}" "### account: ${arguments[profile]}" "${HOME}/.muttrc")"; then
 			for i in ${section}; do
 				[[ ${start} -eq 0 ]] && start="${i}" || end="${i}"
 			done
-			sed -n -e 's/^# //' -e "${start},${end}p" "${HOME}/.muttrc.global" > "${HOME}/.muttrc"
+			sed -n -e 's/^# //' -e "${start},${end}p" "${HOME}/.muttrc" > "${HOME}/.muttrc.account"
 			if [[ ${arguments[-n]:-0} -eq 0 ]]; then
-				if grep -q "^\s*set\s*mbox_type\s*=\s*Maildir" "${HOME}/.muttrc"; then
-					if folder="$(grep "^\s*set\s*folder\s*=" "${HOME}/.muttrc" | sed -e 's/.*=\s*//' -e "s;\~;${HOME};")"; then
+				if grep -q "^\s*set\s*mbox_type\s*=\s*Maildir" "${HOME}/.muttrc.account"; then
+					if folder="$(grep "^\s*set\s*folder\s*=" "${HOME}/.muttrc.account" | sed -e 's/.*=\s*//' -e "s;\~;${HOME};")"; then
 						folder-exists -m "${folder}" || exit 1
 					fi
 				fi
