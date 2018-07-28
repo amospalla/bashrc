@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=15
+# FileVersion=16
 
 # https://software.opensuse.org/download/package?project=isv:ownCloud:desktop&package=owncloud-client
 
@@ -66,7 +66,7 @@ profiles_path="${HOME}/.owncloud"
 ####################
 
 if [[ "${1:-}" == execute ]]; then
-	lock lock -q -f noerror owncloud-${profile} "${0}" execute2 ${2} ${3}
+	lock lock -q -f noerror owncloud-${2} "${0}" execute2 ${2} ${3}
 	exit $?
 elif [[ "${1:-}" == execute2 ]]; then
 	main ${2} ${3}
