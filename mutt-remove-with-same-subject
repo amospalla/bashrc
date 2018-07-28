@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=5
+# FileVersion=6
 
 tmpfile=/tmp/remove-with-same-subject
 
@@ -26,7 +26,7 @@ if [[ "${subject}" =~ ^=\?[uU][tT][fF]-8 ]]; then
 	[[ ${#subjectnew} -eq 0 ]] || subject="${subjectnew}"
 fi
 
-subject="$(echo "${subject}" | sed -e 's/[<>|\^$\()"'\''*?\\[]/\./g' -e 's/^\s\+$//')"
+subject="$(echo "${subject}" | sed -e 's/[~%+=<>|\^$\()"'\''*?\\[]/\./g' -e 's/^\s\+$//')"
 
 if [[ ${#subject} -eq 0 ]]; then
 	echo "<delete-message><next-new-then-unread>" > "${1}"
