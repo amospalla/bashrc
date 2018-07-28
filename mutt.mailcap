@@ -1,16 +1,19 @@
-# FileVersion=6
+# FileVersion=7
+
+# https://neomutt.org/guide/mimesupport
+# copiousoutput: el comandament no és interactiu, pipar a pager
+# needsterminal
 
 # text/html; lynx -assume_charset=%{charset} -display_charset=utf-8 -dump %s; nametemplate=%s.html; copiousoutput
-text/html; ~/.mutt/bin/view-attachment html %s;
-text/html; w3m -I %{charset} -T text/html; copiousoutput;
-# text/html; elinks -dump; copiousoutput;
+text/html;  ~/.mutt/bin/view-attachment html %s;
+text/html;  w3m -I %{charset} -F -graph -T text/html; copiousoutput;
+text/plain; ~/.mutt/bin/view-attachment text %s;      needsterminal copiousoutput
 
 application/msword;       ~/.mutt/bin/view-attachment msword %s; needsterminal
 image/*;                  ~/.mutt/bin/view-attachment image %s;  needsterminal
 audio/*;                  ~/.mutt/bin/view-attachment audio %s;  needsterminal
 video/*;                  ~/.mutt/bin/view-attachment video %s;  needsterminal
 application/pdf;          ~/.mutt/bin/view-attachment pdf %s;    needsterminal
-text/plain;               ~/.mutt/bin/view-attachment text %s; needsterminal copiousoutput
 application/octet-stream; ~/.mutt/bin/view-attachment "-" %s; needsterminal
 
 # spreadsheets
