@@ -1,4 +1,4 @@
-# FileVersion=48
+# FileVersion=49
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -222,14 +222,14 @@ set sort_aux=reverse-last-date-received
 
 auto_view text/html                                      # view html automatically
 # alternative_order text/plain text/enriched text/html     # save html for last
-alternative_order text/enriched text/plain text text/html 
+alternative_order text/enriched text/plain text text/html
 
 ## Make quick html view macro
 bind  index,pager V  noop        ## Unbinds V from version
 # Opcio 1
 # macro index,pager V "<view-attachments><search>html<enter><view-mailcap><exit>"
 # Opcio 2
-macro index,pager  <F10>  "<copy-message>/tmp/mutttmpbox\n<enter><shell-escape>~/.mutt/bin/viewhtmlmail /tmp/mutttmpbox\n" "View HTML in browser"
+macro index,pager V "<copy-message>/tmp/mutttmpbox\n<enter><shell-escape>~/.mutt/bin/viewhtmlmail /tmp/mutttmpbox\n" "View HTML in browser"
 
 bind  index,pager L  noop
 macro index,pager L <pipe-entry>'urlview'<enter> 'Follow links with urlview'

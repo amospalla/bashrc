@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# FileVersion=6
+# FileVersion=9
 
 tmpfile=/tmp/remove-with-same-subject
 
 set -eu -o pipefail -o errtrace
 
 declare subject email
-declare -a subjectin=()
+declare -a subjectin=() nums=()
 
 email="$(head -n300)"
 
@@ -26,11 +26,26 @@ if [[ "${subject}" =~ ^=\?[uU][tT][fF]-8 ]]; then
 	[[ ${#subjectnew} -eq 0 ]] || subject="${subjectnew}"
 fi
 
-subject="$(echo "${subject}" | sed -e 's/[~%+=<>|\^$\()"'\''*?\\[]/\./g' -e 's/^\s\+$//')"
+expr1='s/[~%+=<>|\^$\()*?\\[]/\./g' # charactes mutt's regex doesn't like
+expr2='s/"/\./g'                    # charactes mutt's regex doesn't like
+expr3="s/'/\./g"                    # charactes mutt's regex doesn't like
+expr4="s/\s\+$/.*/g"              # trailing blanks
+expr5='s/[A-Z][a-z]\{2\} [0-9]\{1,2\}, [0-9]\{4\} [0-9]\{1,2\}:[0-9]\{1,2\}:[0-9:]\{1,2\} [AP]M/[A-Z][a-z]{2} [0-9]{1,2}, [0-9]{4} [0-9:]{5,8} [AP]M/' # Generalize dates like 'May 18, 2014 12:47:33 PM'
+
+# Remove characters that mutt regex does not like
+subject="$(echo "${subject}" | sed -e "${expr1}" -e "${expr2}" -e "${expr3}" -e "${expr4}" -e "${expr5}" )"
+
+# Substitue numbers by regex
+readarray -t nums < <(echo "${subject}" | grep -o "[0-9]\+")
+[[ -f /tmp/abc ]] && rm /tmp/abc || true
+for (( i=0; i<${#nums[@]}; i++ )); do
+	[[ ${#nums[$i]} -ge 4 ]] || continue
+	subject="$(echo "${subject}" | sed "s/${nums[$i]}/[0-9]+/" )"
+done
 
 if [[ ${#subject} -eq 0 ]]; then
 	echo "<delete-message><next-new-then-unread>" > "${1}"
 else
-	echo "push \"<tag-pattern>\^${subject}<enter><tag-prefix><delete-message><next-new-then-unread>\"" > "${1}"
+	echo "push \"<tag-pattern>\^${subject}$<enter><tag-prefix><delete-message><next-new-then-unread>\"" > "${1}"
 fi
 # <sync-mailbox>
