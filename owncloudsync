@@ -1,8 +1,10 @@
 #!/bin/bash
 
-# FileVersion=16
+# FileVersion=17
 
 # https://software.opensuse.org/download/package?project=isv:ownCloud:desktop&package=owncloud-client
+
+set -eu -o pipefail  -o errtrace
 
 ####################
 #### Functions #####
@@ -82,8 +84,6 @@ else
 	argparse "$@" && shift ${arguments_shift}
 	args="${@}"
 fi
-
-set -eu o pipefail  -o errtrace
 
 if [[ ${arguments[list]:-0} -eq 1 ]]; then
 	show_profiles

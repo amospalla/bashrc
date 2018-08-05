@@ -1,7 +1,15 @@
 #!/bin/bash
 
-# FileVersion=9
+# FileVersion=11
 
+#############
+# Variables #
+#############
+numbers_min=1  # minimal size of numbers to substitute by regex
+
+#############
+# Main      #
+#############
 tmpfile=/tmp/remove-with-same-subject
 
 set -eu -o pipefail -o errtrace
@@ -30,18 +38,20 @@ expr1='s/[~%+=<>|\^$\()*?\\[]/\./g' # charactes mutt's regex doesn't like
 expr2='s/"/\./g'                    # charactes mutt's regex doesn't like
 expr3="s/'/\./g"                    # charactes mutt's regex doesn't like
 expr4="s/\s\+$/.*/g"              # trailing blanks
-expr5='s/[A-Z][a-z]\{2\} [0-9]\{1,2\}, [0-9]\{4\} [0-9]\{1,2\}:[0-9]\{1,2\}:[0-9:]\{1,2\} [AP]M/[A-Z][a-z]{2} [0-9]{1,2}, [0-9]{4} [0-9:]{5,8} [AP]M/' # Generalize dates like 'May 18, 2014 12:47:33 PM'
+#expr5='s/[A-Z][a-z]\{2\} [0-9]\{1,2\}, [0-9]\{4\} [0-9]\{1,2\}:[0-9]\{1,2\}:[0-9:]\{1,2\} [AP]M/[A-Z][a-z]{2} [0-9]{1,2}, [0-9]{4} [0-9:]{5,8} [AP]M/' # Generalize dates like 'May 18, 2014 12:47:33 PM'
+expr5="s/[aApP][mM]/[aApP][mM]/g"              # am/pm
+expr6="s/\([jJ][aA][nN]\|[fF][eE][bB]\|[mM][aA][rR]\|[aA][pP][rR]\|[mM][aA][yY]\|[jJ][uU][nN]\|[jJ][uU][lL]\|[aA][uU][gG]\|[sS][eE][pP]\|[oO][cC][tT]\|[nN][oO][vV]\|[dD][eE][cC]\)/[fFjJaAsSoOnNmM][aAeEpPuUcCoO][nNbBrRyYnNlLgGpPtTvVcC]/g"   # months
 
 # Remove characters that mutt regex does not like
-subject="$(echo "${subject}" | sed -e "${expr1}" -e "${expr2}" -e "${expr3}" -e "${expr4}" -e "${expr5}" )"
+subject="$(echo "${subject}" | sed -e "${expr1}" -e "${expr2}" -e "${expr3}" -e "${expr4}" -e "${expr5}" -e "${expr6}" )"
 
 # Substitue numbers by regex
-readarray -t nums < <(echo "${subject}" | grep -o "[0-9]\+")
-[[ -f /tmp/abc ]] && rm /tmp/abc || true
-for (( i=0; i<${#nums[@]}; i++ )); do
-	[[ ${#nums[$i]} -ge 4 ]] || continue
-	subject="$(echo "${subject}" | sed "s/${nums[$i]}/[0-9]+/" )"
-done
+subject="$(echo "${subject}" | sed "s/[0-9]\+/\[0-9]+/g")"
+# readarray -t nums < <(echo "${subject}" | grep -o "[0-9]\+")
+# for (( i=0; i<${#nums[@]}; i++ )); do
+# 	[[ ${#nums[$i]} -ge ${numbers_min} ]] || continue
+# 	subject="$(echo "${subject}" | sed "s/${nums[$i]}/[0-9]+/" )"
+# done
 
 if [[ ${#subject} -eq 0 ]]; then
 	echo "<delete-message><next-new-then-unread>" > "${1}"
