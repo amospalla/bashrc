@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=617
-FileVersion=617
+# FileVersion=618
+FileVersion=618
 
 #====================================================================
 # Main
@@ -14,8 +14,8 @@ declare -i arguments_shift _files_update_counter=0 _files_updated _bash_version=
 declare _files_update_text=""
 
 _load_program_list(){
-	_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email bashrc-update section muttrc message run-every folder-exists ssh-socket filewatch print-color box dstatw)
-	_program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all [bashrc-update]=all [section]=all [muttrc]=all [message]=all [run-every]=all [folder-exists]=all [ssh-socket]=all [filewatch]=all [print-color]=all [box]=all [dstatw]=all)
+	_program_list=(try sshconnect make-links myip status-changed rescan-scsi-bus timer-countdown tmuxac wait-ping grepip tmux-send is-number beep max-mtu repeat testcpu testport pastebin lock extract disksinfo lowercase uppercase check-type argparse argparse-create-template unit-conversion unit-print float retention check-ping show-lvm-thinpool-usage check-lvm-thinpool-usage notify run-cron lvmthinsnapshots program-exists status-changed-email bashrc-update section muttrc message run-every folder-exists ssh-socket filewatch print-color box dstatw du-average)
+	_program_list_user=([try]=all [sshconnect]=all [make-links]=all [myip]=all [status-changed]=all [rescan-scsi-bus]=root [timer-countdown]=all [tmuxac]=all [wait-ping]=all [grepip]=all [tmux-send]=all [is-number]=all [beep]=all [max-mtu]=all [repeat]=all [testcpu]=all [testport]=all [pastebin]=all [lock]=all [extract]=all [disksinfo]=root [lowercase]=all [uppercase]=all [check-type]=all [argparse]=all [argparse-create-template]=all [unit-conversion]=all [unit-print]=all [float]=all [retention]=all [check-ping]=all [show-lvm-thinpool-usage]=root [check-lvm-thinpool-usage]=root [notify]=all [run-cron]=all [program-exists]=all [lvmthinsnapshots]=root [status-changed-email]=all [bashrc-update]=all [section]=all [muttrc]=all [message]=all [run-every]=all [folder-exists]=all [ssh-socket]=all [filewatch]=all [print-color]=all [box]=all [dstatw]=all [du-average]=all)
 }
 
 _status_changed_intervals="1m 5m 15m 1h 1d"
@@ -473,6 +473,7 @@ _bashrc_show_help(){
 	color blue; printf "box"; color; echo ": print a text surrounded by a box."
 	color blue; printf "print-color"; color; echo ": prints a text coloured."
 	color blue; printf "dstatw"; color; echo ": dstatw wrapper."
+	color blue; printf "du-average"; color; echo ": periodically outputs size of a specified path including average growth."
 	color blue; printf "retention"; color; echo ": helper to mantain a retention with given dates."
 	color blue; printf "program-exists"; color; echo ": check if a list of programs are available."
 	color blue; printf "try"; color; echo ": tries executing a command until it succeeds."
@@ -1073,6 +1074,18 @@ _source_utilities(){
 			printf -- "${border_char}"
 			color
 		done; printf "\n"
+	}
+
+	du-average(){
+		arguments_list=(args1)
+		args1='[-i|--interval {interval}] [-u|--units {units}] {path}'
+		arguments_description=('du-average' 'Periodically prints folder size, including its average growth speed.')
+		arguments_parameters=( '[-i|--interval {interval}]: interval between prints in seconds (default 5).'
+							   '[-u|--units {units}]: units (default mb).'
+							   '{path}: path to calculate size for.')
+		local -A arguments=()
+		argparse "$@" && shift ${arguments_shift}
+		echo "stub for du-average"
 	}
 
 	dstatw(){
