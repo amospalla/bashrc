@@ -78,6 +78,10 @@ profiles_path="${HOME}/.owncloud"
 #### Code      #####
 ####################
 
+declare binary
+
+get_binary
+
 if [[ "${1:-}" == execute ]]; then
 	lock lock -q -f noerror owncloud-${2} "${0}" execute2 ${2} ${3}
 	exit $?
