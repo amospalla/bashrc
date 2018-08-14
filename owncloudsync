@@ -19,6 +19,17 @@ check_profile_exists(){
 	[[ ! -f "${profiles_path}/${profile}.conf" ]] && echo "Error: profile does not exist." && exit 1 || true
 }
 
+get_binary(){
+	if type -a owncloudcmd >/dev/null 2>&1; then
+		binary=owncloudcmd
+	elif type -a nextcloudcmd >/dev/null 2>&1; then
+		binary=nextcloudcmd
+	else
+		echo "Error: no binary found (neither nextcloudcmd or owncloudcmd)."
+		exit 1
+	fi
+}
+
 main(){
 	local profile="${1}" opts="" output="" output2="" invalid_filename="" ec=0
 	. "${profiles_path}/${profile}.conf"
@@ -26,7 +37,7 @@ main(){
 	path_remote="$(echo "${path_remote}" | sed 's/^\///')" # Remove heading slash from local path
 	[[ -f "${profiles_path}/${profile}.exclude" ]] && opts="${opts} --exclude ${profiles_path}/${profile}.exclude" || true
 	if [[ ${2} -eq 1 ]]; then
-		echo "owncloudcmd ${opts} -h --trust --non-interactive -n ${path_local} ${hostname}/remote.php/webdav/${path_remote}"
+		echo "${binary} ${opts} -h --trust --non-interactive -n ${path_local} ${hostname}/remote.php/webdav/${path_remote}"
 		return 0
 	fi
 
@@ -40,11 +51,11 @@ main(){
 	fi
 	[[ -d "${path_local}/.sync_log" ]] || mkdir -p "${path_local}/.sync_log"
 
-	printf "$(date +"%Y%m%d%H%M%S") $(hostname -f)" > "${path_local}/.sync_dates/$(hostname -f)"
+	printf "%(%Y%m%d%H%M%S)T $(hostname -f)" > "${path_local}/.sync_dates/$(hostname -f)"
 
-	output="$(owncloudcmd ${opts} -h --trust --non-interactive -n ${path_local} https://${hostname}/remote.php/webdav/${path_remote} 2>&1 | dos2unix)" && ec=0 || ec=$?
-	invalid_filename="$(echo "${output}" | grep -o "Could not complete propagation of.*\(File name contains at least one invalid character\|characters are not supported in file names\)"  | sed -e 's/ by OCC::PropagateIgnoreJob.*//' -e 's/Could not complete propagation of/Invalid filename: /')"
-	output2="$(echo "${output}" | sed -e '0,/#### Discovery end ###/d' -e '/#### Reconcile end ###########/,$d' -e 's/.*info sync.csync.reconciler ]:\s*//' | grep -v -e "INSTRUCTION_IGNORE" -e "\.sync_dates" -e "\.sync_log" -e "INSTRUCTION_UPDATE_METADATA\s*[a-z]* \(dir\|file\):" | sort -k 2,2)"
+	output="$(${binary} ${opts} -h --trust --non-interactive -n ${path_local} https://${hostname}/remote.php/webdav/${path_remote} 2>&1 | dos2unix)" && ec=0 || ec=$?
+	invalid_filename="$(echo "${output}" | grep -o "Could not complete propagation of.*\(File name contains at least one invalid character\|characters are not supported in file names\)"  | sed -e 's/ by OCC::PropagateIgnoreJob.*//' -e 's/Could not complete propagation of/Invalid filename: /' || true)"
+	output2="$(echo "${output}" | sed -e '0,/#### Discovery end ###/d' -e '/#### Reconcile end ###########/,$d' -e 's/.*info sync.csync.reconciler ]:\s*//' | grep -v -e "INSTRUCTION_IGNORE" -e "\.sync_dates" -e "\.sync_log" -e "INSTRUCTION_UPDATE_METADATA\s*[a-z]* \(dir\|file\):" | sort -k 2,2 || true)"
 	[[ ${#invalid_filename} -gt 0 ]] && output2="$(echo "${output2}"; echo "${invalid_filename}")" && ec=1
 	echo "${output2}" | grep -q "INSTRUCTION_CONFLICT" && ec=1 || true
 	if [[ ${#output2} -gt 0 ]]; then
@@ -78,9 +89,9 @@ else
 	args1='list'
 	args2='[-c|--command] {profiles...}'
 	arguments_list=(args1 args2)
-	arguments_description=('owncloudsync' 'Owncloudcmd wrapper')
+	arguments_description=('owncloudsync' 'Owncloudcmd/Nextcloudcmd wrapper')
 	arguments_parameters=( 'list: list available profiles.'
-						   '[-c|--command] {profiles...}: execute profiles. -c: only show owncloudcmd command.' )
+						   '[-c|--command] {profiles...}: execute profiles. -c: only show owncloudcmd/nextcloudcmd command.' )
 	argparse "$@" && shift ${arguments_shift}
 	args="${@}"
 fi
