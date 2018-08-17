@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# FileVersion=618
-FileVersion=618
+# FileVersion=619
+FileVersion=619
 
 #====================================================================
 # Main
@@ -590,6 +590,7 @@ _source_aliases_amospalla(){
 	alias dstat2='dstat     --time --cpu --disk --io --net --page --sys --mem --swap --int --top-cpu --top-io --top-mem --fs --tcp --proc-count'
 	alias dstat2full='dstat --time --cpu --disk --io --net --page --sys --mem --swap --int --top-cpu --top-io --top-mem --fs --tcp --proc-count --full'
 	alias killmosh='who | grep -o "(mosh \[[0-9]\+])" | grep -o "[0-9]\+" | xargs kill'
+	alias dft="df --human-readable --local --total --print-type --exclude-type=tmpfs --exclude-type=devtmpfs"
 }
 
 #====================================================================
