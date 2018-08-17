@@ -1,9 +1,9 @@
-# FileVersion=4
+# FileVersion=5
 
 alias email-personal-imap="muttrc  jordi@amospalla.es-imap"
 alias email-personal-maildir="muttrc  jordi@amospalla.es-mbsync"
 alias email-work-imap="muttrc  jordi.marques@minorisa.net-imap"
 alias email-work-maildir="muttrc  jordi.marques@minorisa.net-mbsync"
-alias mail-work-exchange-imap="muttrc jordi.marques@minorisa.net-exchange-imap"
+alias email-work-exchange-imap="muttrc jordi.marques@minorisa.net-exchange-imap"
 
 [[ -f "${HOME}/.bashrc.local2" ]] && . "${HOME}/.bashrc.local2"
