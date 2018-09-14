@@ -1,4 +1,4 @@
-# FileVersion=57
+# FileVersion=58
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -148,7 +148,7 @@
 # set realname            = "Jordi Marqués"
 # set from                = "jordi.marques@minorisa.net"
 # set mbox_type           = Maildir
-# set folder              = ~/.Mail/jordi.marques@minorisa.net
+# set folder              = ~/.Mail/jordi.marques@minorisa.net-exchange
 # set spoolfile           = +INBOX
 # set record              = +INBOX
 # set postponed           = +Borradores
