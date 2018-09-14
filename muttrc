@@ -1,4 +1,4 @@
-# FileVersion=56
+# FileVersion=57
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -31,7 +31,7 @@
 ### account: jordi@amospalla.es-imap
 
 
-### account: jordi@amospalla.es-mbsync
+### account: jordi@amospalla.es-maildir
 # #  * * * * *              pgrep mutt >/dev/null && lock lock -q -f noerror mbsync-jordi@amospalla_es    ~/.mutt/bin/mbsync.sh jordi@amospalla.es       >/dev/null 2>&1 || true
 # #  * * * * *    sleep 30; pgrep mutt >/dev/null && lock lock -q -f noerror mbsync-jordi@amospalla_es    ~/.mutt/bin/mbsync.sh jordi@amospalla.es-inbox >/dev/null 2>&1 || true
 # macro index gr "<shell-escape>${HOME}/.mutt/bin/mbsync.sh jordi@amospalla.es-inbox<enter>"
@@ -54,7 +54,7 @@
 # # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'te" | gpg -r jordi@amospalla.es -e > ~/.mutt/jordi@amospalla.es.mutt.gpg
 # # read -s -p password: pass && echo ${pass} | gpg2 -r jordi@amospalla.es -e > ~/.mutt/jordi@amospalla.es.mbsync.gpg
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi@amospalla.es.mutt.gpg |"
-### account: jordi@amospalla.es-mbsync
+### account: jordi@amospalla.es-maildir
 
 
 ### account: jordi.marques@minorisa.net-imap
@@ -87,7 +87,7 @@
 ### account: jordi.marques@minorisa.net-imap
 
 
-### account: jordi.marques@minorisa.net-mbsync
+### account: jordi.marques@minorisa.net-maildir
 # #  * * * * *              pgrep mutt >/dev/null && lock lock -q -f noerror mbsync-jordi.marques@minorisa_net    ~/.mutt/bin/mbsync.sh jordi.marques@minorisa.net       >/dev/null 2>&1 || true
 # #  * * * * *    sleep 30; pgrep mutt >/dev/null && lock lock -q -f noerror mbsync-jordi.marques@minorisa_net    ~/.mutt/bin/mbsync.sh jordi.marques@minorisa.net-inbox >/dev/null 2>&1 || true
 # macro index gr "<shell-escape>${HOME}/.mutt/bin/mbsync.sh jordi.marques@minorisa.net-inbox<enter>"
@@ -110,7 +110,7 @@
 # # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'" | gpg -r jordi.marques@minorisa.net -e > ~/.mutt/jordi.marques@minorisa.net.mutt.gpg
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi.marques@minorisa.net.mutt.gpg |"
 # macro index,pager A "<tag-thread><tag-prefix><save-message>=folders/.proveidors/.altres<enter><next-new-then-unread>"
-### account: jordi.marques@minorisa.net-mbsync
+### account: jordi.marques@minorisa.net-maildir
 
 
 ### account: jordi.marques@minorisa.net-exchange-imap
@@ -140,7 +140,7 @@
 # bind index,pager gr imap-fetch-mail
 ### account: jordi.marques@minorisa.net-exchange-imap
 
-### account: jordi.marques@minorisa.net-exchange-mbsync
+### account: jordi.marques@minorisa.net-exchange-maildir
 # #  * * * * *              pgrep mutt >/dev/null && lock lock -q -f noerror mbsync-jordi_marques@minorisa_net-exchange    ~/.mutt/bin/mbsync.sh jordi.marques@minorisa.net-exchange        >/dev/null 2>&1 || true
 # #  * * * * *    sleep 30; pgrep mutt >/dev/null && lock lock -q -f noerror mbsync-jordi_marques@minorisa_net-exchange    ~/.mutt/bin/mbsync.sh jordi.marques@minorisa.net-exchange-inbox  >/dev/null 2>&1 || true
 # macro index gr "<shell-escape>${HOME}/.mutt/bin/mbsync.sh jordi.marques@minorisa.net-exchange-inbox<enter>"
@@ -163,7 +163,7 @@
 # # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'te" | gpg -r jordi.marques@minorisa.net -e > ~/.mutt/jordi.marques@minorisa.net-exchange.mutt.gpg
 # # read -s -p password: pass && echo ${pass} | gpg2 -r jordi.marques@minorisa.net -e > ~/.mutt/jordi.marques@minorisa.net-exchange.mbsync.gpg
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi.marques@minorisa.net.exchange.mutt.gpg |"
-### account: jordi.marques@minorisa.net-exchange-mbsync
+### account: jordi.marques@minorisa.net-exchange-maildir
 
 set smtp_authenticators = "login"
 
