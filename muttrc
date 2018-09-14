@@ -1,4 +1,4 @@
-# FileVersion=53
+# FileVersion=56
 # www.mutt.org/doc/manual/ 2.6
 # apt-get install w3m isync urlview poppler-utils (pdftotext) caca-utils mpv par notmuch-mutt
 
@@ -13,8 +13,6 @@
 # # set imap_pass         = your-imap-password
 # set imap_idle           = yes
 # set smtp_url            = "smtp://jordi@amospalla.es@amospalla.es:587/"
-# # set ssl_force_tls     = yes
-# # set ssl_starttls      = yes
 # set spoolfile           = +INBOX
 # set record              = +INBOX
 # set postponed           = +Drafts
@@ -22,8 +20,6 @@
 # set trash               = +Trash
 # mailboxes               = +INBOX
 # unmailboxes             = +
-# set ssl_verify_host     = no
-# set ssl_verify_dates    = no
 # set my_tempvar          = `mkdir -p ~/.cache/mutt`
 # set header_cache        = "~/.cache/mutt/header_$imap_user"
 # set message_cachedir    = "~/.cache/mutt"
@@ -52,8 +48,6 @@
 # # mailboxes `echo -n "+ "; find ~/.Mail/jordi@amospalla.es -maxdepth 4 -type d -name "*" -not \( -name "cur" -or -name "new" -or -name "tmp" \) -printf "+'%p' " | sed "s;${HOME}/.Mail/jordi@amospalla.es/\?;;g"`
 # mailboxes `find ~/.Mail/jordi@amospalla.es -maxdepth 4 -type d -name "*" -not \( -name "cur" -or -name "new" -or -name "tmp" \) -printf "+'%p' " | sed "s;${HOME}/.Mail/jordi@amospalla.es/\?;;g" | sed "s/^+''// "`
 # set smtp_url            = "smtp://jordi@amospalla.es@amospalla.es:587/"
-# # set ssl_force_tls     = yes
-# # set sidebar_delim_chars = "/."
 # set timeout             = 10
 # set net_inc             = 5
 # # source "$HOME/.muttrc.global"
@@ -74,8 +68,6 @@
 # set imap_idle           = yes
 # # set smtp_url            = "smtp://jordi.marques@minorisa.net@zimbra.ini6.com:587/"
 # set smtp_url            = "smtp://jordi.marques@minorisa.net@217.150.209.150:587/"
-# # set ssl_force_tls     = yes
-# set ssl_starttls        = yes
 # set spoolfile           = +INBOX
 # set record              = +INBOX
 # set postponed           = +Drafts
@@ -112,8 +104,6 @@
 # # mailboxes `echo -n "+ "; find ~/.Mail/jordi.marques@minorisa.net -maxdepth 4 -type d -name "*" -not \( -name "cur" -or -name "new" -or -name "tmp" \) -printf "+'%p' " | sed "s;${HOME}/.Mail/jordi.marques@minorisa.net/\?;;g"`
 # mailboxes `find ~/.Mail/jordi.marques@minorisa.net -maxdepth 4 -type d -name "*" -not \( -name "cur" -or -name "new" -or -name "tmp" \) -printf "+'%p' " | sed "s;${HOME}/.Mail/jordi.marques@minorisa.net/\?;;g" | sed "s/^+''// "`
 # set smtp_url            = "smtp://jordi.marques@minorisa.net@zimbra.ini6.com:587/"
-# # set ssl_force_tls     = yes
-# set ssl_starttls        = yes
 # set timeout             = 10
 # set net_inc             = 5
 # # source "$HOME/.muttrc.global"
@@ -132,8 +122,6 @@
 # # set imap_pass         = your-imap-password
 # set imap_idle           = yes
 # set smtp_url            = "smtp://jordi.marques@minorisa.net@outlook.office365.com:587/"
-# # set ssl_force_tls     = yes
-# set ssl_starttls        = yes
 # set spoolfile           = +INBOX
 # set record              = +INBOX
 # set postponed           = +Borradores
@@ -151,6 +139,44 @@
 # source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi.marques@minorisa.net-exchange.mutt.gpg |"
 # bind index,pager gr imap-fetch-mail
 ### account: jordi.marques@minorisa.net-exchange-imap
+
+### account: jordi.marques@minorisa.net-exchange-mbsync
+# #  * * * * *              pgrep mutt >/dev/null && lock lock -q -f noerror mbsync-jordi_marques@minorisa_net-exchange    ~/.mutt/bin/mbsync.sh jordi.marques@minorisa.net-exchange        >/dev/null 2>&1 || true
+# #  * * * * *    sleep 30; pgrep mutt >/dev/null && lock lock -q -f noerror mbsync-jordi_marques@minorisa_net-exchange    ~/.mutt/bin/mbsync.sh jordi.marques@minorisa.net-exchange-inbox  >/dev/null 2>&1 || true
+# macro index gr "<shell-escape>${HOME}/.mutt/bin/mbsync.sh jordi.marques@minorisa.net-exchange-inbox<enter>"
+# macro index gR "<shell-escape>${HOME}/.mutt/bin/mbsync.sh jordi.marques@minorisa.net-exchange      <enter>"
+# set realname            = "Jordi Marqués"
+# set from                = "jordi.marques@minorisa.net"
+# set mbox_type           = Maildir
+# set folder              = ~/.Mail/jordi.marques@minorisa.net
+# set spoolfile           = +INBOX
+# set record              = +INBOX
+# set postponed           = +Borradores
+# set mbox                = +Archivo
+# set trash               = +Trash
+# mailboxes `find ~/.Mail/jordi.marques@minorisa.net-exchange -maxdepth 4 -type d -name "*" -not \( -name "cur" -or -name "new" -or -name "tmp" \) -printf "+'%p' " | sed "s;${HOME}/.Mail/jordi@amospalla.es/\?;;g" | sed "s/^+''// "`
+# set smtp_url            = "smtp://jordi.marques@minorisa.net@outlook.office365.com:587/"
+# # set sidebar_delim_chars = "/."
+# set timeout             = 10
+# set net_inc             = 5
+# # source "$HOME/.muttrc.global"
+# # read -s -p password: pass && printf "set imap_pass='${pass}'\nset smtp_pass='${pass}'te" | gpg -r jordi.marques@minorisa.net -e > ~/.mutt/jordi.marques@minorisa.net-exchange.mutt.gpg
+# # read -s -p password: pass && echo ${pass} | gpg2 -r jordi.marques@minorisa.net -e > ~/.mutt/jordi.marques@minorisa.net-exchange.mbsync.gpg
+# source "${HOME}/.mutt/bin/read-password.sh ~/.mutt/jordi.marques@minorisa.net.exchange.mutt.gpg |"
+### account: jordi.marques@minorisa.net-exchange-mbsync
+
+set smtp_authenticators = "login"
+
+# SSL hardening
+set ssl_force_tls=yes
+set ssl_starttls=yes
+# set ssl_use_sslv2=no
+set ssl_use_sslv3=no
+set ssl_use_tlsv1=no
+set ssl_use_tlsv1_1=no
+set ssl_use_tlsv1_2=yes
+set ssl_verify_dates=yes
+set ssl_verify_host=yes
 
 bind index,pager g noop
 bind pager r noop
@@ -191,7 +217,8 @@ unset confirmappend
 # set signature = ~/.signature
 
 # make sure Vim knows Mutt is a mail client and that a UTF-8 encoded message will be composed
-set editor="vim -c 'set syntax=mail ft=mail enc=utf-8'"
+# set editor="vim -c 'set syntax=mail ft=mail enc=utf-8'"
+set editor="vim +13 -c 'set nobackup' -c 'set noswapfile' -c 'set nowritebackup' -c 'set tw=72 ft=mail noautoindent'"
 # Store message headers locally to speed things up.
 # If hcache is a folder, Mutt will create sub cache folders for each account which may speeds things up even more.
 
