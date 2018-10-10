@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# FileVersion=1
+# FileVersion=2
+
+# read -s -p password: pass && echo ${pass} | gpg2 -r jordi@amospalla.es -e > ~/.vdirsyncer/password.gpg
 
 export GPGKEY="$("${HOME}/bin/getgpgkey.sh")"
 
