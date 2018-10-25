@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=2
+# FileVersion=3
 
 set -eu -o pipefail -o errtrace
 
@@ -17,8 +17,8 @@ show_help(){
 output="${1}"
 icc="${2}"
 
-disptext="$(dispwin --help 2>&1)" || true
-if ! [[ ${disptext} =~ Screen" "[0-9] ]]; then
+disptext="$(dispwin --help 2>&1 || true)"
+if ! [[ ${disptext} =~ (Screen|Monitor)" "[0-9] ]]; then
 	echo "Error: obtaining screens from dispwin"
 	exit 1
 fi
@@ -38,7 +38,7 @@ elif [[ -d "${icc}/" ]]; then
 	fi
 fi
 
-if [[ ${disptext} =~ Screen" "[0-9]+," "Output" "${output} ]]; then
+if [[ ${disptext} =~ (Screen|Monitor)" "[0-9]+," "Output" "${output} ]]; then
 	[[ $BASH_REMATCH =~ [0-9]+ ]] && device_number=${BASH_REMATCH}
 else
 	echo "Error: output '${output}' not known by dispwin."

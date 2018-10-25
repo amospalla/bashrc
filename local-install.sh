@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=12
+# FileVersion=13
 
 # TODO
 # afegir arquitectura
@@ -103,7 +103,7 @@ compile(){
 	if [[ ${#vars[${packagefull}_git_branch]} -gt 0 ]]; then
 		newversion=${vars[${packagefull}_git_branch]}
 	else
-		newversion="$(grep "^PACKAGE_VERSION=" Makefile | sed 's/^PACKAGE_VERSION=//')"
+		newversion="$(grep "^PACKAGE_VERSION\s*=" Makefile | sed 's/^PACKAGE_VERSION\s*=\s*//')"
 	fi
 	newversion=${newversion//-}
 
@@ -273,6 +273,26 @@ declare -a online_available=() installed=() packages_status=()
 
 # Required packages: install and left installed
 # Optional packages: install and remove after package installation
+vars["tinc_Ubuntu_16.04_packages_required"]="libc6 liblzo2-2 libssl1.0.0 zlib1g"
+vars["tinc_Ubuntu_16.04_packages_dev"]="build-essential liblzo2-dev libssl-dev"
+vars["tinc_Ubuntu_16.04_git"]=""
+vars["tinc_Ubuntu_16.04_url"]="https://www.tinc-vpn.org/packages/tinc-1.0.35.tar.gz"
+vars["tinc_Ubuntu_16.04_configure_command"]="./configure"
+vars["tinc_Ubuntu_16.04_configure_path"]=""
+vars["tinc_Ubuntu_16.04_git_branch"]=""
+vars["tinc_Ubuntu_16.04_git_recursive"]=""
+vars["tinc_Ubuntu_16.04_install_path"]="/usr/local"
+
+vars["tinc_Ubuntu_18.04_packages_required"]="libc6 liblzo2-2 libssl1.0.0 zlib1g"
+vars["tinc_Ubuntu_18.04_packages_dev"]="build-essential liblzo2-dev libssl1.0-dev lsb-base"
+vars["tinc_Ubuntu_18.04_git"]=""
+vars["tinc_Ubuntu_18.04_url"]="https://www.tinc-vpn.org/packages/tinc-1.0.35.tar.gz"
+vars["tinc_Ubuntu_18.04_configure_command"]="./configure"
+vars["tinc_Ubuntu_18.04_configure_path"]=""
+vars["tinc_Ubuntu_18.04_git_branch"]=""
+vars["tinc_Ubuntu_18.04_git_recursive"]=""
+vars["tinc_Ubuntu_18.04_install_path"]="/usr/local"
+
 vars["neomutt_Ubuntu_16.04_packages_required"]="libc6 libgnutls30 libgpgme11 libgssapi-krb5-2 libidn11 libncursesw5 libnotmuch4 libsasl2-2 libtinfo5 libtokyocabinet9 mime-support"
 vars["neomutt_Ubuntu_16.04_packages_dev"]="build-essential git gettext xsltproc libxml2-utils docbook-xml docbook-xsl libncursesw5-dev libidn11-dev libgnutls28-dev libkrb5-dev libtokyocabinet-dev libnotmuch-dev libgpgme11-dev"
 vars["neomutt_Ubuntu_16.04_git"]="https://github.com/neomutt/neomutt"
