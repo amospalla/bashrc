@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FileVersion=13
+# FileVersion=14
 
 # TODO
 # afegir arquitectura
@@ -277,7 +277,7 @@ vars["tinc_Ubuntu_16.04_packages_required"]="libc6 liblzo2-2 libssl1.0.0 zlib1g"
 vars["tinc_Ubuntu_16.04_packages_dev"]="build-essential liblzo2-dev libssl-dev"
 vars["tinc_Ubuntu_16.04_git"]=""
 vars["tinc_Ubuntu_16.04_url"]="https://www.tinc-vpn.org/packages/tinc-1.0.35.tar.gz"
-vars["tinc_Ubuntu_16.04_configure_command"]="./configure"
+vars["tinc_Ubuntu_16.04_configure_command"]="./configure --with-systemd"
 vars["tinc_Ubuntu_16.04_configure_path"]=""
 vars["tinc_Ubuntu_16.04_git_branch"]=""
 vars["tinc_Ubuntu_16.04_git_recursive"]=""
@@ -287,7 +287,7 @@ vars["tinc_Ubuntu_18.04_packages_required"]="libc6 liblzo2-2 libssl1.0.0 zlib1g"
 vars["tinc_Ubuntu_18.04_packages_dev"]="build-essential liblzo2-dev libssl1.0-dev lsb-base"
 vars["tinc_Ubuntu_18.04_git"]=""
 vars["tinc_Ubuntu_18.04_url"]="https://www.tinc-vpn.org/packages/tinc-1.0.35.tar.gz"
-vars["tinc_Ubuntu_18.04_configure_command"]="./configure"
+vars["tinc_Ubuntu_18.04_configure_command"]="./configure --with-systemd"
 vars["tinc_Ubuntu_18.04_configure_path"]=""
 vars["tinc_Ubuntu_18.04_git_branch"]=""
 vars["tinc_Ubuntu_18.04_git_recursive"]=""
