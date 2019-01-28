@@ -3,6 +3,7 @@
 ._sync_*.db-wal
 ._sync_*.db-shm
 .osync_workdir/
+.syncthing.*.tmp
 lightroom/programa/Data/local/modified/@APPDATALOCAL@/Adobe/Lightroom
 lightroom/programa/Data/local/modified/@PROGRAMFILES@
 lightroom/programa/Data/local/modified/@APPDATALOCAL@/Adobe/CameraRaw/Cache

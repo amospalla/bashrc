@@ -3,6 +3,7 @@
 ._sync_*.db-wal
 ._sync_*.db-shm
 .osync_workdir/
+.syncthing.*.tmp
 rcver/i3/config
 rcver/i3/conky/conky.rc
 rcver/i3/bar/bar.escriptori.casa.amospalla.es

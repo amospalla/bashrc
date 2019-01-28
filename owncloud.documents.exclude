@@ -4,3 +4,4 @@
 ._sync_*.db-shm
 .osync_workdir/
 *.kdbx.lock
+.syncthing.*.tmp
