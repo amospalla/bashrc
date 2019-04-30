@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 
-# FileVersion=7
+# FileVersion=8
 
 from sys import exit
 
 try:
     from taskw import TaskWarrior
 except ImportError:
-    print ("Python taskw not installed: pip3 install taskw.")
+    print("Python taskw not installed: pip3 install taskw.")
     exit()
 
 try:
     from graphviz import Digraph
 except ImportError:
-    print ("Python digraph not installed: pip3 install graphviz.")
+    print("Python digraph not installed: pip3 install graphviz.")
     exit()
 
 import re
@@ -113,8 +113,9 @@ def add_task_group(task, length, priority='L'):
             group_found = []
         group.append(task)
         if 'depends' in task:
-            for uuid in task['depends']:
-                if get_task_with_uuid(uuid) is None:  # taskwarrior depends is an uuid
+            for uuid in task['depends'].split(','):
+                if get_task_with_uuid(uuid) is None:
+                    # taskwarrior depends is an uuid
                     continue
                 add_task_group(get_task_with_uuid(uuid), priority=priority,
                                length=length + 1)
@@ -147,6 +148,7 @@ for task in tasks_in:
 for task in tasks:
     add_task_group(task, length=0)
 
+
 for cluster in ['Low', 'Medium', 'High']:
     priority_found = False
     for group in priority_groups:
@@ -173,17 +175,21 @@ for cluster in ['Low', 'Medium', 'High']:
                 else:
                     color = 'white'
 
-                match = re.search( '(__)([^_]+)(__)', task["description"], flags = 0)
+                match = re.search('(__)([^_]+)(__)', task["description"],
+                                  flags=0)
                 if match:
                     description = match.group(2)
                 else:
                     description = task['description']
 
-                c.node(task["uuid"], description + "(" + str(task['id']) + ")", color = color)
+                c.node(task["uuid"], description + "(" + str(task['id']) + ")",
+                       color=color)
                 if 'depends' in task:
-                    for dependency in task['depends']:
+                    for dependency in task['depends'].split(','):
                         c.edges([(task['uuid'], dependency)])
 
 
-dot.view()
-# dot.render('/tmp/file', view=True)
+dot.format = 'png'
+dot.graph_attr['dpi'] = '600'
+# dot.view()
+dot.render('/tmp/taskgraph', view=True)

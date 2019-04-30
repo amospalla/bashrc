@@ -24,3 +24,10 @@ export GPGKEY=ABCDEFGH
 ############
 
 # export CEPH_ARGS="--conf /etc/ceph/ceph10.conf --keyring /etc/ceph/ceph10.client.admin.keyring"
+
+# MOSH_SERVER_NETWORK_TMOUT=86400     # One day
+# MOSH_SERVER_NETWORK_TMOUT=172800    # Two days
+MOSH_SERVER_NETWORK_TMOUT=345600      # Four days
+# MOSH_SERVER_NETWORK_TMOUT=604800    # A week
+export MOSH_SERVER_NETWORK_TMOUT
+alias mosh="mosh --server='env MOSH_SERVER_NETWORK_TMOUT=${MOSH_SERVER_NETWORK_TMOUT:-0} /usr/bin/mosh-server'"

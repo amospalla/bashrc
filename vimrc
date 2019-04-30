@@ -1,4 +1,4 @@
-" FileVersion=58
+" FileVersion=59
 
 " To install Vundle:
 " git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
@@ -40,6 +40,7 @@ Bundle 'majutsushi/tagbar'
 Bundle 'scrooloose/nerdtree'
 Bundle 'vimwiki/vimwiki'
 Bundle 'gcmt/taboo.vim'
+Bundle 'w0rp/ale.git'
 """""" Python """"""
 " Python autocompletion. If used disable python-mode autocompletion with let g:pymode_rope=0
 " Vim ide
@@ -84,9 +85,9 @@ highlight Comment cterm=italic
 " 	set background=dark
 " endif
 colorscheme solarized
-" let g:solarized_termcolors=256
+let g:solarized_termcolors=256
 " let g:solarized_visibility="high"
-" let g:solarized_contrast="high"
+let g:solarized_contrast="high"
 
 " colorscheme zenburn
 
